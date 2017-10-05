@@ -15,7 +15,6 @@ y1=a*y(3);
 y2=y(4);
 
 %set nonlinear term, k3, to 0
-%
 k3=0;
 
 %define A matrix for EOM
