@@ -1,7 +1,5 @@
-%% Simple 1D mass-in-mass system 
-% dependicies - sys.m
+%% Simple 1D mass-in-mass system with cubic nonlinear spring
 % 11/09/2017 - Conor MacDonald
-% GitHub comment to test
  
 clear all
 close all
