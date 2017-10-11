@@ -21,7 +21,10 @@ k3=double(k);
 w0=sqrt(k2/m2);
 % Define A matrix
 f=w0/(2*pi);
-A=[x2; -((k1/m1)+(k3/m1))*(x1)+((k3/m1)*y1); y2; ((k3/m2)*x1)-((k3/m2)*y1)];
+A=[x2; ...
+    -((k1/m1)+(k3/m1))*(x1)+((k3/m1)*y1); ...
+    y2; ...
+    ((k3/m2)*x1)-((k3/m2)*y1)];
 
 % Input excitation force
 %sinusodial harmonic

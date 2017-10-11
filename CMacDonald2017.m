@@ -5,7 +5,7 @@ clear all
 close all
 tic
 % Time specification
-tspan = [0 1];
+tspan = [0 10];
 
 % Initial conditions
 % velocity is initially 0, v1=0, v2=0
