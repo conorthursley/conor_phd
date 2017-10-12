@@ -5,18 +5,18 @@ clear all
 close all
 tic
 % Time specification
-tspan = [0 10];
+tspan = [0 1];
 
 % Initial conditions
 % velocity is initially 0, v1=0, v2=0
 % displacement for m1 is 1e-3 from the fixed wall (L spacing)
 % displacement for m2 is 1.5E-3 from the wall (5e-4 away from m1, within)
 % y=[u1;v1;u2;v2]
-y=[1e-3;0;1e-3;0];
-%opts = odeset('RelTol',1e-5,'AbsTol',1e-7);
+y=[0;0;0;0];
+opts = odeset('RelTol',1e-5,'AbsTol',1e-7);
 % System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t, result] = ode45(@sys, tspan, y);
+[t, result] = ode45(@sys, tspan, y, opts);
 toc
 
 % u1=result(:,1); u2=result(:,2);
@@ -56,16 +56,16 @@ legend('u2')
 grid on
 
 %% Ratio of displacement between masses
-U1=abs(u1);
-U2=abs(u2);
-Ux=U2/U1;
-
-figure
-plot(t,Ux)
-
+% U1=abs(u1);
+% U2=abs(u2);
+% Ux=U2/U1;
+% 
+% figure
+% plot(t,Ux)
+% 
 %% Pwelch function
 % figure
-% [pxx,freq] = pwelch(u2,500,300,500,max(t));
+% [pxx,freq] = pwelch(u1,500,300,500,max(t));
 % plot(freq,10*log10(pxx))
 % xlabel('Frequency (Hz)')
 % ylabel('Magnitude (dB)')
@@ -121,9 +121,11 @@ title('Phase plane') % Inserts the title in the plot
 grid on
 
 %% Frequency Response Function plot
+% input= sin(2*pi*5*t);
+% output=result(:,1);
+% 
 % FRF = fft(output)./fft(input);
-% input from H = sin(2*pi*1*t);
-% output from result(:,1);
+% 
 % plot(t,FRF);
 
 %% Impulse Reaction Plot
