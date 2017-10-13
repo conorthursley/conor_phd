@@ -4,7 +4,7 @@ function [dy]=sys(t,y)
 k1=2e6;
 m1=1;
 k2=2e5;
-m2=0.1*m1;
+m2=2*m1;
 
 
 % define X matrix, Xdot
@@ -14,7 +14,7 @@ y1=y(3);
 y2=y(4);
 
 syms q
-spring=piecewise(q<5e-4,k1,5e-4<q<1.5e-3, k2, q>1.5e-3, k1);
+spring=piecewise(q<=5e-4,k1,5e-4<q<1.5e-3, k2, q>=1.5e-3, k1);
 k=subs(spring, q, y1);
 k3=double(k);
 

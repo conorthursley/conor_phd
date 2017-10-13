@@ -16,7 +16,7 @@ y=[0;0;0;0];
 opts = odeset('RelTol',1e-5,'AbsTol',1e-7);
 % System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t, result] = ode45(@sys, tspan, y, opts);
+[t, result] = ode15s(@sys, tspan, y, opts);
 toc
 
 % u1=result(:,1); u2=result(:,2);
@@ -89,6 +89,7 @@ title('Single-Sided Amplitude Spectrum of U1(t)')
 grid on
 xlabel('f (Hz)')
 ylabel('|P1(f)|')
+axis([0 100 0 Inf])
 %Single sided amplitude spectrum of U2(t)
 % 
 subplot(2,1,2);
@@ -99,7 +100,7 @@ title('Single-Sided Amplitude Spectrum of U2(t)')
 grid on
 xlabel('f (Hz)')
 ylabel('|P1(f)|')
-
+axis([0 100 0 Inf])
 
 %% Phase plane
 %
