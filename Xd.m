@@ -1,9 +1,9 @@
 function Xdot=Xd(t,y)
 %Define parameters from model
-k1=2e6;
+% k1=1000; % Not Used
 m1=1;
-k2=2e5;
-m2=9*m1;
+k2=100;
+m2=500*m1;
 % k3=2e4;
 % D=1e10; %damping coefficient 
 
@@ -16,13 +16,13 @@ y1=y(3);
 y2=y(4);
 
 %set nonlinear term, k3, to 0
-k3=2e4;
+k3=0;
 
 %define A matrix for EOM
 A=[x2; ...
-    -((k2/m1)*(x1-y1))-((k3/m1)*((x1-y1)^3))+((k1/m1)*x1); ...
+    -((k2/m1)*(x1-y1));%-((k3/m1)*((x1-y1)^4)); ...
     y2;...
-    -((k2/m2)*(y1-x1))-((k3/m2)*((y1-x1)^3))];
+    -((k2/m2)*(y1-x1))];%-((k3/m2)*((y1-x1)^4))];
 
 % input force vector, B
 B=[0 (0.1*sin(2*pi*5*t)) 0 0];
