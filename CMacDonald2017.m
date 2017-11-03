@@ -12,17 +12,23 @@ tspan = [0 1];
 % displacement for m1 is 1e-3 from the fixed wall (L spacing)
 % displacement for m2 is 1E-3 from the wall (5e-4 away from m1, within)
 % y=[u1;v1;u2;v2]
-y=[1e-3;0;0;0];
+y=[1e-3;0;1e-3;0];
+%---------------------------------------------------
+% Parameters
+k1=2e6; %N/m
+m1=1; %kg
+k2=0.1*k1;
+m2=0.5*m1;
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
 input =2; %Hz
 
 
-opts = odeset('RelTol',1e-5,'AbsTol',1e-7, 'OutputFcn',@odeplot); % 'Events', @events);
+opts = odeset('RelTol',1e-5,'AbsTol',1e-7, 'OutputFcn',@odeplot, 'Events', @events);
 %% System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t,result] = ode45(@(t,y)Linear(t,y,input), tspan, y,opts);
+[t,result,te,ye,ie] = ode45(@(t,y)Linear(t,y,input,k1,m1,k2,m2), tspan, y,opts);
 toc
 
 
