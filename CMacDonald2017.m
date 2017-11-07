@@ -5,37 +5,38 @@ clear all
 close all
 tic
 % Time specification
-tspan = [0 1];
+tspan = [0 0.1];
 %---------------------------------------------------
 % Initial conditions
 % velocity is initially 0, v1=0, v2=0
 % displacement for m1 is 1e-3 from the fixed wall (L spacing)
 % displacement for m2 is 1E-3 from the wall (5e-4 away from m1, within)
 % y=[u1;v1;u2;v2]
-y=[1e-3;0;1e-3;0];
+% y=[1e-3;0;1e-3;0];
+y=zeros(8,1);
 %---------------------------------------------------
 % Parameters
-k1=2e6; %N/m
+k1=1000; %N/m
 m1=1; %kg
 k2=0.1*k1;
-m2=0.5*m1;
+m2=500*m1;
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
 input =2; %Hz
 
 
-opts = odeset('RelTol',1e-5,'AbsTol',1e-7, 'OutputFcn',@odeplot, 'Events', @events);
+opts = odeset('RelTol',1e-5,'AbsTol',1e-7, 'OutputFcn',@odeplot, 'Events', @events); %, 'Mass', mass);
 %% System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t,result,te,ye,ie] = ode45(@(t,y)Linear(t,y,input,k1,m1,k2,m2), tspan, y,opts);
+[t,result,te,ye,ie] = ode45(@(t,y)TwoCell(t,y,input,k1,m1,k2,m2), tspan, y,opts);
 toc
 
 
 %% Plots displacement and velocity of displacement of 2 masses
 u1=result(:,1);
 u2=result(:,3);
-
+%---------------------------------------------------
 figure
 ax1=subplot(2,1,1);
 plot(t,u1)
@@ -179,3 +180,13 @@ function [value,isterminal,direction] = events(~,y)
       %0 if all zeros are to be located (the default). A value of +1 locates only zeros where the event function is increasing, ...
       % ... and -1 locates only zeros where the event function is decreasing
 end
+
+%% Mass function
+% function M = mass
+% 
+% M=[1 0 0 0; 0 0.5 0 0; 0 0 1 0; 0 0 0 0.5]; %mass matrix
+% 
+% end
+
+
+
