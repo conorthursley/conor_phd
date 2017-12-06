@@ -2,12 +2,12 @@
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\NLOneUnitCellHarmonic7.csv';
+file = 'C:\ANSYS\Temp\Validation\NLOneUnitCellHarmonic11.csv';
 M=csvread(file,2,0); %start reading from row 2, column 1    
 
 ansys_freq = M((1:10000),1); % excitation frequency
 ansys_amp_1 = M((1:10000),2);
-ansys_amp_2 = M((1:10000),4);
+% ansys_amp_2 = M((1:10000),4);
 
 %% Displacement freq responses mass 1
 figure
@@ -19,7 +19,7 @@ ylabel('Magnitude, u','FontSize',14)
 % legend({'mass_1'},'FontSize',14)
 %% Displacement freq responses mass2
 figure
-plot(ansys_freq,abs(ansys_amp_2),'LineWidth',0.05)
+plot(ansys_freq,abs(ansys_amp_1),'LineWidth',0.05)
 grid on
 title('frequency response magnitudes for a NL one unit-cell AMM, secondary mass','FontSize',14)
 xlabel('Freq, Hz','FontSize',14)

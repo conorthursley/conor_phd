@@ -1,7 +1,7 @@
 %% Experimental code for ODE event solver to find a solution to the secular cubic function
 
 % Simple 1D mass-in-mass system with dynamic system outlined by the funciton in the ode45 
-% 11/03/2017 - Conor MacDonald
+% 11/03/2017 - Conor MacDonald MMDDYYYY
 %---------------------------------------------------
 clear all
 close all
@@ -31,18 +31,18 @@ ieout = [];
 %---------------------------------------------------
 % Parameters
 k1=1000; %N/m
-m1=5; %kg
-k2=0.5*k1;
-m2=0.1*m1;
+m1=1; %kg
+k2=0.1*k1;
+m2=0.3*m1;
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
 freq=5; %Hz
 Amp=0.1;
-input=[freq Amp];
+input=[freq Amp]; 
 %---------------------------------------------------
 % ode options  - see 'odeset'
-opts = odeset('RelTol',1e-10,'AbsTol',1e-10, 'OutputFcn',@odeplot, 'Events', @events);
+opts = odeset('RelTol',1e-10,'AbsTol',1e-10,  'Events', @events); %'OutputFcn',@odeplot,
 %% System simulation
 
 % solve continuosly from tstart to tend at each terminal event
@@ -53,7 +53,7 @@ for i=1:10000
     %could probably write a code to keep iterating between the event (dont
     %stop) and event (stop) with a flag system.
     %---------------------------------------------------
-    [t,result,te,ye,ie] = ode45(@(t,y)nonLinear(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
+    [t,result,te,ye,ie] = ode45(@(t,y)DuffingOsc(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
 %     if ~ishold
 %         hold on
 %     end %check that the graph is on hold
@@ -143,9 +143,9 @@ dt=mean(diff(eT));  %average time step done in the ode45 computation
 Fs=1/dt;
 n=length(eT);  %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft=fft(u1,m)/n; % DFT of signal
+dft1=fft(u1,m)/n; % DFT of signal
 fr = (0:m-1)*(Fs/m)/10;
-fourier = abs(dft);     
+fourier = abs(dft1);     
 plot(fr(1:floor(m/2)),fourier(1:floor(m/2)))
 title('Single-Sided Amplitude Spectrum of U1(t)')
 grid on
@@ -201,22 +201,57 @@ grid on
 % Using the TFESTIMATE function to compare input and output signals
 % txy = tfestimate(x,y) finds a transfer function estimate, txy, given an input signal, x, and an output signal, y.
 % input signal is our sine wave (or harmonic input) across the time length
-x=input(1)*sin(2*pi*input(2)*t);
-Fsample=1000;
-[txu1,fu1]=tfestimate(x,u1,[],[],[],Fsample);
-[txu2,fu2]=tfestimate(x,u2,[],[],[],Fsample);
-%---------------------------------------------------
-% subplot creation
+% x=input(1)*sin(2*pi*input(2)*t);
+% Fsample=1000;
+% [txu1,fu1]=tfestimate(x,u1,[],[],[],Fsample);
+% [txu2,fu2]=tfestimate(x,u2,[],[],[],Fsample);
+% %---------------------------------------------------
+% % subplot creation
+% figure
+% ax5=subplot(2,1,1);
+% plot(fu1,20*log10(abs(txu1)))
+% title('Transfer function of U1(t)')
+% grid on
+% xlabel('f (Hz)')
+% ylabel('Mag (dB)')
+% %---------------------------------------------------
+% ax6=subplot(2,1,2);
+% plot(fu2,mag2db(abs(txu2)))
+% title('Transfer function of U2(t)')
+% grid on
+% xlabel('f (Hz)')
+% ylabel('Mag (dB)')
+% %---------------------------------------------------
+% linkaxes([ax5,ax6],'y')
+
+%% LogLog plots
+y1=fft(u1);
+y2=fft(u2);
+dt=mean(diff(eT));  %average time step done 
+Fs=1/dt;
+n=length(eT); %length of signal = number of samples
+m=pow2(nextpow2(n));  %transform length
+dft1=fft(u1,m)/n; % DFT of signal
+fr = (0:m-1)*(Fs/m)/10;
+fourier1 = abs(dft1); 
+freq=fr(1:floor(m/2));
+P3=fourier1(1:floor(m/2));
 figure
 ax5=subplot(2,1,1);
-plot(fu1,20*log10(abs(txu1)))
+loglog(freq,abs(P3))
 title('Transfer function of U1(t)')
 grid on
 xlabel('f (Hz)')
 ylabel('Mag (dB)')
 %---------------------------------------------------
+m=pow2(nextpow2(n));  %transform length
+dft2=fft(u2,m)/n; % DFT of signal
+fr = (0:m-1)*(Fs/m)/10;
+fourier1 = abs(dft2); 
+freq=fr(1:floor(m/2));
+P4=fourier1(1:floor(m/2));
 ax6=subplot(2,1,2);
-plot(fu2,mag2db(abs(txu2)))
+loglog(freq,abs(P4))
 title('Transfer function of U2(t)')
 grid on
 xlabel('f (Hz)')
@@ -233,7 +268,7 @@ toc
 function [value,isterminal,direction] = events(~,y)
       value = [double((y(3)-(y(1))<=-(5e-4))); double((y(3)-y(1))>=+(5e-4))]; %double((y(7)-(y(5))<=-(5e-4))); double((y(7)-y(5))>=+(5e-4));double((y(1)-y(5))>=+(1.5e-3))]; %need to use double to convert logical to numerical
            % detect when the bounds gets crossed
-      isterminal = ones(2,1); % halt integration, reverse direction 
+      isterminal = [0;0]; % halt integration, reverse direction 
       % 1 if the integration is to terminate when the ith event occurs. Otherwise, it is 0.
       direction = [0;0]; % approaching the event from any which way
       %0 if all zeros are to be located (the default). A value of +1 locates only zeros where the event function is increasing, ...

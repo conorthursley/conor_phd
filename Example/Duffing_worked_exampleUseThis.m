@@ -7,10 +7,10 @@
 %% Coefficients 
 alpha=1;
 beta=-1;
-delta=0.02;
+delta=0;
 gamma=8;
 omega=0.5;
-tspan=[0 100];
+tspan=[0 1000];
 y0=[0 0]; %initial conditions
 %% ODE solver
 tic

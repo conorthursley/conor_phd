@@ -5,7 +5,7 @@ clear all
 close all
 tic
 % Time specification
-tspan = [0 0.1];
+tspan = [0 10];
 %---------------------------------------------------
 % Initial conditions
 % velocity is initially 0, v1=0, v2=0
@@ -13,29 +13,29 @@ tspan = [0 0.1];
 % displacement for m2 is 1E-3 from the wall (5e-4 away from m1, within)
 % y=[u1;v1;u2;v2]
 % y=[1e-3;0;1e-3;0];
-y=zeros(8,1);
+y=[0 0];
 %---------------------------------------------------
 % Parameters
-k1=1000; %N/m
+k1=10e3; %N/m
 m1=1; %kg
-k2=0.1*k1;
-m2=500*m1;
+k2=2000*k1;
+m2=0.3*m1;
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
-input =2; %Hz
+input =[5 1]; %Hz
 
 
-opts = odeset('RelTol',1e-5,'AbsTol',1e-7, 'OutputFcn',@odeplot, 'Events', @events); %, 'Mass', mass);
+opts = odeset('RelTol',1e-5,'AbsTol',1e-7, 'OutputFcn',@odeplot); %, 'Mass', mass, 'Events', @events);
 %% System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t,result,te,ye,ie] = ode45(@(t,y)TwoCell(t,y,input,k1,m1,k2,m2), tspan, y,opts);
+[t,result] = ode15s(@(t,y)DuffingVal(t,y,input,k1,m1,k2,m2), tspan, y,opts); %,te,ye,ie
 toc
 
 
 %% Plots displacement and velocity of displacement of 2 masses
 u1=result(:,1);
-u2=result(:,3);
+u2=result(:,2);
 %---------------------------------------------------
 figure
 ax1=subplot(2,1,1);
