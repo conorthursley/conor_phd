@@ -1,11 +1,11 @@
-function [dy]=DuffingVal(~,y,~,k1,m1,k2,~)
+function [dy]=DuffingVal(~,y,k1,m1,k2)
 
 %-----------------------------------
 x1=y(1);
 x2=y(2);
 %-----------------------------------
 % f=input(1)*(2*pi); 
-d=0.01; %damping
+d=0.02; %damping
 A=[x2;-(d/m1)*x2-((k1/m1)*x1+(k2/m1))*(x1.^3)];
     
 % A=y(2);

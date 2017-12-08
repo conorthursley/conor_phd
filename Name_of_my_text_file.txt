@@ -1,5 +1,5 @@
 ! Script to examine the response for a mass-spring system
-! Conor MacDonaldDecember 06, 2017  8:50:18 AM
+! Conor MacDonaldDecember 08, 2017  4:27:48 PM
 
 FINI
 /clear,all
@@ -7,7 +7,7 @@ FINI
 /prep7
 
 ! Define parameters
-m1=1.000000
+m1=0.100000
 m2=0.300000
 k1=1000.000000
 k2=100.000000
@@ -61,10 +61,6 @@ REAL,1! Change to real set 1 for the mass
 E,II
 *ENDDO
 
-! define the excitation force on Node #1, in the X direction
-! F, NODE, Lab, VALUE, VALUE2, NEND, NINC
-! Specifies force loads at nodes.
-F,1,FX,1
 ! Constrain the end node, which is numbered 10
 ! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6
 ! Defines degree-of-freedom constraints at nodes.
@@ -72,26 +68,3 @@ D,11,UX,0
 
 SAVE
 FINI
-
-/SOLU     ! Start the solution process
-
-ANTYPE, HARMIC   ! Use Harmonic Analysis
-!Setup the solution process
-!*
-!*
-HROPT,FULL
-HROUT,ON
-LUMPM,1
-!*
-EQSLV, ,0,
-PSTRES,0
-!*
-!*
-OUTPR,ALL,ALL,
-HARFRQ,0,100,
-NSUBST,10000,
-KBC,0
-!*
-SAVE
-
-SOLVE

@@ -15,7 +15,7 @@ fprintf(fileID,strFIN);
 %% Parameters and Modelling
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
-m1=1; 
+m1=0.1; 
 m2=0.3;
 k1=1000;
 k2=100;
@@ -69,12 +69,12 @@ fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 1\n',ival+1,fval+1
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II\n*ENDDO\n');
 %-----------------------------------------------
-% Define the excitation force on node#1
+%% Loads: Define the excitation force on node#1
 % Force of 1 applied on the first node
 % prepare for harmonic or transient analysis
-fprintf(fileID,'\n! define the excitation force on Node #1, in the X direction\n! F, NODE, Lab, VALUE, VALUE2, NEND, NINC');
-fprintf(fileID,'\n! Specifies force loads at nodes.');
-fprintf(fileID,'\nF,1,FX,1');
+% fprintf(fileID,'\n! define the excitation force on Node #1, in the X direction\n! F, NODE, Lab, VALUE, VALUE2, NEND, NINC');
+% fprintf(fileID,'\n! Specifies force loads at nodes.');
+% fprintf(fileID,'\nF,1,FX,1');
 %-----------------------------------------------
 % Constrain the other end of the chain
 fprintf(fileID,'\n! Constrain the end node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',fval);
@@ -86,14 +86,14 @@ fprintf(fileID,'\nSAVE\nFINI\n');
 % Model process has been completed
 %% Solution of system
 % setup the solution process
-fprintf(fileID,'\n/SOLU     ! Start the solution process\n');
-fprintf(fileID,'\nANTYPE, HARMIC   ! Use Harmonic Analysis\n');
-fprintf(fileID,'!Setup the solution process\n!*\n!*\nHROPT,FULL\nHROUT,ON\nLUMPM,1\n!*\nEQSLV, ,0,\nPSTRES,0\n!*\n!*\nOUTPR,ALL,ALL,\n');
-fprintf(fileID,'HARFRQ,%d,%d,',ivalHarm,fvalHarm);
-fprintf(fileID,'\nNSUBST,%d,\nKBC,0\n!*\nSAVE\n',subsN);
-%-----------------------------------------------
-%solve the system
-fprintf(fileID,'\nSOLVE\n');
+% fprintf(fileID,'\n/SOLU     ! Start the solution process\n');
+% fprintf(fileID,'\nANTYPE, HARMIC   ! Use Harmonic Analysis\n');
+% fprintf(fileID,'!Setup the solution process\n!*\n!*\nHROPT,FULL\nHROUT,ON\nLUMPM,1\n!*\nEQSLV, ,0,\nPSTRES,0\n!*\n!*\nOUTPR,ALL,ALL,\n');
+% fprintf(fileID,'HARFRQ,%d,%d,',ivalHarm,fvalHarm);
+% fprintf(fileID,'\nNSUBST,%d,\nKBC,0\n!*\nSAVE\n',subsN);
+% %-----------------------------------------------
+% %solve the system
+% fprintf(fileID,'\nSOLVE\n');
 %-----------------------------------------------
 %% Analysis/PostProcessing
 %-----------------------------------------------

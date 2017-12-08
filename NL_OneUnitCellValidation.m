@@ -2,8 +2,8 @@
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\NLOneUnitCell17.csv';
-M=csvread(file,2,0); %start reading from row 2, column 1
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffTenUnitHarmonic1.csv';
+M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
 ansys_amp_1 = M((1:length(M)),2);
@@ -30,9 +30,9 @@ xlabel('f (Hz)')
 ylabel('|P1(f)|')
 %% Displacement Time responses
 figure
-plot(ansys_time, abs(ansys_amp_1),'r','LineWidth',0.05)
+plot(ansys_time,(ansys_amp_1),'r','LineWidth',0.005)
 grid on
-title('Time response magnitudes for a NL one unit-cell AMM','FontSize',14)
+title('Time response magnitudes for a 10 unit linear spring mass-spring system','FontSize',14)
 xlabel('Time, s','FontSize',14)
 ylabel('Magnitude, u','FontSize',14)
 % legend({'mass_1'},'FontSize',14)
@@ -41,8 +41,30 @@ figure
 loglog(freq,abs(P))
 y1=get(gca,'ylim');
 grid on
-title('Frequency response magnitudes for a NL one unit-cell AMM','FontSize',14)
+title('Frequency response magnitudes for a 10 unit linear spring mass-spring system','FontSize',14)
 xlabel('Frequency, Hz','FontSize',14)
 ylabel('magnitude','FontSize',14)
 % legend({'mass_1','mass_2'},'FontSize',14)
 
+%% amplitude vs freq
+% need to get the average amplitude in each section of the frequency signal
+% each frequency is active for 20 seconds
+tend=20;
+ti=1;
+for i=1:15
+    [c, index] = min(abs(ansys_time-tend));
+    SVG=mean(abs(ansys_amp_1(ti:index)));
+    EG(i,1)=SVG;
+    tend=tend+20;
+    ti=index;
+    
+end
+figure
+gee=13:0.25:16.5;
+gg=flipud(EG);
+plot(gee,200*EG)
+grid on
+
+    
+    
+    
