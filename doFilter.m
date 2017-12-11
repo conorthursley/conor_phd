@@ -9,9 +9,9 @@ persistent Hd;
 
 if isempty(Hd)
     
-    Fstop1 = 5;    % First Stopband Frequency
+    Fstop1 = 2;    % First Stopband Frequency
     Fpass1 = 10;   % First Passband Frequency
-    Fpass2 = 35;   % Second Passband Frequency
+    Fpass2 = 42;   % Second Passband Frequency
     Fstop2 = 50;   % Second Stopband Frequency
     Astop1 = 60;   % First Stopband Attenuation (dB)
     Apass  = 1;    % Passband Ripple (dB)

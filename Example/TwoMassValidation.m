@@ -146,3 +146,4 @@ title(str,'FontSize',14)
 xlabel('Excitation frequency, \Omega','FontSize',14)
 ylabel('Magnitude','FontSize',14)
 legend({'mass_1','mass_2'},'FontSize',14)
+

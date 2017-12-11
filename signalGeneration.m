@@ -6,13 +6,13 @@
 hf=50;
 dt=1/(10*hf);
 %length of time we want to find response for
-lt=100;
+lt=10;
 steps=lt/dt;
-x=linspace(0,100,steps);
+x=linspace(0,10,steps);
 %generate random numbers between [-1,1] with a length of steps
 r=-1+2.*rand(steps,1);
 % put it through the filter we created in bandpass filter toolbox thing
-y=doFilter(r);
+y=doFilter2(r);
 % create vector to export to a csv file for APDL to read
 Y=[x',y];
 

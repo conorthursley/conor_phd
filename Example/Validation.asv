@@ -174,7 +174,7 @@ ylabel('magnitude','FontSize',14)
 legend({'matlab','APDL'},'FontSize',14)
 %% TF Estimate
 
-[txy,frequencies]=tfestimate(ansys_freq_hz,ansys_amp,[],[],[],500);
+[txy,frequencies]=tfestimate(ansys_amp_1,ansys_amp_2,[],[],[],500);
 
 % plot
 figure

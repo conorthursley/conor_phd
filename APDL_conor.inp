@@ -1,5 +1,5 @@
 ! Script to examine the response for a mass-spring system
-! Conor MacDonaldDecember 08, 2017  4:27:48 PM
+! Conor MacDonaldDecember 11, 2017  6:07:29 PM
 
 FINI
 /clear,all
@@ -10,9 +10,9 @@ FINI
 m1=0.100000
 m2=0.300000
 k1=1000.000000
-k2=100.000000
-L=1.000000
-l=0.500000
+k2=10.000000
+L=40.000000
+l=20.000000
 n=5.000000 !number of cells
 ival=0.000000
 fval=10.000000
@@ -22,20 +22,40 @@ ET,1,MASS21
 KEYOPT,1,3,4
 R,1,m1
 
-! Define the spring element
+! Define the mass element
+ET,4,MASS21
+KEYOPT,1,3,4
+R,4,m2
+
+! Define the linear spring element
 ET,2,COMBIN14
 KEYOPT,2,3,2
 R,2,k1
 
+! Define the spring nonlinear element
+ET,3,COMBIN39
+KEYOPT,2,1,0
+KEYOPT,2,2,0
+KEYOPT,2,3,0
+KEYOPT,2,4,0
+KEYOPT,2,6,0
+KEYOPT,2,3,2
+R,3,-10,-20000,-9,-16290,-8,-13120,
+RMORE,-7,-10430,-6,-8160,-5,-6250,
+RMORE,-4,-4640,-3,-3270,-2,-2080,
+RMORE,-1,-1010,0,0,1,1010,
+RMORE,2,2080,3,3270,4,4640,
+RMORE,5,6250,6,8160,7,10430,
+RMORE,8,13120,9,16290,
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
-*DO,II,0,fval,1 ! For I = 1 to 10:
+*DO,II,0,fval,1 ! For I = 0 to 10:
 
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
 
-posx=II*L		! calculate nodal position with spacing, L=1
+posx=II*l		! calculate nodal position with spacing, =20
 
 N,II+1,posx,0,0			! define the node
 *ENDDO
@@ -43,28 +63,40 @@ N,II+1,posx,0,0			! define the node
 ! Now that all the nodes are defined
 ! One can define the elements that link them together
 
+TYPE,3! Change the element type to 3 (spring element)
+REAL,3! Change to real set 3 for the spring
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,2,10, 2
+
+E,II,II+1
+*ENDDO
+
 TYPE,2! Change the element type to 2 (spring element)
 REAL,2! Change to real set 2 for the spring
 
-!*DO, Par, IVAL, FVAL, INC
-*DO, II,1 ,10.000000, 1
+E,1,2
 
-E,II,II+1
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,2,8, 2
+
+E,II,II+2
 *ENDDO
 
 TYPE,1! Change the element type to 1 (mass element)
 REAL,1! Change to real set 1 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,1 ,11, 1
+*DO, II,2 ,10, 2
 
 E,II
 *ENDDO
 
-! Constrain the end node, which is numbered 10
-! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6
-! Defines degree-of-freedom constraints at nodes.
-D,11,UX,0
+TYPE,4! Change the element type to 4 (mass element)
+REAL,4! Change to real set 4 for the mass
 
-SAVE
-FINI
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,3 ,11, 2
+
+E,II
+*ENDDO

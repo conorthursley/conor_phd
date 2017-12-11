@@ -6,7 +6,7 @@ file = 'U:\_PhD\APDL\Duffing\FivetToSevenHz.csv';
 M=csvread(file,2,19); %start reading from row 3, column 1
 
 time = M((1:18009),1);      % excitation frequency
-amp =M((1:18006),2);
+amp =M((1:18009),2);
 w0=zeros(length(time),1);
 w1=zeros(length(time),1);
 %-------------------------------------------------------
