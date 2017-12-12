@@ -1,11 +1,17 @@
 %% Text file writer
 % creates a text file/inp file from MATLAB which is then run in ANSYS APDL
-strTitle='Name_of_my_text_file.txt';
+strTitle='LinearAMMchain.txt';
 fileID = fopen(strTitle,'w');
+% dont forget to change the last line when you change this title
+%-----------------------------------------------
+%% Future Improvements and plans
+% - assign variables for elements so changing between types and real
+% constants is easy af.
+
 %-----------------------------------------------
 %% Intro comments and time stamp
 dt = datestr(now,'mmmm dd, yyyy HH:MM:SS AM');
-strIntro='! Script to examine the response for a mass-spring system\n! Conor MacDonald ';
+strIntro='! Script to examine the response for a linear mass-spring system\n! Conor MacDonald ';
 fprintf(fileID,strcat(strIntro,dt));
 %-----------------------------------------------
 %% Clear up and start Proprocessor
@@ -22,7 +28,7 @@ k2=10;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=1000; %number of cells, so we need 2xn number of nodes
+n=5; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -44,22 +50,9 @@ fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n
 % Define the linear spring element, element type 2
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1\n');
+
 %-----------------------------------------------
-% Define the nonlinear spring element, element type 2
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the spring nonlinear element\nET,3,COMBIN39\nKEYOPT,2,1,0\nKEYOPT,2,2,0\nKEYOPT,2,3,0\nKEYOPT,2,4,0\nKEYOPT,2,6,0\nKEYOPT,2,3,2');
-% create the nonlinear spring curve using nonlinearCurve.m
-F = nonlinearCurve(k1,k2);
-% Loop the resultant curve data to form the spring parameters in ANSYS
-fprintf(fileID,'\nR,3,%d,%d,%d,%d,%d,%d,\n',F(1,1),F(1,2),F(2,1),F(2,2),F(3,1),F(3,2));
-var=4;
-while var<(length(F)-2)
-    fprintf(fileID,'RMORE,%d,%d,%d,%d,%d,%d,\n',F(var,1),F(var,2),F(var+1,1),F(var+1,2),F(var+2,1),F(var+2,2));
-    var=var+3;
-end
-fprintf(fileID,'RMORE,%d,%d,%d,%d,%d,%d,\n',F(var,1),F(var,2),F(var+1,1),F(var+1,2));
-%-----------------------------------------------
-% Node Generation
+%% Node Generation
 
 % Outline the DO loop to create 'n' amount of nodes
 fprintf(fileID,'\n! Define a DO loop using the command\n!*DO, counter, InitialVAL, FinalVAL, INCrement\n');
@@ -75,8 +68,8 @@ fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 % fprintf(fileID,'\n\nN,1,0,0,0     !Define first node at 0,0');
 fprintf(fileID,'\n! Now that all the nodes are defined\n! One can define the elements that link them together\n');
 %-----------------------------------------------
-% link springs together (nonlinear springs - primary mass to secondary mass)
-fprintf(fileID,'\nTYPE,3! Change the element type to 3 (spring element)\nREAL,3! Change to real set 3 for the spring\n');
+% link springs together (linear springs - primary mass to secondary mass)
+fprintf(fileID,'\nTYPE,2! Change the element type to 2 (spring element)\nREAL,2! Change to real set 2 for the spring\n');
 fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
@@ -109,11 +102,11 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % fprintf(fileID,'\nF,1,FX,1');
 %-----------------------------------------------
 % Constrain the other end of the chain
-% fprintf(fileID,'\n! Constrain the end node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
-% fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
-% fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
-% %-----------------------------------------------
-% fprintf(fileID,'\nSAVE\nFINI\n');
+fprintf(fileID,'\n! Constrain the first node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
+fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
+fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
+%-----------------------------------------------
+fprintf(fileID,'\nSAVE\nFINI\n');
 %-----------------------------------------------
 % Model process has been completed
 %% Solution of system
@@ -140,19 +133,11 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % fprintf(fileID,'PLVAR,2,3');
 
 
-
-
-
-
-
-
-
-
 %% End
 % Copy text file contents to ANSYS' input file format, .inp
 fclose(fileID);
-fileID2 = fopen('APDL_conor.inp' ,'w');
-copyfile Name_of_my_text_file.txt APDL_conor.inp
+fileID2 = fopen('APDL_AMM_linearChain.inp' ,'w');
+copyfile LinearAMMchain.txt APDL_AMM_linearChain.inp
 
 
 
