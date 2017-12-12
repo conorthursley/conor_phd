@@ -10,7 +10,7 @@ lt=10;
 steps=lt/dt;
 x=linspace(0,10,steps);
 %generate random numbers between [-1,1] with a length of steps
-A=200;
+A=10;
 r=-A+(2*A).*rand(steps,1);
 % put it through the filter we created in bandpass filter toolbox thing
 y=doFilter2(r);
@@ -19,7 +19,7 @@ Y=[x',y];
 
 plot(x,r,'b',x,y,'g')
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilter.csv';
+file='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp10Length10.csv';
 csvwrite(file,Y);
 
 

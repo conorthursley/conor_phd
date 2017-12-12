@@ -5,9 +5,14 @@ m2=0.3;
 k1=1000;
 k2=10;
 w0=2*pi*sqrt(k2/m2);
+
+% effective mass
+theta=m2/m1;
+w2=sqrt(k2/m2);
+
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans20.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans25.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -15,7 +20,7 @@ t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
 ansys_amp_2 = M((1:length(M)),3);
 
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilter.csv';
+bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp10Length10.csv';
 bandpass=csvread(bandpassFile);
 %% FFT of input (displacement)
 figure
@@ -32,7 +37,7 @@ fourier = abs(dft);
 f=Fs*(0:(n/2))/n;
 freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
-plot(freq/w0,P)
+plot(freq/(w2),P)
 % plot(flop,abs(y),'LineWidth',2)
 title('FFT of input amp (simple)')
 grid on
@@ -52,7 +57,7 @@ fourier = abs(dft);
 f=Fs*(0:(n/2))/n;
 freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
-plot(2*pi*freq/(w0),P)
+plot(freq/(w2),P)
 % plot(flop,abs(y),'LineWidth',2)
 title('FFT of output amp (simple)')
 grid on
@@ -70,7 +75,7 @@ ylabel('Magnitude, u','FontSize',14)
 legend({'mass_1'},'FontSize',14)
 %% Loglog plot of frequency response
 figure
-loglog(freq/(w0),abs(P))
+loglog(freq,abs(P))
 y1=get(gca,'ylim');
 grid on
 title('Frequency response magnitudes for a 10 unit linear spring mass-spring system','FontSize',14)
@@ -80,15 +85,13 @@ ylabel('magnitude','FontSize',14)
 %% TF estimate
 % takes in input and output signal
 % bandpass filter input signal
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilter.csv';
-bandpass=csvread(bandpassFile);
 
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_2,[],[],[],1/(dt*10*t(end)));
+[txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_2,[],[],[],1/(dt*1*t(end)));
 
 % plot
 figure
-plot(frequencies/(w0/(2*pi)),20*log10(abs(txy)))
+plot(frequencies/(w2),20*log10(abs(txy)))
 grid on
 title('TF Estimate','FontSize',14)
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
