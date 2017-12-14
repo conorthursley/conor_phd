@@ -12,15 +12,15 @@ w2=sqrt(k2/m2);
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans25.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans26.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
-ansys_amp_2 = M((1:length(M)),3);
+% ansys_amp_2 = M((1:length(M)),3);
 
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp10Length10.csv';
+bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp1Length10.csv';
 bandpass=csvread(bandpassFile);
 %% FFT of input (displacement)
 figure
@@ -37,7 +37,7 @@ fourier = abs(dft);
 f=Fs*(0:(n/2))/n;
 freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
-plot(freq/(w2),P)
+plot(freq,P)
 % plot(flop,abs(y),'LineWidth',2)
 title('FFT of input amp (simple)')
 grid on
@@ -51,13 +51,13 @@ Fs=1/dt;
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(ansys_time); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft=fft(ansys_amp_2,m); % DFT of signal
+dft=fft(ansys_amp_1,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft); 
 f=Fs*(0:(n/2))/n;
 freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
-plot(freq/(w2),P)
+plot(freq,P)
 % plot(flop,abs(y),'LineWidth',2)
 title('FFT of output amp (simple)')
 grid on
@@ -67,7 +67,7 @@ linkaxes([ax1,ax2],'x')
 
 %% Displacement Time responses
 figure
-plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
+plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_1),'r','LineWidth',0.005)
 grid on
 title('Time response magnitudes for a 10 unit linear spring mass-spring system','FontSize',14)
 xlabel('Time, s','FontSize',14)
@@ -87,11 +87,11 @@ ylabel('magnitude','FontSize',14)
 % bandpass filter input signal
 
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_2,[],[],[],1/(dt*1*t(end)));
+[txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],1/(dt*t(end)));
 
 % plot
 figure
-plot(frequencies/(w2),20*log10(abs(txy)))
+plot(frequencies,20*log10(abs(txy)))
 grid on
 title('TF Estimate','FontSize',14)
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)

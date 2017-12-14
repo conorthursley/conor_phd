@@ -1,10 +1,10 @@
 %% generate a signal to use the bandpass filter for
 % filter then makes the signal good enough to put through the APDL
 % transient analysis
-
+clear all
 %highest frequency of interest we want to know
-hf=500;
-dt=1/(10*hf);
+hf=50;
+dt=1/(100*hf);
 %length of time we want to find response for
 lt=10;
 steps=lt/dt;
