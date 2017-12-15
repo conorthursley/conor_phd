@@ -1,4 +1,4 @@
-function y = doFilter2(x)
+function y = doFilter2(x,dt)
 %DOFILTER Filters input x and returns output y.
 
 % MATLAB Code
@@ -13,7 +13,7 @@ if isempty(Hd)
     Fstop = 125;   % Stopband Frequency
     Apass = 1;     % Passband Ripple (dB)
     Astop = 60;    % Stopband Attenuation (dB)
-    Fs    = 2000;  % Sampling Frequency
+    Fs    = 1/dt;  % Sampling Frequency
     
     h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, Fs);
     

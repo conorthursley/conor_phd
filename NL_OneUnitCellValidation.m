@@ -4,23 +4,24 @@ m1=0.1;
 m2=0.3;
 k1=1000;
 k2=10;
-w0=2*pi*sqrt(k2/m2);
+w1=sqrt((4*k1)/m1)/(2*pi);
+w2=sqrt((k1)/m1)/(2*pi);
 
 % effective mass
 theta=m2/m1;
-w2=sqrt(k2/m2);
+% w2=sqrt(k2/m2);
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans26.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans36.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
-% ansys_amp_2 = M((1:length(M)),3);
+ansys_amp_2 = M((1:length(M)),3);
 
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp1Length10.csv';
+bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp100Length10Fs5000.csv';
 bandpass=csvread(bandpassFile);
 %% FFT of input (displacement)
 figure
@@ -51,7 +52,7 @@ Fs=1/dt;
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(ansys_time); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft=fft(ansys_amp_1,m); % DFT of signal
+dft=fft(ansys_amp_2,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft); 
 f=Fs*(0:(n/2))/n;
@@ -59,7 +60,7 @@ freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
 plot(freq,P)
 % plot(flop,abs(y),'LineWidth',2)
-title('FFT of output amp (simple)')
+title('FFT of output amp  5unitAMM NLH chain (simple)')
 grid on
 xlabel('Normalised frequency, \Omega (Hz)')
 ylabel('|P1(f)|')
@@ -67,18 +68,18 @@ linkaxes([ax1,ax2],'x')
 
 %% Displacement Time responses
 figure
-plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_1),'r','LineWidth',0.005)
+plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
 grid on
-title('Time response magnitudes for a 10 unit linear spring mass-spring system','FontSize',14)
+title('Time response magnitudes for a 10 unit NLH spring mass-spring system','FontSize',14)
 xlabel('Time, s','FontSize',14)
 ylabel('Magnitude, u','FontSize',14)
-legend({'mass_1'},'FontSize',14)
+legend({'mass_1','mass_2'},'FontSize',14)
 %% Loglog plot of frequency response
 figure
-loglog(freq,abs(P))
+loglog(freq/w1,abs(P))
 y1=get(gca,'ylim');
 grid on
-title('Frequency response magnitudes for a 10 unit linear spring mass-spring system','FontSize',14)
+title('Frequency response magnitudes for a 10 unit NLH spring mass-spring system','FontSize',14)
 xlabel('Frequency, Hz','FontSize',14)
 ylabel('magnitude','FontSize',14)
 % legend({'mass_1','mass_2'},'FontSize',14)
@@ -87,17 +88,22 @@ ylabel('magnitude','FontSize',14)
 % bandpass filter input signal
 
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],1/(dt*t(end)));
+[txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_2,[],[],[],length(bandpass)/10);
 
 % plot
 figure
-plot(frequencies,20*log10(abs(txy)))
+plot(frequencies/w1,20*log10(abs(txy)))
 grid on
-title('TF Estimate','FontSize',14)
+title('TF Estimate 5unitAMM NLH chain','FontSize',14)
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 
-
+figure
+loglog(frequencies/w1,abs(txy))
+grid on
+title('TF Estimate 5unitAMM NLH chain','FontSize',14)
+xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
+ylabel('Magnitude, dB','FontSize',14)
 % dt=mean(diff(bandpass(:,1)));  %average time step done 
 % Fs=1/dt;
 % % y = fft(ansys_amp_1);  
