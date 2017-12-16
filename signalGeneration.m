@@ -3,14 +3,14 @@
 % transient analysis
 clear all
 %highest frequency of interest we want to know
-hf=100;
+hf=20;
 dt=1/(10*hf);
 %length of time we want to find response for
 lt=100;
 steps=lt/dt;
 x=linspace(0,lt,steps);
 %generate random numbers between [-1,1] with a length of steps
-A=100;
+A=10;
 r=-A+(2*A).*rand(steps,1);
 % put it through the filter we created in bandpass filter toolbox thing
 y=doFilter2(r,dt);
@@ -19,7 +19,7 @@ Y=[x',y];
 
 plot(x,r,'b',x,y,'g')
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp100Length100.csv';
+file='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterAmp10Length100ValidationYao2008.csv';
 csvwrite(file,Y);
 
 

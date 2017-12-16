@@ -21,14 +21,14 @@ fprintf(fileID,strFIN);
 %% Parameters and Modelling
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
-m1=0.1; 
-m2=0.3;
-k1=1000;
-k2=10;
-L=40; %length between cells (cell is two masses)
+m1=0.1011; 
+m2=0.04647;
+k1=117;
+k2=2*37;
+L=0.25; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=100; %number of cells, so we need 2xn number of nodes
+n=7; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
