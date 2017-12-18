@@ -1,5 +1,5 @@
 ! Script to examine the response for a linear mass-spring system
-! Conor MacDonaldDecember 16, 2017  2:53:16 PM
+! Conor MacDonaldDecember 18, 2017  2:56:51 PM
 
 FINI
 /clear,all
@@ -11,8 +11,8 @@ m1=0.101100
 m2=0.046470
 k1=117.000000
 k2=74.000000
-L=0.250000
-l=0.125000
+L=0.025000
+l=0.012500
 n=7.000000 !number of cells
 ival=0.000000
 fval=14.000000
@@ -32,6 +32,16 @@ ET,2,COMBIN14
 KEYOPT,2,3,2
 R,2,k1
 
+! Define the linear spring element
+ET,3,COMBIN14
+KEYOPT,2,3,2
+R,3,k2
+
+! Define the mass element
+ET,4,MASS21
+KEYOPT,1,3,4
+R,4,m2
+
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
@@ -40,7 +50,7 @@ R,2,k1
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
 
-posx=II*l		! calculate nodal position with spacing, =1.250000e-01
+posx=II*l		! calculate nodal position with spacing, =1.250000e-02
 
 N,II+1,posx,0,0			! define the node
 *ENDDO
@@ -48,8 +58,8 @@ N,II+1,posx,0,0			! define the node
 ! Now that all the nodes are defined
 ! One can define the elements that link them together
 
-TYPE,2! Change the element type to 2 (spring element)
-REAL,2! Change to real set 2 for the spring
+TYPE,3! Change the element type to 3 (spring element)
+REAL,3! Change to real set 3 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
 *DO, II,2,14, 2

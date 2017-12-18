@@ -25,7 +25,7 @@ m1=0.1011;
 m2=0.04647;
 k1=117;
 k2=2*37;
-L=0.25; %length between cells (cell is two masses)
+L=0.025; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
 n=7; %number of cells, so we need 2xn number of nodes
@@ -50,6 +50,13 @@ fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n
 % Define the linear spring element, element type 2
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1\n');
+%-----------------------------------------------
+% Define the secondary linear spring element, element type 3
+%keyopts, real constants, declare element type
+fprintf(fileID,'\n! Define the linear spring element\nET,3,COMBIN14\nKEYOPT,2,3,2\nR,3,k2\n');
+%-----------------------------------------------
+% Define mass 2, element 4
+fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n');
 
 %-----------------------------------------------
 %% Node Generation
@@ -69,7 +76,7 @@ fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 fprintf(fileID,'\n! Now that all the nodes are defined\n! One can define the elements that link them together\n');
 %-----------------------------------------------
 % link springs together (linear springs - primary mass to secondary mass)
-fprintf(fileID,'\nTYPE,2! Change the element type to 2 (spring element)\nREAL,2! Change to real set 2 for the spring\n');
+fprintf(fileID,'\nTYPE,3! Change the element type to 3 (spring element)\nREAL,3! Change to real set 3 for the spring\n');
 fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
