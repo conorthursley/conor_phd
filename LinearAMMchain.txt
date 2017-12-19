@@ -1,5 +1,5 @@
 ! Script to examine the response for a linear mass-spring system
-! Conor MacDonaldDecember 18, 2017  2:56:51 PM
+! Conor MacDonaldDecember 19, 2017  5:52:39 PM
 
 FINI
 /clear,all
@@ -7,15 +7,15 @@ FINI
 /prep7
 
 ! Define parameters
-m1=0.101100
-m2=0.046470
-k1=117.000000
-k2=74.000000
-L=0.025000
-l=0.012500
-n=7.000000 !number of cells
+m1=0.100000
+m2=0.300000
+k1=1000.000000
+k2=10659.000000
+L=5.000000
+l=2.500000
+n=20.000000 !number of cells
 ival=0.000000
-fval=14.000000
+fval=40.000000
 
 ! Define the mass element
 ET,1,MASS21
@@ -45,12 +45,12 @@ R,4,m2
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
-*DO,II,0,fval,1 ! For I = 0 to 14:
+*DO,II,0,fval,1 ! For I = 0 to 40:
 
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
 
-posx=II*l		! calculate nodal position with spacing, =1.250000e-02
+posx=II*l		! calculate nodal position with spacing, =2.500000e+00
 
 N,II+1,posx,0,0			! define the node
 *ENDDO
@@ -62,7 +62,7 @@ TYPE,3! Change the element type to 3 (spring element)
 REAL,3! Change to real set 3 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,14, 2
+*DO, II,2,40, 2
 
 E,II,II+1
 *ENDDO
@@ -73,7 +73,7 @@ REAL,2! Change to real set 2 for the spring
 E,1,2
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,12, 2
+*DO, II,2,38, 2
 
 E,II,II+2
 *ENDDO
@@ -82,7 +82,7 @@ TYPE,1! Change the element type to 1 (mass element)
 REAL,1! Change to real set 1 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2 ,14, 2
+*DO, II,2 ,40, 2
 
 E,II
 *ENDDO
@@ -91,7 +91,7 @@ TYPE,4! Change the element type to 4 (mass element)
 REAL,4! Change to real set 4 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,3 ,15, 2
+*DO, II,3 ,41, 2
 
 E,II
 *ENDDO

@@ -1,7 +1,7 @@
-m1=0.1011; 
-m2=0.04647;
-k1=117;
-k2=37*2;
+m1=0.1; 
+m2=0.3;
+k1=1000;
+k2=1.0659e4;
 w0=sqrt(k2/m2);
 
 % effective mass
@@ -18,14 +18,14 @@ meff=m1+(m2*w2^2)./(w2^2-A.^2);
 figure
 plot(meff/m1,C)
 grid
-axis([-20 20 0 3])
+% axis([-20 20 0 3])
 
 qL=2*asin(sqrt((meff)/(4*k1).*A.^2));
 
 figure
 plot(real(qL)/pi,A/(2*pi))
 grid
-axis([0 1 0 12])
+% axis([0 1 0 12])
 % omega=(1/B^2)*sqrt((2*k1)./((meff)).*(1-cos(qL)));
 % 
 % figure

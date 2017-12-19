@@ -1,0 +1,20 @@
+% Copyright (C) 2004-2007 Burkhard Schmidt's group
+%
+% This file is under public domain. You may modify or incorporate it into other
+% works without any restrictions.
+
+ 0.0    0.45
+ 1.0    0.28009
+ 1.5    0.18205
+ 2.0    0.09277
+ 2.5    0.00714
+ 3.0   -0.03174
+ 3.5   -0.04522
+ 4.0   -0.03390
+ 4.5   -0.01950
+ 5.5   -0.00616
+ 6.0   -0.00473
+ 7.0   -0.00250
+ 8.0   -0.00104
+10.0    0.0
+15.0    0.0

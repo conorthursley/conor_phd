@@ -3,7 +3,7 @@
 % transient analysis
 clear all
 %highest frequency of interest we want to know
-hf=14;
+hf=70;
 dt=1/(10*hf);
 %length of time we want to find response for
 lt=100;
@@ -19,7 +19,7 @@ Y=[x',y];
 
 plot(x,r,'b',x,y,'g')
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\lowpassFilterFs14000Amp10Length100ValidationYao2008.csv';
+file='C:\ANSYS\Temp\Validation\DuffingValDec17\deleteme.csv';
 csvwrite(file,Y);
 
 

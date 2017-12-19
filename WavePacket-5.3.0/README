@@ -1,0 +1,90 @@
+WavePacket is a program package for the numerical simulation of quantum-mechanical wavepacket dynamics for distinguishable particles. WavePacket comprises functions for stationary and time-evolving, closed and open quantum systems, as well as for their optimal control by external fields. 
+
+This README describes the stable MATLAB version 5.3.0 of WavePacket which was released on May 30, 2017. 
+
+1. Installation and execution of the programs
+
+=============================================
+
+
+
+To use the program, add the Sources directory to your Matlab source path. 
+
+For each simulation, you then write an initialization function qm_init(), change the working directory to the directory where this function 
+is located, and run
+
+	qm_setup();
+	qm_init();
+	qm_propa();
+	qm_cleanup();
+
+
+for a propagation that numerically solves the time-dependent Schroedinger equation (TDSE). Replacing qm_propa by qm_bound in the lines above, you can also run a bound state calculation that numerically solves the time-independent Schroedinger equation (TISE). There is also the option to run qm_movie instead, which produces animated graphics visualizing the results of qm_propa and/or qm_bound. Alternatively, one can run qm_matrix and qm_abncd to switch from coordinate to energy representation where the (optimal) control of quantum dynamics can be simulated by calling qm_control or qm_optimal. These two functions work for closed as well as for open quantum systems; in the latter case they solve the Liouville-von Neumann equation (LvNE). If necessary, dimension reduction can be carried out by qm_balance and qm_truncate or qm_H2model. For a complete list of functions, see also below.
+
+The easiest way to learn how to set up an initialization function qm_init() is by studying the numerous examples found in the Demos directory. As indicated there by the names of the subdirectories, some of those example are for prototyical model Hamiltonians (such as Morse oscillator, spin-boson system) while others are from the field of molecular physics (vibration, rotation, electronic excitation), partly also including application of quantum optimal control theory. A thorough description of all of these examples, along with data and graphical output, can be found on the general Wavepacket wiki pages hosted at SourceForge,
+	http://sourceforge.net/p/wavepacket/wiki/Home/
+where also a lot of numerical details are documented. Furthermore, a detailed user guide and a reference of all variables, functions, parameters can be found on the Wiki pages of the Matlab version,
+	http://sourceforge.net/p/wavepacket/matlab/wiki/Home/
+Also the further development of the WavePacket software will be centrally administrated through the SourceForge website, providing an SVN repository as well as a ticket service for bug fixes or feature requests arising from the community.
+
+2. Brief description of the files
+=================================
+	
+The Sources directory contains the following files and subdirectories
+
+A. WavePacket functions
+-------------------
+
+qm_setup.m    - Before WavePacket simulations: set up simulations
+qm_bound.m    - Perform bound state calculations: solve TISE
+qm_propa.m    - Perform wavepacket propagations: solve TDSE
+qm_movie.m    - Visualize results from previous WavePacket calculations (qm_bound or qm_propa)
+qm_matrix.m   - Transform results of qm_bound (TISE) to eigen representation
+qm_abncd.m    - Set up system matrices for TDSE or LvNE in energy representation 
+qm_control.m  - Solve TDSE or LvNE in energy representation 
+qm_optimal.m  - Optimal control of TDSE or LvNE systems in energy representation
+qm_balance.m  - Transformation to balance controllability and observability
+qm_truncate.m - Truncate states which are of low controllability and observability
+qm_H2model.m  - Perform H2 optimal model reduction
+qm_cleanup.m  - After WavePacket simulations: close files and clean up
+
+B. Function packages
+--------------------
+
++amo  - various model functions for additional multiplicative operators
++aux  - auxiliary functions; useful but not yet fully matured
++dip  - various model functions for dipole moments
++grid - class definitons for various discrete variable representations, see below
++init - initialization tasks; among others for grid representations and Hamiltonian
++ket  - manipulation of quantum states; among others containing various propagators
++kin  - class definitions for various kinetic energy operators, see below
++math - mathematical utility functions; among others: Hermite/Laguerre polynomials, elliptic functions
++nip  - various model functions for negativ imaginary potentials used as absorb boundary conditions
++ode  - solvers for ordinaary differential equations
++oct  - utilities for (optimal) control 
++plot - graphical output functions; among others: surface and contour plots of Wigner representations 
++pol  - various model functions for polarizabilities
++pot  - various model functions for (real) potential energy
++sbc  - various model functions for system-bath coupling (LvNE only)
++util - minor utilities; among others handling of multidimensional splines and Taylor series
++wav  - various models for initial wavefunctions
+
+C. Class definitions
+--------------------
+
++grid/@fft      - Fourier based scheme for discrete variable representation
++grid/@hermite  - Gauss-Hermite scheme for discrete variable representation
++grid/@legendre - Gauss-Legendre scheme for discrete variable representation
+
+Although these DVR schemes come with their native kinetic operators, we added two more kinetic operator, thus illustrating how to set up more complex ones
+
++kin/@jacobi    - Kinetic operator for Jacobi coordinates
++kin/@triatomic - Kinetic operator for triatomic molecules using bond coordinates
+	
+3. Contact
+==========
+
+If you have any feedback, questions, suggestions, do not hestitate to contact us. The maintenance and further development is mainly done by PD Dr. Burkhard Schmidt at Free University Berlin, Germany
+	burkhard.schmidt@fu-berlin.de
+Alternatively you can also write to DR. Ulf Lorenz
+	ulf@wavepacket.org
