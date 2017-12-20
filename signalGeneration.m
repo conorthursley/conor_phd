@@ -3,7 +3,7 @@
 % transient analysis
 clear all
 %highest frequency of interest we want to know
-hf=70;
+hf=80;
 dt=1/(10*hf);
 %length of time we want to find response for
 lt=100;
@@ -13,13 +13,13 @@ x=linspace(0,lt,steps);
 A=10;
 r=-A+(2*A).*rand(steps,1);
 % put it through the filter we created in bandpass filter toolbox thing
-y=doFilter2(r,dt);
+% y=doFilter2(r,dt);
 % create vector to export to a csv file for APDL to read
-Y=[x',y];
+Y=[x',r];
 
-plot(x,r,'b',x,y,'g')
+% plot(x,r,'b',x,y,'g')
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\deleteme.csv';
+file='C:\ANSYS\Temp\Validation\DuffingValDec17\deleteme1.csv';
 csvwrite(file,Y);
 
 

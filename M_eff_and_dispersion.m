@@ -1,7 +1,14 @@
 m1=0.1; 
-m2=0.3;
+m2=1*m1;
 k1=1000;
-k2=1.0659e4;
+k2=1*k1; %118.4353;
+SpringRatio=k2/k1
+MassRatio=m2/m1
+% m1=0.2927;
+% m2=0.03;
+% k1=8557;
+% k2=1895;
+
 w0=sqrt(k2/m2);
 
 % effective mass
@@ -20,7 +27,7 @@ plot(meff/m1,C)
 grid
 % axis([-20 20 0 3])
 
-qL=2*asin(sqrt((meff)/(4*k1).*A.^2));
+qL=2*(asin(sqrt((meff)/(4*k1).*A.^2)));
 
 figure
 plot(real(qL)/pi,A/(2*pi))
@@ -85,3 +92,20 @@ figure
 Tall=T7+T6+T5+T4+T3+T2+T1;
 loglog(abs(Tall),B)
 grid
+%% band structure
+freq=50;
+w_2=freq*2*pi;
+m2=0.03; m2
+k2=w_2^2*m2; k2
+upper=(freq+2)/freq;
+lower=(freq-2)/freq;
+Mr=upper^2-1;
+m1=m2/Mr; m1
+
+L=12500000*lower^2*(-49999041*Mr+50000000*lower^2-49999041);
+Q=49999041*(50000000*lower^2-49999041);
+
+T=L/Q;
+
+Kr=Mr/T;
+k1=k2/Kr; k1

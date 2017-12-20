@@ -1,5 +1,5 @@
 ! Script to examine the response for a linear mass-spring system
-! Conor MacDonaldDecember 19, 2017  4:22:10 PM
+! Conor MacDonaldDecember 20, 2017 12:16:03 PM
 
 FINI
 /clear,all
@@ -7,55 +7,82 @@ FINI
 /prep7
 
 ! Define parameters
-m1=0.100000
+m1=0.142900
 m2=0.300000
-k1=1000.000000
-k2=1184.000000
+k1=238.690000
+k2=118.440000
 L=2.000000
 l=1.000000
 n=100.000000 !number of cells
 ival=0.000000
 fval=200.000000
 
-k3=4737.400000
-k4=10659.000000
-k5=18950.000000
-
+! --------------Elements------------------
+! --------------10 HZ------------------
 ! Define the mass element
 ET,1,MASS21
 KEYOPT,1,3,4
-R,1,m1
+R,1,1.429000e-01
 
 ! Define the mass element
 ET,2,MASS21
 KEYOPT,1,3,4
-R,2,m2
+R,2,3.000000e-01
 
-! Define the primary spring element
+! Define the spring element
 ET,3,COMBIN14
 KEYOPT,2,3,2
-R,3,k1
-
-! Define the secondary spring element
-ET,7,COMBIN14
-KEYOPT,2,3,2
-R,7,k2
-
-! Define the secondary spring element
-ET,6,COMBIN14
-KEYOPT,2,3,2
-R,6,k2
-
-! Define the secondary spring element
-ET,5,COMBIN14
-KEYOPT,2,3,2
-R,5,k2
+R,3,2.386900e+02
 
 ! Define the secondary spring element
 ET,4,COMBIN14
 KEYOPT,2,3,2
-R,4,k2
+R,4,1.184400e+02
 
+! --------------20 HZ------------------
+! Define the spring element
+ET,5,COMBIN14
+KEYOPT,2,3,2
+R,5,9.617100e+02
+
+! Define the secondary spring element
+ET,6,COMBIN14
+KEYOPT,2,3,2
+R,6,4.737400e+02
+
+! --------------40 HZ------------------
+! Define the mass element
+ET,7,MASS21
+KEYOPT,1,3,4
+R,7,2.927000e-01
+
+! Define the spring element
+ET,8,COMBIN14
+KEYOPT,2,3,2
+R,8,8557
+
+! Define the secondary spring element
+ET,9,COMBIN14
+KEYOPT,2,3,2
+R,9,1895
+
+! --------------70 HZ------------------
+! Define the mass element
+ET,10,MASS21
+KEYOPT,1,3,4
+R,10,5.176000e-01
+
+! Define the spring element
+ET,11,COMBIN14
+KEYOPT,2,3,2
+R,11,47937
+
+! Define the secondary spring element
+ET,12,COMBIN14
+KEYOPT,2,3,2
+R,12,5803
+
+! --------------Node Generation------------------
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
@@ -72,24 +99,56 @@ N,II+1,posx,0,0			! define the node
 ! Now that all the nodes are defined
 ! One can define the elements that link them together
 
+! --------------Element Modelling------------------
+! Secondary mass is constant throughout. Do first
+TYPE,2! Change the element type to 2 (mass element)
+REAL,2! Change to real set 2 for the mass
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,3 ,201, 2
+
+E,II
+*ENDDO
+
+! --------------10 HZ Unit Cell------------------
+! Mass 1 for the 10Hz and 20Hz section are the same value, so Do loop for both
+TYPE,1! Change the element type to 1 (mass element)
+REAL,1! Change to real set 1 for the mass
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,2 ,100, 2
+
+E,II
+*ENDDO
+
 TYPE,3! Change the element type to 3 (spring element)
 REAL,3! Change to real set 3 for the spring
 
 E,1,2
  !Define the first node to just be a mass (that will be grounded) and a primary spring to the chain
-!*DO, Par, IVAL, FVAL, INC
-*DO, II,2,198, 2
+!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the first 25 cells
+*DO, II,2,48, 2
 
 E,II,II+2
 *ENDDO
 
-TYPE,7! Change the element type to 7 (spring element)
-REAL,7! Change to real set 7 for the spring
+TYPE,4! Change the element type to 4 (spring element)
+REAL,4! Change to real set 4 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
 *DO, II,2,50, 2
 
 E,II,II+1
+*ENDDO
+
+! --------------20 HZ Unit Cell------------------
+TYPE,5! Change the element type to 5 (spring element)
+REAL,5! Change to real set 5 for the spring
+
+!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the second 25 cells
+*DO, II,50,98, 2
+
+E,II,II+2
 *ENDDO
 
 TYPE,6! Change the element type to 6 (spring element)
@@ -101,8 +160,27 @@ REAL,6! Change to real set 6 for the spring
 E,II,II+1
 *ENDDO
 
-TYPE,5! Change the element type to 5 (spring element)
-REAL,5! Change to real set 5 for the spring
+! --------------40 HZ Unit Cell------------------
+TYPE,7! Change the element type to 7 (mass element)
+REAL,7! Change to real set 7 for the mass
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,102 ,150, 2
+
+E,II
+*ENDDO
+
+TYPE,8! Change the element type to 8 (spring element)
+REAL,8! Change to real set 8 for the spring
+
+!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the third 25 cells
+*DO, II,100,148, 2
+
+E,II,II+2
+*ENDDO
+
+TYPE,9! Change the element type to 9 (spring element)
+REAL,9! Change to real set 9 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
 *DO, II,102,150, 2
@@ -110,8 +188,18 @@ REAL,5! Change to real set 5 for the spring
 E,II,II+1
 *ENDDO
 
-TYPE,4! Change the element type to 4 (spring element)
-REAL,4! Change to real set 4 for the spring
+! --------------70 HZ Unit Cell------------------
+TYPE,10! Change the element type to 10 (mass element)
+REAL,10! Change to real set 10 for the mass
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,152 ,200, 2
+
+E,II
+*ENDDO
+
+TYPE,12! Change the element type to 12 (spring element)
+REAL,12! Change to real set 12 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
 *DO, II,152,200, 2
@@ -119,24 +207,16 @@ REAL,4! Change to real set 4 for the spring
 E,II,II+1
 *ENDDO
 
-TYPE,1! Change the element type to 1 (mass element)
-REAL,1! Change to real set 1 for the mass
+TYPE,11! Change the element type to 11 (spring element)
+REAL,11! Change to real set 11 for the spring
 
-!*DO, Par, IVAL, FVAL, INC
-*DO, II,2 ,200, 2
+!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the first 25 cells
+*DO, II,150,200, 2
 
-E,II
+E,II,II+2
 *ENDDO
 
-TYPE,2! Change the element type to 2 (mass element)
-REAL,2! Change to real set 2 for the mass
-
-!*DO, Par, IVAL, FVAL, INC
-*DO, II,3 ,201, 2
-
-E,II
-*ENDDO
-
+! --------------Loads/Constrain DOF------------------
 ! Constrain the first node, which is numbered 1
 ! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6
 ! Defines degree-of-freedom constraints at nodes.

@@ -21,22 +21,22 @@ fprintf(fileID,strFIN);
 %% Parameters and Modelling
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
-m1=0.1; 
-T1=1; %element and constant type of 1
-m2=0.3;
-T2=2; %element and constant type of 2
-k1=1000;
-T3=3; %element and constant type of 3
-%-------------------------------------
-% 4 types of springs. mass remains the same throughout the chain
-k2=1.184e3; %translates to 10Hz - k2=0.3*(10*2*pi)^2, 0.3=m2
-T4=7; %element and constant type of 4
-k3=4.7374e3; %20Hz
-T5=6;%element and constant type of 5
-k4=1.0659e4; %30Hz
-T6=5; %element and constant type of 6
-k5=1.8950e4; %40Hz
-T7=4; %element and constant type of 7
+%----------------10 HZ---------------------
+m1=0.1429; T1=1; %element and constant type of 1
+m2=0.3; T2=2; %element and constant type of 2
+k1=238.69; T3=3; %element and constant type of 3
+k2=118.44; T4=4; %element and constant type of 4
+%----------------20 HZ---------------------
+k5=961.71; T5=5; %element and constant type of 5
+k6=473.74; T6=6; %element and constant type of 6
+%----------------40 HZ---------------------
+m7=0.2927; T7=7; %element and constant type of 7
+k8=8557; T8=8; %element and constant type of 8
+k9=1895; T9=9; %element and constant type of 9
+%----------------70 HZ---------------------
+m10=0.5176; T10=10; %element and constant type of 10
+k11=47937; T11=11; %element and constant type of 11
+k12=5803; T12=12; %element and constant type of 12
 %-------------------------------------
 L=2; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
@@ -50,38 +50,40 @@ fval=2*n; %final value for end of node chain
 %-------------------------------------
 strPAR=('\n! Define parameters\nm1=%f\nm2=%f\nk1=%f\nk2=%f\nL=%f\nl=%f\nn=%f !number of cells\nival=%f\nfval=%f\n');
 fprintf(fileID,strPAR,m1,m2,k1,k2,L,l,n,ival,fval);
-strPAR1=('\nk3=%f\nk4=%f\nk5=%f\n');
-fprintf(fileID,strPAR1,k3,k4,k5);
 %-----------------------------------------------
-% Define the mass element, element type 1
-strMAS=('\n! Define the mass element\nET,%d,MASS21\nKEYOPT,1,3,4\nR,%d,m1\n');
-fprintf(fileID,strMAS,T1,T1);
-% Define mass 2, element 2
-fprintf(fileID,'\n! Define the mass element\nET,%d,MASS21\nKEYOPT,1,3,4\nR,%d,m2\n',T2,T2);
-%-----------------------------------------------
-% Define the linear spring element, element type 2
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the primary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,k1\n',T3,T3);
-%-----------------------------------------------
-% Define the secondary linear spring element, spring value that corresponds to 10Hz, element type 3
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,k2\n',T4,T4);
-%-----------------------------------------------
-% spring value that corresponds to 20Hz, element type 
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,k2\n',T5,T5);
-%-----------------------------------------------
-% spring value that corresponds to 30Hz, element type 
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,k2\n',T6,T6);
-%-----------------------------------------------
-% spring value that corresponds to 40Hz, element type 
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,k2\n',T7,T7);
+%% Defining elements
+fprintf(fileID,'\n! --------------Elements------------------');
+%----------------10 HZ---------------------
+fprintf(fileID,'\n! --------------10 HZ------------------');
+% Define the mass elements
+fprintf(fileID,'\n! Define the mass element\nET,%d,MASS21\nKEYOPT,1,3,4\nR,%d,%d\n',T1,T1,m1);
+fprintf(fileID,'\n! Define the mass element\nET,%d,MASS21\nKEYOPT,1,3,4\nR,%d,%d\n',T2,T2,m2);
+% Define the linear spring elements
+fprintf(fileID,'\n! Define the spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T3,T3,k1);
+fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T4,T4,k2);
+%----------------20 HZ---------------------
+fprintf(fileID,'\n! --------------20 HZ------------------');
+% Define the linear spring elements
+fprintf(fileID,'\n! Define the spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T5,T5,k5);
+fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T6,T6,k6);
+%----------------40 HZ---------------------
+fprintf(fileID,'\n! --------------40 HZ------------------');
+% Define the mass elements
+fprintf(fileID,'\n! Define the mass element\nET,%d,MASS21\nKEYOPT,1,3,4\nR,%d,%d\n',T7,T7,m7);
+% Define the linear spring elements
+fprintf(fileID,'\n! Define the spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T8,T8,k8);
+fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T9,T9,k9);
+%----------------70 HZ---------------------
+fprintf(fileID,'\n! --------------70 HZ------------------');
+% Define the mass elements
+fprintf(fileID,'\n! Define the mass element\nET,%d,MASS21\nKEYOPT,1,3,4\nR,%d,%d\n',T10,T10,m10);
+% Define the linear spring elements
+fprintf(fileID,'\n! Define the spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T11,T11,k11);
+fprintf(fileID,'\n! Define the secondary spring element\nET,%d,COMBIN14\nKEYOPT,2,3,2\nR,%d,%d\n',T12,T12,k12);
 %-----------------------------------------------
 %-----------------------------------------------
 %% Node Generation
-
+fprintf(fileID,'\n! --------------Node Generation------------------');
 % Outline the DO loop to create 'n' amount of nodes
 fprintf(fileID,'\n! Define a DO loop using the command\n!*DO, counter, InitialVAL, FinalVAL, INCrement\n');
 fprintf(fileID,'\n*DO,II,%d,fval,1 ! For I = %d to %d:\n',ival,ival,fval);
@@ -96,54 +98,89 @@ fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 % fprintf(fileID,'\n\nN,1,0,0,0     !Define first node at 0,0');
 fprintf(fileID,'\n! Now that all the nodes are defined\n! One can define the elements that link them together\n');
 %-----------------------------------------------
+fprintf(fileID,'\n! --------------Element Modelling------------------');
+% Masses to secondary mass
+fprintf(fileID,'\n! Secondary mass is constant throughout. Do first');
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (mass element)\nREAL,%d! Change to real set %d for the mass\n',T2,T2,T2,T2);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',ival+3,fval+1);
+fprintf(fileID,'\nE,II\n*ENDDO\n');
+%-----------------------------------------------
+fprintf(fileID,'\n! --------------10 HZ Unit Cell------------------');
+% place masses on each node in the section + the next section as they are
+% both the same mass (10 and 20Hz)
+fprintf(fileID,'\n! Mass 1 for the 10Hz and 20Hz section are the same value, so Do loop for both');
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (mass element)\nREAL,%d! Change to real set %d for the mass\n',T1,T1,T1,T1);
+% setout another DO loop
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',ival+2,(fval/2));
+% element is defined by connectivity to two nodes, I and J
+fprintf(fileID,'\nE,II\n*ENDDO\n');
 % link springs together (linear springs - primary mass to primary mass)
 fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T3,T3,T3,T3);
 fprintf(fileID,'\nE,1,2\n !Define the first node to just be a mass (that will be grounded) and a primary spring to the chain');
 % setout another DO loop
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval-2);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the first %d cells\n*DO, II,2,%d, 2\n',fval/8,(fval/4)-2);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+2\n*ENDDO\n');
-%-----------------------------------------------
-% Linking 4 different spring values for K2, so need to break up the DO
-% loop, or repeat it 4 times.
-%------------------------------------------------
-% link 10 hz springs k2, T4 (linear springs - primary mass to secondary mass)
+%link secondary springs together (linear springs - primary mass to secondary mass)
 fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T4,T4,T4,T4);
 fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval/4);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
 %-----------------------------------------------
-% link 20 hz springs k2, T5 (linear springs - primary mass to secondary mass)
+fprintf(fileID,'\n! --------------20 HZ Unit Cell------------------');
+% link springs together (linear springs - primary mass to primary mass)
 fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T5,T5,T5,T5);
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d,%d, 2\n',(fval/4)+2,fval/2);
+% setout another DO loop
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the second %d cells\n*DO, II,%d,%d, 2\n',fval/8,(fval/4),(fval/2)-2);
+% element is defined by connectivity to two nodes, I and J
+fprintf(fileID,'\nE,II,II+2\n*ENDDO\n');
+% link 20 hz springs k6, T6 (linear springs - primary mass to secondary mass)
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T6,T6,T6,T6);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d,%d, 2\n',(fval/4)+2,(fval/2));
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
 %-----------------------------------------------
-% link 30 hz springs k2, T6 (linear springs - primary mass to secondary mass)
-fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T6,T6,T6,T6);
+fprintf(fileID,'\n! --------------40 HZ Unit Cell------------------');
+% primary mass
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (mass element)\nREAL,%d! Change to real set %d for the mass\n',T7,T7,T7,T7);
+% setout another DO loop
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',(fval/2)+2,(fval*0.75));
+% element is defined by connectivity to two nodes, I and J
+fprintf(fileID,'\nE,II\n*ENDDO\n');
+% link springs together (linear springs - primary mass to primary mass)
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T8,T8,T8,T8);
+% setout another DO loop
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the third %d cells\n*DO, II,%d,%d, 2\n',fval/8,fval/2,(fval*0.75)-2);
+% element is defined by connectivity to two nodes, I and J
+fprintf(fileID,'\nE,II,II+2\n*ENDDO\n');
+%link secondary springs together (linear springs - primary mass to secondary mass)
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T9,T9,T9,T9);
 fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d,%d, 2\n',(fval/2)+2,fval*0.75);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
 %-----------------------------------------------
-% link 40 hz springs k2, T7 (linear springs - primary mass to secondary mass)
-fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T7,T7,T7,T7);
+fprintf(fileID,'\n! --------------70 HZ Unit Cell------------------');
+% primary mass
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (mass element)\nREAL,%d! Change to real set %d for the mass\n',T10,T10,T10,T10);
+% setout another DO loop
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',fval*0.75+2,(fval));
+% element is defined by connectivity to two nodes, I and J
+fprintf(fileID,'\nE,II\n*ENDDO\n');
+%link secondary springs together (linear springs - primary mass to secondary mass)
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T12,T12,T12,T12);
 fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d,%d, 2\n',(fval*0.75)+2,fval);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
-%-----------------------------------------------
-% place masses on each node=
-fprintf(fileID,'\nTYPE,%d! Change the element type to %d (mass element)\nREAL,%d! Change to real set %d for the mass\n',T1,T1,T1,T1);
+% link springs together (linear springs - primary mass to primary mass)
+fprintf(fileID,'\nTYPE,%d! Change the element type to %d (spring element)\nREAL,%d! Change to real set %d for the spring\n',T11,T11,T11,T11);
 % setout another DO loop
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',ival+2,fval);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC ! Setout the DO loop for the last %d cells\n*DO, II,%d,%d, 2\n',fval/8,fval*0.75,fval);
 % element is defined by connectivity to two nodes, I and J
-fprintf(fileID,'\nE,II\n*ENDDO\n');
-% Change masses to secondary mass
-fprintf(fileID,'\nTYPE,%d! Change the element type to %d (mass element)\nREAL,%d! Change to real set %d for the mass\n',T2,T2,T2,T2);
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',ival+3,fval+1);
-fprintf(fileID,'\nE,II\n*ENDDO\n');
+fprintf(fileID,'\nE,II,II+2\n*ENDDO\n');
+%-----------------------------------------------
 %-----------------------------------------------
 %% Loads: Define the excitation force on node#1
-
+fprintf(fileID,'\n! --------------Loads/Constrain DOF------------------');
 % Force of 1 applied on the first node
 % prepare for harmonic or transient analysis
 % fprintf(fileID,'\n! define the excitation force on Node #1, in the X direction\n! F, NODE, Lab, VALUE, VALUE2, NEND, NINC');
