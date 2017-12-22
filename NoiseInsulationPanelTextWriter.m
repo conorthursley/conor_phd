@@ -1,6 +1,6 @@
 %% Text file writer
 % creates a text file/inp file from MATLAB which is then run in ANSYS APDL
-strTitle='LinearAMMchain.txt';
+strTitle='ChainNoiseInsulationPanel.txt';
 fileID = fopen(strTitle,'w');
 % dont forget to change the last line when you change this title
 %-----------------------------------------------
@@ -11,7 +11,7 @@ fileID = fopen(strTitle,'w');
 %-----------------------------------------------
 %% Intro comments and time stamp
 dt = datestr(now,'mmmm dd, yyyy HH:MM:SS AM');
-strIntro='! Script to examine the response for a linear mass-spring system\n! Conor MacDonald ';
+strIntro='! Script to examine the response for a noise insulation mass-spring system\n! Conor MacDonald ';
 fprintf(fileID,strcat(strIntro,dt));
 %-----------------------------------------------
 %% Clear up and start Proprocessor
@@ -22,16 +22,14 @@ fprintf(fileID,strFIN);
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
 m1=0.1; 
-m2=0.5*m1;
 k1=1000;
-k2=k1/3.125;
 L=5; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=1; %number of cells, so we need 2xn number of nodes
+n=10; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
-fval=2*n; %final value for end of node chain
+fval=n; %final value for end of node chain
 %-------------------------------------
 % frequency range for harmonic analysis
 ivalHarm=0; %initial freq
@@ -44,30 +42,21 @@ fprintf(fileID,strPAR,m1,m2,k1,k2,L,l,n,ival,fval);
 % Define the mass element, element type 1
 strMAS=('\n! Define the mass element\nET,1,MASS21\nKEYOPT,1,3,4\nR,1,m1\n');
 fprintf(fileID,strMAS);
-% Define mass 2, element 4
-fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n');
 %-----------------------------------------------
 % Define the linear spring element, element type 2
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1\n');
 %-----------------------------------------------
-% Define the secondary linear spring element, element type 3
-%keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the linear spring element\nET,3,COMBIN14\nKEYOPT,2,3,2\nR,3,k2\n');
-%-----------------------------------------------
-% Define mass 2, element 4
-fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n');
-
 %-----------------------------------------------
 %% Node Generation
 
 % Outline the DO loop to create 'n' amount of nodes
 fprintf(fileID,'\n! Define a DO loop using the command\n!*DO, counter, InitialVAL, FinalVAL, INCrement\n');
-fprintf(fileID,'\n*DO,II,%d,fval,1 ! For I = %d to %d:\n',ival,ival,fval);
+fprintf(fileID,'\n*DO,II,%d,%d,1 ! For I = %d to %d:\n',ival,fval,ival,fval);
 % Define the node command line
 % we aren't concerend with rotation so we just need the longitudinal value
 fprintf(fileID,'\n! Define the nodes using the command\n! N, NODE, X, Y, Z, THXY, THYZ, THZX\n');
-fprintf(fileID,'\nposx=II*l		! calculate nodal position with spacing, =%d\n',l);
+fprintf(fileID,'\nposx=II*%d		! calculate nodal position with spacing, =%d\n',L,L);
 % define the node(s) and end the do loop
 fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 % fprintf(fileID,'\nN,II+2,posx+l,0,0\n*ENDDO\n');
@@ -75,29 +64,19 @@ fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 % fprintf(fileID,'\n\nN,1,0,0,0     !Define first node at 0,0');
 fprintf(fileID,'\n! Now that all the nodes are defined\n! One can define the elements that link them together\n');
 %-----------------------------------------------
-% link springs together (linear springs - primary mass to secondary mass)
-fprintf(fileID,'\nTYPE,3! Change the element type to 3 (spring element)\nREAL,3! Change to real set 3 for the spring\n');
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval);
-% element is defined by connectivity to two nodes, I and J
-fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
-%-----------------------------------------------
 % link springs together (linear springs - primary mass to primary mass)
 fprintf(fileID,'\nTYPE,2! Change the element type to 2 (spring element)\nREAL,2! Change to real set 2 for the spring\n');
-fprintf(fileID,'\nE,1,2\n');
+% fprintf(fileID,'\nE,1,2\n');
 % setout another DO loop
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval-2);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d,%d, 1\n',ival+1,fval);
 % element is defined by connectivity to two nodes, I and J
-fprintf(fileID,'\nE,II,II+2\n*ENDDO\n');
+fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
 %-----------------------------------------------
 % place masses on each node=
 fprintf(fileID,'\nTYPE,1! Change the element type to 1 (mass element)\nREAL,1! Change to real set 1 for the mass\n');
 % setout another DO loop
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',ival+2,fval);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 1\n',ival+1,fval+1);
 % element is defined by connectivity to two nodes, I and J
-fprintf(fileID,'\nE,II\n*ENDDO\n');
-% Change masses to secondary mass
-fprintf(fileID,'\nTYPE,4! Change the element type to 4 (mass element)\nREAL,4! Change to real set 4 for the mass\n');
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,%d ,%d, 2\n',ival+3,fval+1);
 fprintf(fileID,'\nE,II\n*ENDDO\n');
 %-----------------------------------------------
 %% Loads: Define the excitation force on node#1
@@ -116,8 +95,8 @@ fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
 fprintf(fileID,'\nFINI\n');
 
 %% Analysis
-fprintf(fileID,'!*\nANTYPE,4\n!*\nTRNOPT,FULL \nLUMPM,0 \n!*  \nNSUBST,80000,80000,80000\n');
-fprintf(fileID,'OUTRES,ERASE\nOUTRES,NSOL,ALL \nTIME,100\n');
+% fprintf(fileID,'!*\nANTYPE,4\n!*\nTRNOPT,FULL \nLUMPM,0 \n!*  \nNSUBST,80000,80000,80000\n');
+% fprintf(fileID,'OUTRES,ERASE\nOUTRES,NSOL,ALL TIME,100\n');
 %-----------------------------------------------
 % Model process has been completed
 %% Solution of system
@@ -147,8 +126,8 @@ fprintf(fileID,'OUTRES,ERASE\nOUTRES,NSOL,ALL \nTIME,100\n');
 %% End
 % Copy text file contents to ANSYS' input file format, .inp
 fclose(fileID);
-fileID2 = fopen('APDL_AMM_linearChain.inp' ,'w');
-copyfile LinearAMMchain.txt APDL_AMM_linearChain.inp
+fileID2 = fopen('APDL_NoiseInsulaiton_linearChain.inp' ,'w');
+copyfile ChainNoiseInsulationPanel.txt APDL_NoiseInsulaiton_linearChain.inp
 
 
 

@@ -1,9 +1,9 @@
     clear all
 %% Parameters
 m1=0.1; 
-m2=0.3;
+m2=0.5*m1;
 k1=1000;
-k2=1.0659e4;
+k2=10;
 w1=sqrt((k1)/m1)/(2*pi);
 w2=sqrt((k2)/m2)/(2*pi);
 
@@ -13,7 +13,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans73.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans75.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -24,12 +24,16 @@ ansys_amp_2 = M((1:length(M)),2);
 bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\deleteme1.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
+% [q,t5]=max(bandpass);
+% figure
+% plot(t,bandpass)
+
 % bandpass=10*(sin(10*2*pi*t)+sin(20*2*pi*t)+sin(40*2*pi*t)+sin(70*2*pi*t));
 %% FFT of input (displacement)
 figure
 ax1=subplot(2,1,1);
 dt=abs(mean(diff(t)));  %average time step done 
-Fs=10/dt;
+Fs=1/dt;
 % y = fft(ansys_amp_1);  
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
@@ -50,7 +54,7 @@ set(gca,'fontsize',14)
 % FFT of output (displacement)
 ax2=subplot(2,1,2);
 dt=mean(diff(t));  %average time step done 
-Fs=10/dt;
+Fs=1/dt;
 % y = fft(ansys_amp_1);  
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
@@ -79,6 +83,20 @@ xlabel('Time, s','FontSize',14)
 ylabel('Magnitude, u','FontSize',14)
 legend({'mass_1','mass_2'},'FontSize',14)
 set(gca,'fontsize',14)
+%% Distribution of energy ratio
+KE1=(0.5*m1*ansys_amp_1.^2);
+KE2=(0.5*m1*ansys_amp_2.^2);
+RDR=KE2./(KE1+KE2);
+RDR2=KE1./(KE1+KE2);
+figure
+plot(ansys_time,RDR,ansys_time,RDR2,'r')
+grid on
+axis([0 1 -Inf Inf])
+title('Distribution of Energy','FontSize',14)
+xlabel('Time, s','FontSize',14)
+ylabel('R_{DR}','FontSize',14)
+legend({'mass_{ratio}'},'FontSize',14)
+set(gca,'fontsize',14)
 %% Loglog plot of frequency response
 figure
 loglog(freq,abs(P))
@@ -96,22 +114,33 @@ ylabel('magnitude','FontSize',14)
 [txy,frequencies]=tfestimate(bandpass,ansys_amp_2,[],[],[],1/dt);
 
 % plot
-figure
-plot(frequencies,20*log10(abs(txy)))
+% figure
+hold on
+plot(frequencies/w1,20*log10(abs(txy)),'g')
 % axis([0 12 -Inf Inf])
 grid on
-title('TF Estimate 5unitAMM NLH chain','FontSize',14)
+title('Transfer function of metamaterial configurations','FontSize',14)
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',14)
+% axis([0 10 -Inf 0])
+legend({'linear AMM','noise insulation panel','nonlinear AMM'},'FontSize',14)
+%%
 figure
-loglog(frequencies,abs(txy))
+semilogx(frequencies,abs(txy))
 % axis([0 12 0 10])
 grid on
 title('TF Estimate 5unitAMM NLH chain','FontSize',14)
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',14)
+
+figure
+[pxx,f] = periodogram(ansys_amp_2,[],[],1/dt);
+plot(f/w2,10*log10(pxx))
+grid on
+title('Periodogram PSD of system','FontSize',14)
+axis([0 20 -Inf Inf])
 % dt=mean(diff(bandpass(:,1)));  %average time step done 
 % Fs=1/dt;
 % % y = fft(ansys_amp_1);  
@@ -129,14 +158,14 @@ set(gca,'fontsize',14)
 %% M_effective
 % effective mass
 m1=0.1; 
-m2=1*m1;
+m2=0.5*m1;
 k1=1000;
-k2=1*k1;
+k2=320;
 w1=sqrt((k1)/m1)/(2*pi);
 w2=sqrt((k2)/m2)/(2*pi);
 upper=(w2+2)/w2;
 lower=(w2-2)/w2;
-w=linspace(0,w2*2*pi*2.5,80000);
+w=linspace(0,w1*2*pi*2.5,80000);
 wT=sqrt(k2/m2);
 A=w;
 B=wT;
@@ -174,8 +203,8 @@ Tall=T7+T6+T5+T4+T3+T2+T1;
 
 %% Graph 3 plots together (dispersion relation, theoretical transmittance,
 % numerical transmittance)
-SP=upper*w2; %upper limit of bandgap - work out how to calculate - band gap upper and lower limit
-VP=lower*w2; %lower limit
+SP=upper*w1; %upper limit of bandgap - work out how to calculate - band gap upper and lower limit
+VP=lower*w1; %lower limit
 figure
 %------------SubPlot1----------------%
 ay1=subplot(3,1,1);
@@ -212,13 +241,13 @@ set(gca,'fontsize',14)
 % linkaxes([ay1,ay2,ay3],'x')  
 
 %% External Work done by a single unit cell AMM
-time=linspace(0,10,1000);
+time=linspace(0,100,1000);
 Amp=0.01;
-w2=149.07;
-om1=1.080*w2;
+
+om1=1.006*w2;
 om2=om1/w2;
-Kr=0.1;
-Mr=9;
+Kr=0.01;
+Mr=0.5;
 %-----------------------------------------
 F1=0.25*(1-cos(2*om1*time));
 F2=0.5*(1/(1+om2)*(1-cos((w2+om1)*time))+(1/(1-om2))*(1-cos((w2-om1)*time)));

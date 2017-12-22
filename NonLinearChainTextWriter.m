@@ -5,7 +5,7 @@ fileID = fopen(strTitle,'w');
 %-----------------------------------------------
 %% Intro comments and time stamp
 dt = datestr(now,'mmmm dd, yyyy HH:MM:SS AM');
-strIntro='! Script to examine the response for a mass-spring system\n! Conor MacDonald ';
+strIntro='! Script to examine the response for a nonlinear mass-spring system\n! Conor MacDonald ';
 fprintf(fileID,strcat(strIntro,dt));
 %-----------------------------------------------
 %% Clear up and start Proprocessor
@@ -16,24 +16,21 @@ fprintf(fileID,strFIN);
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
 m1=0.1; 
-m2=0.3;
+m2=0.5*m1;
 k1=1000;
-k2=10;
+k2L=320;
+k2NL=k2L/100;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=100; %number of cells, so we need 2xn number of nodes
+n=10; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
 %-------------------------------------
-% frequency range for harmonic analysis
-ivalHarm=0; %initial freq
-fvalHarm=100;  %final freq
-subsN=10000; %number of substeps in analysis
 %-------------------------------------
-strPAR=('\n! Define parameters\nm1=%f\nm2=%f\nk1=%f\nk2=%f\nL=%f\nl=%f\nn=%f !number of cells\nival=%f\nfval=%f\n');
-fprintf(fileID,strPAR,m1,m2,k1,k2,L,l,n,ival,fval);
+strPAR=('\n! Define parameters\nm1=%f\nm2=%f\nk1=%f\nL=%f\nl=%f\nn=%f !number of cells\nival=%f\nfval=%f\n');
+fprintf(fileID,strPAR,m1,m2,k1,L,l,n,ival,fval);
 %-----------------------------------------------
 % Define the mass element, element type 1
 strMAS=('\n! Define the mass element\nET,1,MASS21\nKEYOPT,1,3,4\nR,1,m1\n');
@@ -49,7 +46,7 @@ fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the spring nonlinear element\nET,3,COMBIN39\nKEYOPT,2,1,0\nKEYOPT,2,2,0\nKEYOPT,2,3,0\nKEYOPT,2,4,0\nKEYOPT,2,6,0\nKEYOPT,2,3,2');
 % create the nonlinear spring curve using nonlinearCurve.m
-F = nonlinearCurve(k1,k2);
+F = nonlinearCurve(k2L,k2NL);
 % Loop the resultant curve data to form the spring parameters in ANSYS
 fprintf(fileID,'\nR,3,%d,%d,%d,%d,%d,%d,\n',F(1,1),F(1,2),F(2,1),F(2,2),F(3,1),F(3,2));
 var=4;
@@ -67,7 +64,7 @@ fprintf(fileID,'\n*DO,II,%d,fval,1 ! For I = %d to %d:\n',ival,ival,fval);
 % Define the node command line
 % we aren't concerend with rotation so we just need the longitudinal value
 fprintf(fileID,'\n! Define the nodes using the command\n! N, NODE, X, Y, Z, THXY, THYZ, THZX\n');
-fprintf(fileID,'\nposx=II*l		! calculate nodal position with spacing, =%d\n',l);
+fprintf(fileID,'\nposx=II*L		! calculate nodal position with spacing, =%d\n',L);
 % define the node(s) and end the do loop
 fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 % fprintf(fileID,'\nN,II+2,posx+l,0,0\n*ENDDO\n');
@@ -109,9 +106,9 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % fprintf(fileID,'\nF,1,FX,1');
 %-----------------------------------------------
 % Constrain the other end of the chain
-% fprintf(fileID,'\n! Constrain the end node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
-% fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
-% fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
+fprintf(fileID,'\n! Constrain the end node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
+fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
+fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
 % %-----------------------------------------------
 % fprintf(fileID,'\nSAVE\nFINI\n');
 %-----------------------------------------------
@@ -152,7 +149,7 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % Copy text file contents to ANSYS' input file format, .inp
 fclose(fileID);
 fileID2 = fopen('APDL_conor.inp' ,'w');
-copyfile Name_of_my_text_file.txt APDL_conor.inp
+copyfile Name_of_my_text_file.txt APDL_NLchain.inp
 
 
 
