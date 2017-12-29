@@ -6,7 +6,7 @@ close all
 a=1;
 y=3/4*0.5;
 d=0;
-b=[-0.5 -0.05 0 0.05 0.05]; %linear oscillator - as B is the nonlinear term
+b=[-0.5 -0.05 0 0.05 0.5]; %linear oscillator - as B is the nonlinear term
 % z is steady state displacment and w is frequency
 figure
 for i=1:5

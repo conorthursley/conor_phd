@@ -22,13 +22,13 @@ fprintf(fileID,strFIN);
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
 m1=0.1; 
-m2=0.5*m1;
+m2=5*m1;
 k1=1000;
 k2=k1/3.125;
-L=5; %length between unit cells (cell is two masses)
+L=40; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=1; %number of cells, so we need 2xn number of nodes
+n=10; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -116,8 +116,8 @@ fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
 fprintf(fileID,'\nFINI\n');
 
 %% Analysis
-fprintf(fileID,'!*\nANTYPE,4\n!*\nTRNOPT,FULL \nLUMPM,0 \n!*  \nNSUBST,80000,80000,80000\n');
-fprintf(fileID,'OUTRES,ERASE\nOUTRES,NSOL,ALL \nTIME,100\n');
+% fprintf(fileID,'!*\nANTYPE,4\n!*\nTRNOPT,FULL \nLUMPM,0 \n!*  \nNSUBST,80000,80000,80000\n');
+% fprintf(fileID,'OUTRES,ERASE\nOUTRES,NSOL,ALL \nTIME,100\n');
 %-----------------------------------------------
 % Model process has been completed
 %% Solution of system

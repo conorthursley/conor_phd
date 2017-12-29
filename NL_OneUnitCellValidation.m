@@ -1,9 +1,9 @@
     clear all
 %% Parameters
 m1=0.1; 
-m2=0.5*m1;
+m2=5*m1;
 k1=1000;
-k2=10;
+k2=k1/3.125;
 w1=sqrt((k1)/m1)/(2*pi);
 w2=sqrt((k2)/m2)/(2*pi);
 
@@ -13,15 +13,15 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans75.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans100.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
-ansys_amp_2 = M((1:length(M)),2);
+ansys_amp_2 = M((1:length(M)),3);
 
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\deleteme1.csv';
+bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\InverseExcelAmp.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
 % [q,t5]=max(bandpass);
@@ -76,7 +76,7 @@ set(gca,'fontsize',14)
 
 %% Displacement Time responses
 figure
-plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
+plot(ansys_time,mean(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
 grid on
 title('Time response magnitudes for a free-free AMM system with 7 units','FontSize',14)
 xlabel('Time, s','FontSize',14)
@@ -116,7 +116,7 @@ ylabel('magnitude','FontSize',14)
 % plot
 % figure
 hold on
-plot(frequencies/w1,20*log10(abs(txy)),'g')
+plot(frequencies,20*log10(abs(txy)),'b')
 % axis([0 12 -Inf Inf])
 grid on
 title('Transfer function of metamaterial configurations','FontSize',14)
@@ -127,17 +127,19 @@ set(gca,'fontsize',14)
 legend({'linear AMM','noise insulation panel','nonlinear AMM'},'FontSize',14)
 %%
 figure
-semilogx(frequencies,abs(txy))
+hold on
+loglog(frequencies,abs(txy),'b')
 % axis([0 12 0 10])
 grid on
 title('TF Estimate 5unitAMM NLH chain','FontSize',14)
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',14)
-
+%%
 figure
+% hold on
 [pxx,f] = periodogram(ansys_amp_2,[],[],1/dt);
-plot(f/w2,10*log10(pxx))
+plot(f,10*log10(pxx),'b')
 grid on
 title('Periodogram PSD of system','FontSize',14)
 axis([0 20 -Inf Inf])
@@ -157,12 +159,6 @@ axis([0 20 -Inf Inf])
 % plot(freq,P,'g',freq,P1,'b')
 %% M_effective
 % effective mass
-m1=0.1; 
-m2=0.5*m1;
-k1=1000;
-k2=320;
-w1=sqrt((k1)/m1)/(2*pi);
-w2=sqrt((k2)/m2)/(2*pi);
 upper=(w2+2)/w2;
 lower=(w2-2)/w2;
 w=linspace(0,w1*2*pi*2.5,80000);

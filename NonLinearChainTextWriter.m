@@ -1,6 +1,6 @@
 %% Text file writer
 % creates a text file/inp file from MATLAB which is then run in ANSYS APDL
-strTitle='Name_of_my_text_file.txt';
+strTitle='NonLinearAMMchain.txt';
 fileID = fopen(strTitle,'w');
 %-----------------------------------------------
 %% Intro comments and time stamp
@@ -16,14 +16,14 @@ fprintf(fileID,strFIN);
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
 m1=0.1; 
-m2=0.5*m1;
+m2=5*m1;
 k1=1000;
-k2L=320;
+k2L=k1/3.125;
 k2NL=k2L/100;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=10; %number of cells, so we need 2xn number of nodes
+n=1; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -149,7 +149,7 @@ fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
 % Copy text file contents to ANSYS' input file format, .inp
 fclose(fileID);
 fileID2 = fopen('APDL_conor.inp' ,'w');
-copyfile Name_of_my_text_file.txt APDL_NLchain.inp
+copyfile NonLinearAMMchain.txt APDL_NLchain.inp
 
 
 

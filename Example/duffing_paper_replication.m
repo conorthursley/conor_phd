@@ -1,32 +1,3 @@
-%% solving the duffing equation theoretically to get our amplitude vs frequency curves
-
-clear all
-% close all
-m=1;
-kl=1e+3; %linear stiffness, k2
-kn=-1; %nonlinear stiffness
-c=1; %damping
-f=200; %forcing amplitude 
-m1=0.1;
-m2=0.9;
-% w=150;
-mst=m1+m2;
-%-------------------------------------------------
-w0=sqrt(kl/m2);
-A=1;
-% omega=w/w0;
-% syms u
-
-% n=1;
-% % for w=4:0.1:8
-% w=5;
-%     equ=w0+3/8*(kn/w0)*u^2+sqrt((-1+A/(u^2)))-w;  
-%     dis=solve(equ,u); %,'MaxDegree',3);
-%     n=n+1;
-%     S=double(dis);
-% % end
-
-%-------------------------------------------------
 %% Displacement parameter 
 % Y=cuberoot(sqrt(X+H)+G)
 row=0;

@@ -10,16 +10,16 @@ lt=100;
 steps=lt/dt;
 x=linspace(0,lt,steps);
 %generate random numbers between [-1,1] with a length of steps
-A=10;
+A=500;
 r=-A+(2*A).*rand(steps,1);
 % put it through the filter we created in bandpass filter toolbox thing
 % y=doFilter2(r,dt);
 % create vector to export to a csv file for APDL to read
 Y=[x',r];
 
-% plot(x,r,'b',x,y,'g')
+plot(x,r,'b') %,x,y,'g')
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\deleteme1.csv';
+file='C:\ANSYS\Temp\Validation\DuffingValDec17\HigherAmp.csv';
 csvwrite(file,Y);
 
 
