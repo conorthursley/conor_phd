@@ -16,7 +16,7 @@ fprintf(fileID,strFIN);
 % Parameters and loop to create the model
 % stiffness, mass, number of cells, length, etc
 m1=0.1; 
-m2=5*m1;
+m2=0.5*m1;
 k1=1000;
 k2L=k1/3.125;
 k2NL=k2L/100;
@@ -46,7 +46,7 @@ fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the spring nonlinear element\nET,3,COMBIN39\nKEYOPT,2,1,0\nKEYOPT,2,2,0\nKEYOPT,2,3,0\nKEYOPT,2,4,0\nKEYOPT,2,6,0\nKEYOPT,2,3,2');
 % create the nonlinear spring curve using nonlinearCurve.m
-F = nonlinearCurve(k2L,k2NL);
+F = piecewiseCurve(k2L,k2NL);
 % Loop the resultant curve data to form the spring parameters in ANSYS
 fprintf(fileID,'\nR,3,%d,%d,%d,%d,%d,%d,\n',F(1,1),F(1,2),F(2,1),F(2,2),F(3,1),F(3,2));
 var=4;

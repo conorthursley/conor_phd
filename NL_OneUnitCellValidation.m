@@ -1,9 +1,12 @@
     clear all
 %% Parameters
 m1=0.1; 
-m2=5*m1;
+m2=0.5*m1;
 k1=1000;
-k2=k1/3.125;
+k2=2.3562;
+k2L=2.3562;
+k2NL=10000;
+
 w1=sqrt((k1)/m1)/(2*pi);
 w2=sqrt((k2)/m2)/(2*pi);
 
@@ -13,15 +16,17 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans100.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans107.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
 ansys_amp_2 = M((1:length(M)),3);
+velo1=M((1:length(M)),4);
+velo2=M((1:length(M)),5);
 
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\InverseExcelAmp.csv';
+bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\HigherAmp.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
 % [q,t5]=max(bandpass);
@@ -76,13 +81,37 @@ set(gca,'fontsize',14)
 
 %% Displacement Time responses
 figure
-plot(ansys_time,mean(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
+plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
 grid on
 title('Time response magnitudes for a free-free AMM system with 7 units','FontSize',14)
 xlabel('Time, s','FontSize',14)
 ylabel('Magnitude, u','FontSize',14)
 legend({'mass_1','mass_2'},'FontSize',14)
 set(gca,'fontsize',14)
+
+%% Phase Plots and Invariant Manifolds
+figure
+plot(ansys_amp_1,ansys_amp_2)
+grid on
+title('Invariant manifold','FontSize',14)
+xlabel('displacement of mass1','FontSize',14)
+ylabel('displacement of mass2','FontSize',14)
+
+figure
+ax1a=subplot(2,1,1);
+plot(ansys_amp_1,velo1)
+grid on
+title('Phase plot of mass1','FontSize',14)
+xlabel('displacement of mass1','FontSize',14)
+ylabel('velocity of mass1','FontSize',14)
+
+ax2a=subplot(2,1,2);
+plot(ansys_amp_2,velo2);
+grid on
+title('Phase plot of mass2','FontSize',14)
+xlabel('displacement of mass2','FontSize',14)
+ylabel('velocity of mass2','FontSize',14)
+
 %% Distribution of energy ratio
 KE1=(0.5*m1*ansys_amp_1.^2);
 KE2=(0.5*m1*ansys_amp_2.^2);
@@ -114,8 +143,8 @@ ylabel('magnitude','FontSize',14)
 [txy,frequencies]=tfestimate(bandpass,ansys_amp_2,[],[],[],1/dt);
 
 % plot
-% figure
-hold on
+figure
+% hold on
 plot(frequencies,20*log10(abs(txy)),'b')
 % axis([0 12 -Inf Inf])
 grid on
