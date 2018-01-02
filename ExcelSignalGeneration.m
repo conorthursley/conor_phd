@@ -4,10 +4,10 @@ clear all
 % input parameters
 lt=300; %length of time
 il=10; %interval length
-A=200; %amplitude 
+A=2000; %amplitude 
 
-low=0.25; %low interval
-high=8; %high interval
+low=10; %low interval
+high=30; %high interval
 
 hf=high; %highest frequency
 dt=1/(10*hf); %time step size
@@ -24,12 +24,12 @@ for i=1:(lt/il) %how many intervals
         excel=[excel data];
 end
 timeTotal=dt:Tsteps:lt;
-excel=fliplr(excel);
+% excel=fliplr(excel);
 var=[timeTotal' excel'];
 
 figure
-plot(timeTotal,excel)
+plot(timeTotal,(excel))
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\InverseExcelAmp.csv';
+file='C:\ANSYS\Temp\Validation\DuffingValDec17\DuffingExcelAmp.csv';
 csvwrite(file,var);
 

@@ -16,7 +16,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans107.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans114.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -93,24 +93,23 @@ set(gca,'fontsize',14)
 figure
 plot(ansys_amp_1,ansys_amp_2)
 grid on
-title('Invariant manifold','FontSize',14)
-xlabel('displacement of mass1','FontSize',14)
-ylabel('displacement of mass2','FontSize',14)
-
+title('Invariant manifold','FontSize',20)
+xlabel('displacement of mass1','FontSize',20)
+ylabel('displacement of mass2','FontSize',20)
 figure
-ax1a=subplot(2,1,1);
+ax1b=subplot(2,1,1);
 plot(ansys_amp_1,velo1)
 grid on
-title('Phase plot of mass1','FontSize',14)
-xlabel('displacement of mass1','FontSize',14)
-ylabel('velocity of mass1','FontSize',14)
+title('Phase plot of mass1','FontSize',20)
+xlabel('displacement of mass1','FontSize',20)
+ylabel('velocity of mass1','FontSize',20)
 
 ax2a=subplot(2,1,2);
 plot(ansys_amp_2,velo2);
 grid on
-title('Phase plot of mass2','FontSize',14)
-xlabel('displacement of mass2','FontSize',14)
-ylabel('velocity of mass2','FontSize',14)
+title('Phase plot of mass2','FontSize',20)
+xlabel('displacement of mass2','FontSize',20)
+ylabel('velocity of mass2','FontSize',20)
 
 %% Distribution of energy ratio
 KE1=(0.5*m1*ansys_amp_1.^2);
@@ -140,7 +139,7 @@ ylabel('magnitude','FontSize',14)
 % bandpass filter input signal
 
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass,ansys_amp_2,[],[],[],1/dt);
+[txy,frequencies]=tfestimate(bandpass,ansys_amp_1,[],[],[],1/dt);
 
 % plot
 figure
@@ -167,11 +166,11 @@ set(gca,'fontsize',14)
 %%
 figure
 % hold on
-[pxx,f] = periodogram(ansys_amp_2,[],[],1/dt);
+[pxx,f] = periodogram(ansys_amp_1,[],[],1/dt);
 plot(f,10*log10(pxx),'b')
 grid on
 title('Periodogram PSD of system','FontSize',14)
-axis([0 20 -Inf Inf])
+% axis([0 20 -Inf Inf])
 % dt=mean(diff(bandpass(:,1)));  %average time step done 
 % Fs=1/dt;
 % % y = fft(ansys_amp_1);  

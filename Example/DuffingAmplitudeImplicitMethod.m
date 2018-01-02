@@ -1,7 +1,7 @@
 A=linspace(3,0,300);
 w0=1;
-h=+1/2;
-Fc=1/2;
+h=10;
+Fc=200;
 w=zeros(300,1)';
 figure
 hold on

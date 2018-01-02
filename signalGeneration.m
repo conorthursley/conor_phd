@@ -10,7 +10,7 @@ lt=100;
 steps=lt/dt;
 x=linspace(0,lt,steps);
 %generate random numbers between [-1,1] with a length of steps
-A=500;
+A=2000;
 r=-A+(2*A).*rand(steps,1);
 % put it through the filter we created in bandpass filter toolbox thing
 % y=doFilter2(r,dt);
