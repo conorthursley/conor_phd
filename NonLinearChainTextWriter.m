@@ -18,8 +18,8 @@ fprintf(fileID,strFIN);
 m1=0.1; 
 m2=0.5*m1;
 k1=1000;
-k2L=320;
-k2NL=k2L/100;
+k2L=1500;
+k2NL=2e7;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------

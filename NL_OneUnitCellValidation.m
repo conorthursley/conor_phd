@@ -1,9 +1,9 @@
     clear all
 %% Parameters
 m1=0.1; 
-m2=0.5*m1;
+m2=0.03;
 k1=1000;
-k2=2.3562;
+k2=10;
 k2L=2.3562;
 k2NL=10000;
 
@@ -16,15 +16,15 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans114.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans118.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
 ansys_amp_2 = M((1:length(M)),3);
-velo1=M((1:length(M)),4);
-velo2=M((1:length(M)),5);
+% velo1=M((1:length(M)),4);
+% velo2=M((1:length(M)),5);
 
 bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\HigherAmp.csv';
 bandpass1=csvread(bandpassFile);
@@ -32,6 +32,7 @@ bandpass=bandpass1(:,2);
 % [q,t5]=max(bandpass);
 % figure
 % plot(t,bandpass)
+dt=abs(mean(diff(t))); 
 
 % bandpass=10*(sin(10*2*pi*t)+sin(20*2*pi*t)+sin(40*2*pi*t)+sin(70*2*pi*t));
 %% FFT of input (displacement)
@@ -117,9 +118,9 @@ KE2=(0.5*m1*ansys_amp_2.^2);
 RDR=KE2./(KE1+KE2);
 RDR2=KE1./(KE1+KE2);
 figure
-plot(ansys_time,RDR,ansys_time,RDR2,'r')
+plot(ansys_time,RDR,'r')
 grid on
-axis([0 1 -Inf Inf])
+% axis([0 1 -Inf Inf])
 title('Distribution of Energy','FontSize',14)
 xlabel('Time, s','FontSize',14)
 ylabel('R_{DR}','FontSize',14)
@@ -139,7 +140,7 @@ ylabel('magnitude','FontSize',14)
 % bandpass filter input signal
 
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass,ansys_amp_1,[],[],[],1/dt);
+[txy,frequencies]=tfestimate(ansys_amp_2,ansys_amp_1,[],[],[],1/dt);
 
 % plot
 figure
@@ -164,12 +165,14 @@ xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',14)
 %%
-figure
-% hold on
+% figure
+hold on
 [pxx,f] = periodogram(ansys_amp_1,[],[],1/dt);
-plot(f,10*log10(pxx),'b')
+plot(f,10*log10(pxx),'k')
 grid on
-title('Periodogram PSD of system','FontSize',14)
+title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
+xlabel('Frequency, \omega','FontSize',20)
+ylabel('Magnitude, dB','FontSize',20)
 % axis([0 20 -Inf Inf])
 % dt=mean(diff(bandpass(:,1)));  %average time step done 
 % Fs=1/dt;
@@ -187,8 +190,14 @@ title('Periodogram PSD of system','FontSize',14)
 % plot(freq,P,'g',freq,P1,'b')
 %% M_effective
 % effective mass
-upper=(w2+2)/w2;
-lower=(w2-2)/w2;
+Mr=m2/m1; %mass ratio
+Sr=k2/k1; %stiffness ratio
+Tr=Mr/Sr;
+upper=sqrt(1+Mr);
+
+lower=(1/sqrt(2))*sqrt((1+Mr+4*Tr)-sqrt((1+Mr+4*Tr)^2-16*Tr));
+
+
 w=linspace(0,w1*2*pi*2.5,80000);
 wT=sqrt(k2/m2);
 A=w;
@@ -227,39 +236,39 @@ Tall=T7+T6+T5+T4+T3+T2+T1;
 
 %% Graph 3 plots together (dispersion relation, theoretical transmittance,
 % numerical transmittance)
-SP=upper*w1; %upper limit of bandgap - work out how to calculate - band gap upper and lower limit
-VP=lower*w1; %lower limit
+SP=upper*w2; %upper limit of bandgap - work out how to calculate - band gap upper and lower limit
+VP=lower*w2; %lower limit
 figure
 %------------SubPlot1----------------%
-ay1=subplot(3,1,1);
-semilogy(frequencies,abs(txy))
+ay1=subplot(1,3,3);
+semilogx(abs(txy),frequencies)
 grid
-line([SP SP],ylim,'Color',[1 0 0])
-line([VP VP],ylim,'Color',[1 0 0])
-axis([0.1 40 0.00001 1])
-title('Dispersion Relation and Transmittance of free-free AMM system with 7 units (validation of Yao 2008)','FontSize',14)
-ylabel('Magnitude, dB','FontSize',14)
+line(xlim,[SP SP],'Color',[1 0 0])
+line(xlim,[VP VP],'Color',[1 0 0])
+axis([0.01 40 0 14])
+xlabel('Magnitude, dB','FontSize',14)
 legend({'Numerical Result (APDL)'},'FontSize',14)
 set(gca,'fontsize',14)
 %------------SubPlot2----------------%
-ay2=subplot(3,1,2);
-semilogy(B,abs(Tall))
+ay2=subplot(1,3,2);
+semilogx(abs(Tall),B)
 grid
-line([SP SP],ylim,'Color',[1 0 0])
-line([VP VP],ylim,'Color',[1 0 0])
+line(xlim,[SP SP],'Color',[1 0 0])
+line(xlim,[VP VP],'Color',[1 0 0])
 % axis([0 12 -10 100])
-ylabel('Magnitude, dB','FontSize',14)
+title('Dispersion Relation and Transmittance of free-free AMM system with 7 units (validation of Yao 2008)','FontSize',14)
+xlabel('Magnitude, dB','FontSize',14)
 legend({'Theoretical Result'},'FontSize',14)
 set(gca,'fontsize',14)
 %------------SubPlot3----------------%
-ay3=subplot(3,1,3);
-plot(A/(2*pi),real(qL)/pi)
+ay3=subplot(1,3,1);
+plot(real(qL)/pi,A/(2*pi))
 % axis([0 12 0 1])
 grid
-line([SP SP],ylim,'Color',[1 0 0])
-line([VP VP],ylim,'Color',[1 0 0])
-xlabel('Frequency, Hz','FontSize',14)
-ylabel('Real(qa/\pi)' ,'FontSize',14)
+line(xlim,[SP SP],'Color',[1 0 0])
+line(xlim,[VP VP],'Color',[1 0 0])
+ylabel('Frequency, Hz','FontSize',14)
+xlabel('Real(qa/\pi)' ,'FontSize',14)
 legend({'Dispersion Relation'},'FontSize',14)
 set(gca,'fontsize',14)
 % linkaxes([ay1,ay2,ay3],'x')  
@@ -268,10 +277,9 @@ set(gca,'fontsize',14)
 time=linspace(0,100,1000);
 Amp=0.01;
 
-om1=1.006*w2;
+om1=1.080*w2;
 om2=om1/w2;
-Kr=0.01;
-Mr=0.5;
+Kr=Sr;
 %-----------------------------------------
 F1=0.25*(1-cos(2*om1*time));
 F2=0.5*(1/(1+om2)*(1-cos((w2+om1)*time))+(1/(1-om2))*(1-cos((w2-om1)*time)));
