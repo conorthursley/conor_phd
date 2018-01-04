@@ -1,4 +1,4 @@
-function [dy]=DuffingVal(~,y,k1,m1,k2)
+function [dy]=DuffingVal(t,y,input,k1,m1,k2,m2)
 
 %-----------------------------------
 x1=y(1);

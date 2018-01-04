@@ -15,8 +15,8 @@ A=[x2;...
     
 % Input excitation force
 %sinusodial harmonic
-H=input(1)*(sin(f*t));
-B = [0 1 0 0];
+H=input(1); %*(sin(f*t));
+B = [0 H 0 0];
 
 
 %output result as the equation 

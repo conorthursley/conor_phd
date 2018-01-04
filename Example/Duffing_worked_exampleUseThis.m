@@ -5,12 +5,12 @@
 %----------------------------------------------
 
 %% Coefficients 
-alpha=10;
-beta=1000;
-delta=0;
-gamma=200;
-omega=18*2*pi;
-tspan=[0 1];
+alpha=-1;
+beta=10;
+delta=0.00;
+gamma=0.05;
+omega=1.2;
+tspan=[0 100];
 y0=[0 0]; %initial conditions
 %% ODE solver
 tic

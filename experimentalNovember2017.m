@@ -10,7 +10,7 @@ tic
 %---------------------------------------------------
 % Time specification
 tstart = 0;
-tfinal = 20;
+tfinal = 100;
 tout = tstart;
 %---------------------------------------------------
 
@@ -32,13 +32,17 @@ ieout = [];
 % Parameters
 k1=1000; %N/m
 m1=1; %kg
-k2=0.1*k1;
+k2=0.1/k1;
 m2=0.3*m1;
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
-freq=5; %Hz
-Amp=0.1;
+
+bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\HigherAmp.csv';
+bandpass1=csvread(bandpassFile);
+bandpass=bandpass1(:,2);
+freq=bandpass; %Hz
+Amp=bandpass1(:,1);
 input=[freq Amp]; 
 %---------------------------------------------------
 % ode options  - see 'odeset'
