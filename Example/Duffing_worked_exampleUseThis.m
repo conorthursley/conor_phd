@@ -5,11 +5,11 @@
 %----------------------------------------------
 
 %% Coefficients 
-alpha=-1;
-beta=10;
-delta=0.00;
-gamma=0.05;
-omega=1.2;
+alpha=1;
+beta=5;
+delta=0.0;
+gamma=0.65;
+omega=1;
 tspan=[0 100];
 y0=[0 0]; %initial conditions
 %% ODE solver
@@ -42,6 +42,6 @@ grid on
 
 function dy = duffing(t, y, alpha, beta, gamma, delta, omega)
 A=y(2);
-B=gamma*cos(omega*2*pi*t)-delta*y(2)-beta*y(1)-alpha*y(1).^3;
+B=gamma*cos(omega*t)-delta*y(2)-beta*y(1)-alpha*y(1).^3;
 dy=[A; B];
 end

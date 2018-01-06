@@ -1,5 +1,5 @@
 ! Script to examine the response for a linear mass-spring system
-! Conor MacDonaldJanuary 04, 2018  3:02:19 PM
+! Conor MacDonaldJanuary 06, 2018 12:53:28 PM
 
 FINI
 /clear,all
@@ -13,9 +13,9 @@ k1=1000.000000
 k2=320.000000
 L=40.000000
 l=20.000000
-n=1.000000 !number of cells
+n=2.000000 !number of cells
 ival=0.000000
-fval=2.000000
+fval=4.000000
 
 ! Define the mass element
 ET,1,MASS21
@@ -45,7 +45,7 @@ R,4,m2
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
-*DO,II,0,fval,1 ! For I = 0 to 2:
+*DO,II,0,fval,1 ! For I = 0 to 4:
 
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
@@ -62,7 +62,7 @@ TYPE,3! Change the element type to 3 (spring element)
 REAL,3! Change to real set 3 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,2, 2
+*DO, II,2,4, 2
 
 E,II,II+1
 *ENDDO
@@ -73,7 +73,7 @@ REAL,2! Change to real set 2 for the spring
 E,1,2
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,0, 2
+*DO, II,2,2, 2
 
 E,II,II+2
 *ENDDO
@@ -82,7 +82,7 @@ TYPE,1! Change the element type to 1 (mass element)
 REAL,1! Change to real set 1 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2 ,2, 2
+*DO, II,2 ,4, 2
 
 E,II
 *ENDDO
@@ -91,7 +91,7 @@ TYPE,4! Change the element type to 4 (mass element)
 REAL,4! Change to real set 4 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,3 ,3, 2
+*DO, II,3 ,5, 2
 
 E,II
 *ENDDO

@@ -15,7 +15,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans129.csv';
+file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans140.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -51,12 +51,13 @@ freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
 plot(freq,P)
 % plot(flop,abs(y),'LineWidth',2)
-title('FFT of input signal (simple)')
+title('FFT of input signal')
 grid on
 xlabel('Frequency,  (Hz)')
 ylabel('|P1(f)|')
-set(gca,'fontsize',14)
+set(gca,'fontsize',20)
 % FFT of output (displacement)
+
 ax2=subplot(2,1,2);
 dt=mean(diff(t));  %average time step done 
 Fs=1/dt;
@@ -144,7 +145,7 @@ ylabel('magnitude','FontSize',14)
 % plot
 figure
 % hold on
-plot(frequencies/w1,20*log10(abs(txy)),'r')
+graph=plot(frequencies/w1,20*log10(abs(txy)),'b');
 % axis([0 12 -Inf Inf])
 grid on
 title('Transfer function of metamaterial configurations','FontSize',14)
@@ -152,11 +153,12 @@ xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',14)
 % axis([0 10 -Inf 0])
-legend({'linear AMM','noise insulation panel','nonlinear AMM'},'FontSize',14)
+legend({'linear AMM','noise insulation panel','nonlinear case 1'},'FontSize',14)
+set(graph,'LineWidth',1.5);
 %%
-% figure
-hold on
-graph1=loglog(frequencies/w1,abs(txy),'b');
+figure
+% hold on
+graph1=semilogx(frequencies/w1,abs(txy),'b');
 % axis([0 3 0 Inf])
 grid on
 % title('TF Estimate 5unitAMM NLH chain','FontSize',14)
@@ -168,7 +170,7 @@ set(graph1,'LineWidth',2);
 %%
 figure
 % hold on
-[pxx,f] = periodogram(ansys_amp_2,[],[],1/dt);
+[pxx,f] = periodogram(ansys_amp_1,[],[],1/dt);
 plot(f/w1,10*log10(pxx),'k')
 grid on
 title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
@@ -246,7 +248,7 @@ semilogx(abs(txy),frequencies)
 grid
 line(xlim,[SP SP],'Color',[1 0 0])
 line(xlim,[VP VP],'Color',[1 0 0])
-axis([0.01 40 0 VP*3.5])
+axis([0.0001 0.1 0 VP*3.5])
 xlabel('Magnitude, dB','FontSize',14)
 legend({'Numerical Result (APDL)'},'FontSize',14)
 set(gca,'fontsize',14)
