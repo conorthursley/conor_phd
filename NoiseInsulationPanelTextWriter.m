@@ -1,6 +1,6 @@
 %% Text file writer
 % creates a text file/inp file from MATLAB which is then run in ANSYS APDL
-strTitle='ChainNoiseInsulationPanel.txt';
+strTitle='NoiseInsulationPanelChain.txt';
 fileID = fopen(strTitle,'w');
 % dont forget to change the last line when you change this title
 %-----------------------------------------------
@@ -26,7 +26,7 @@ k1=1000;
 L=40; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=2; %number of cells, so we need 2xn number of nodes
+n=10; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=n; %final value for end of node chain
@@ -128,7 +128,7 @@ fprintf(fileID,'\nSAVE\nFINI\n');
 % Copy text file contents to ANSYS' input file format, .inp
 fclose(fileID);
 fileID2 = fopen('APDL_NoiseInsulaiton_linearChain.inp' ,'w');
-copyfile ChainNoiseInsulationPanel.txt APDL_NoiseInsulaiton_linearChain.inp
+copyfile NoiseInsulationPanelChain.txt APDL_NoiseInsulaiton_linearChain.inp
 
 
 

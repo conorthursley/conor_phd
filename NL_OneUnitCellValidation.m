@@ -15,7 +15,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'C:\ANSYS\Temp\Validation\DuffingValDec17\DuffOneUnitTrans140.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans153.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -25,7 +25,7 @@ ansys_amp_2 = M((1:length(M)),3);
 velo1=M((1:length(M)),4);
 velo2=M((1:length(M)),5);
 
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\HigherAmp.csv';
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\ExExcitation2ndMode.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
 % [q,t5]=max(bandpass);

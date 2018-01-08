@@ -19,11 +19,11 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2L=320;
-k2NL=6400;
+k2NL=3200;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=5; %number of cells, so we need 2xn number of nodes
+n=1; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain

@@ -1,5 +1,5 @@
 ! Script to examine the response for a nonlinear mass-spring system
-! Conor MacDonaldJanuary 06, 2018  9:50:15 PM
+! Conor MacDonaldJanuary 08, 2018  6:34:26 PM
 
 FINI
 /clear,all
@@ -12,9 +12,9 @@ m2=0.050000
 k1=1000.000000
 L=40.000000
 l=20.000000
-n=5.000000 !number of cells
+n=1.000000 !number of cells
 ival=0.000000
-fval=10.000000
+fval=2.000000
 
 ! Define the mass element
 ET,1,MASS21
@@ -39,17 +39,17 @@ KEYOPT,2,3,0
 KEYOPT,2,4,0
 KEYOPT,2,6,0
 KEYOPT,2,3,2
-R,3,-10,-6403200,-9,-4668480,-8,-3279360,
-RMORE,-7,-2197440,-6,-1384320,-5,-801600,
-RMORE,-4,-410880,-3,-173760,-2,-51840,
-RMORE,-1,-6720,0,0,1,6720,
-RMORE,2,51840,3,173760,4,410880,
-RMORE,5,801600,6,1384320,7,2197440,
-RMORE,8,3279360,9,4668480,
+R,3,-10,-3203200,-9,-2335680,-8,-1640960,
+RMORE,-7,-1099840,-6,-693120,-5,-401600,
+RMORE,-4,-206080,-3,-87360,-2,-26240,
+RMORE,-1,-3520,0,0,1,3520,
+RMORE,2,26240,3,87360,4,206080,
+RMORE,5,401600,6,693120,7,1099840,
+RMORE,8,1640960,9,2335680,
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
-*DO,II,0,fval,1 ! For I = 0 to 10:
+*DO,II,0,fval,1 ! For I = 0 to 2:
 
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
@@ -66,7 +66,7 @@ TYPE,3! Change the element type to 3 (spring element)
 REAL,3! Change to real set 3 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,10, 2
+*DO, II,2,2, 2
 
 E,II,II+1
 *ENDDO
@@ -77,7 +77,7 @@ REAL,2! Change to real set 2 for the spring
 E,1,2
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,8, 2
+*DO, II,2,0, 2
 
 E,II,II+2
 *ENDDO
@@ -86,7 +86,7 @@ TYPE,1! Change the element type to 1 (mass element)
 REAL,1! Change to real set 1 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2 ,10, 2
+*DO, II,2 ,2, 2
 
 E,II
 *ENDDO
@@ -95,7 +95,7 @@ TYPE,4! Change the element type to 4 (mass element)
 REAL,4! Change to real set 4 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,3 ,11, 2
+*DO, II,3 ,3, 2
 
 E,II
 *ENDDO

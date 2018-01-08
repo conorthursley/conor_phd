@@ -17,7 +17,7 @@ y2=y(4);
 k3=k2;
 % w0=sqrt(k2/m2);
 
-f=input(1)*(2*pi); %(Hz to rad/s)
+f=input(2)*(2*pi); %(Hz to rad/s)
 % Define A matrix
 A=[x2; ...
     -((k1/m1)+(k3/m1))*(x1)+((k3/m1)*y1); ...

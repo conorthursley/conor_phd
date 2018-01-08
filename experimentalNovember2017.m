@@ -10,7 +10,7 @@ tic
 %---------------------------------------------------
 % Time specification
 tstart = 0;
-tfinal = 100;
+tfinal = 10;
 tout = tstart;
 %---------------------------------------------------
 
@@ -31,9 +31,10 @@ ieout = [];
 %---------------------------------------------------
 % Parameters
 k1=1000; %N/m
-m1=1; %kg
-k2=0.1/k1;
-m2=0.3*m1;
+m1=0.1; %kg
+k2=320;
+m2=0.5*m1;
+w1=sqrt(k1/m1)/(2*pi);
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
@@ -44,6 +45,7 @@ bandpass=bandpass1(:,2);
 freq=bandpass; %Hz
 Amp=bandpass1(:,1);
 input=[freq Amp]; 
+input =[0.005 10.3753]; %amp and freq, Hz
 %---------------------------------------------------
 % ode options  - see 'odeset'
 opts = odeset('RelTol',1e-10,'AbsTol',1e-10,  'Events', @events); %'OutputFcn',@odeplot,
@@ -57,7 +59,7 @@ for i=1:10000
     %could probably write a code to keep iterating between the event (dont
     %stop) and event (stop) with a flag system.
     %---------------------------------------------------
-    [t,result,te,ye,ie] = ode45(@(t,y)DuffingOsc(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
+    [t,result,te,ye,ie] = ode45(@(t,y)nonLinear(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
 %     if ~ishold
 %         hold on
 %     end %check that the graph is on hold
@@ -148,7 +150,7 @@ Fs=1/dt;
 n=length(eT);  %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
 dft1=fft(u1,m)/n; % DFT of signal
-fr = (0:m-1)*(Fs/m)/10;
+fr = (0:m-1)*(Fs/m);
 fourier = abs(dft1);     
 plot(fr(1:floor(m/2)),fourier(1:floor(m/2)))
 title('Single-Sided Amplitude Spectrum of U1(t)')
@@ -169,29 +171,36 @@ xlabel('f (Hz)')
 ylabel('|P1(f)|')
 % axis([0 100 0 Inf])
 %---------------------------------------------------
-linkaxes([ax3,ax4],'y')
+linkaxes([ax3,ax4],'x')
 
 
 %% Phase plane
+
 %
 % Plots trajectory 
 figure
 % U1
-subplot(2,1,1);
-plot(yout(:,1),yout(:,2))
+subplot(2,2,1);
+plot(result(:,1),result(:,2))
 xlabel('U_1'); % Insert the x-axis label
 ylabel('dU_1/dt'); % Inserts the y-axis label
-title('Phase plane') % Inserts the title in the plot
+title('Phase plane of m1') % Inserts the title in the plot
 grid on
 %---------------------------------------------------
 % U2
 %---------------------------------------------------
-subplot(2,1,2);
-plot(yout(:,3),yout(:,4))
+subplot(2,2,3);
+plot(result(:,3),result(:,4))
 xlabel('U_2'); % Insert the x-axis label
 ylabel('dU_2/dt'); % Inserts the y-axis label
-title('Phase plane') % Inserts the title in the plot
+title('Phase plane of m2') % Inserts the title in the plot
 grid on
+subplot(2,2,[2,4]);
+plot(result(:,1),result(:,3))
+grid on
+title('Invariant manifold','FontSize',20)
+xlabel('displacement of mass1','FontSize',20)
+ylabel('displacement of mass2','FontSize',20)
 
 %% Frequency Response Function plot
 % input= sin(2*pi*5*t);
@@ -236,7 +245,7 @@ Fs=1/dt;
 n=length(eT); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
 dft1=fft(u1,m)/n; % DFT of signal
-fr = (0:m-1)*(Fs/m)/10;
+fr = (0:m-1)*(Fs/m);
 fourier1 = abs(dft1); 
 freq=fr(1:floor(m/2));
 P3=fourier1(1:floor(m/2));
@@ -250,7 +259,7 @@ ylabel('Mag (dB)')
 %---------------------------------------------------
 m=pow2(nextpow2(n));  %transform length
 dft2=fft(u2,m)/n; % DFT of signal
-fr = (0:m-1)*(Fs/m)/10;
+fr = (0:m-1)*(Fs/m);
 fourier1 = abs(dft2); 
 freq=fr(1:floor(m/2));
 P4=fourier1(1:floor(m/2));
@@ -263,6 +272,50 @@ ylabel('Mag (dB)')
 %---------------------------------------------------
 linkaxes([ax5,ax6],'y')
 toc
+%% Transfer function estimate
+% Using the TFESTIMATE function to compare input and output signals
+% txy = tfestimate(x,y) finds a transfer function estimate, txy, given an input signal, x, and an output signal, y.
+% input signal is our sine wave (or harmonic input) across the time length
+x=input(1)*(sin(input(2)*2*pi*t));
+[txy,frequencies]=tfestimate(u2,u1,[],[],[],1/dt);
+
+% plot
+figure
+% hold on
+graph=plot(frequencies/w1,20*log10(abs(txy)),'b');
+% axis([0 12 -Inf Inf])
+grid on
+title('Transfer function of metamaterial configurations','FontSize',14)
+xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
+ylabel('Magnitude, dB','FontSize',14)
+set(gca,'fontsize',14)
+% axis([0 10 -Inf 0])
+% legend({'linear AMM','noise insulation panel','nonlinear case 1','nonlinear case 2','nonlinear case 3','nonlinear case 4'},'FontSize',14)
+legend({'1 unit cell','2 unit cells','5 unit cells','10 unit cells'},'FontSize',14)
+set(graph,'LineWidth',1.5);
+alldatacursors = findall(gcf,'type','hggroup');
+set(alldatacursors,'FontSize',20)
+%%
+figure
+% hold on
+graph1=semilogx(frequencies/w1,abs(txy),'b');
+% axis([0 3 0 Inf])
+grid on
+% title('TF Estimate 5unitAMM NLH chain','FontSize',14)
+xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
+ylabel('Magnitude, dB','FontSize',14)
+set(gca,'fontsize',20)
+legend({'linear AMM numerical result','nonlinear case 1 AMM numerical result','phononic crystal numerical result','nonlinear case 2 AMM numerical result'})
+set(graph1,'LineWidth',2);
+%%
+figure
+% hold on
+[pxx,f] = periodogram(u2,[],[],1/dt);
+plot(f/w1,10*log10(pxx),'b')
+grid on
+title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
+xlabel('Frequency, \omega','FontSize',20)
+ylabel('Magnitude, dB','FontSize',20)
 %% Event Function
 % Using the ODE events function to trigger when the smaller mass reaches
 % the bounds of the larer mass. As the smaller mass is inside the larger

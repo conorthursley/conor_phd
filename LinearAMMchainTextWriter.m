@@ -28,7 +28,7 @@ k2=k1/3.125;
 L=40; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=2; %number of cells, so we need 2xn number of nodes
+n=10; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -113,11 +113,13 @@ fprintf(fileID,'\n! Constrain the first node, which is numbered %d\n! D, Node, L
 fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
 fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
 %-----------------------------------------------
-fprintf(fileID,'\nFINI\n');
+
 
 %% Analysis
 % fprintf(fileID,'!*\nANTYPE,4\n!*\nTRNOPT,FULL \nLUMPM,0 \n!*  \nNSUBST,80000,80000,80000\n');
 % fprintf(fileID,'OUTRES,ERASE\nOUTRES,NSOL,ALL \nTIME,100\n');
+fprintf(fileID,'\n!*\nANTYPE,4\n!*\nTRNOPT,FULL\nLUMPM,0\n!*\nNSUBST,100000,100000,100000\nOUTRES,ERASE\nOUTRES,NSOL,ALL\nOUTRES,V,ALL\nTIME,10\n');
+fprintf(fileID,'\nSAVE\nFINI\n');
 %-----------------------------------------------
 % Model process has been completed
 %% Solution of system
