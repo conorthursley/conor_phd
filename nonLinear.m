@@ -21,25 +21,27 @@ y1=y(3);
 y2=y(4);
 %----------------------------------
 %set nonlinear term, k3, to 0
-NL=10;%********nonlinear ratio******** nonlinear/linear
+NL=20;%********nonlinear ratio******** nonlinear/linear
 k3=k2*NL; 
+% H=input(1)*cos(2*pi*input(2)*t); 
+H=input(t);
 % value = [double(y(3)<=(y(1)-(5e-4))); double(y(3)>=y(1)+(5e-4))]
 %define A matrix for EOM
 A=[x2; ...
-    -((k1/m1))*x1-((k2/m1))*(x1-y1)-((k3/m1)*((x1-y1)^3)); ...
+    H/m1-((k1/m1))*x1-((k2/m1))*(x1-y1)-((k3/m1)*((x1-y1).^3)); ...
     y2;...
-    -((k2/m2)*(y1-x1))-((k3/m2)*((y1-x1)^3))];
+    -((k2/m2)*(y1-x1))-((k3/m2)*((y1-x1).^3))];
 %----------------------------------
 % input excitation
 % H=((input(1))*(sin(2*pi*input(2)*t)));
 % white noise
-H=input(1)*sin(2*pi*input(2)*t); %*randn(1,t);
-
-% input force vector, B
-B = [0 H/m1 0 0];
+% H=input(1)*sin(2*pi*input(2)*t); %*randn(1,t);
+% 
+% % input force vector, B
+% B = [0 H/m1 0 0];
 %----------------------------------
 %output result as the equation 
-Xdot=A+B';
+Xdot=A;
 
 
 end

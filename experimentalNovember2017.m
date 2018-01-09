@@ -35,20 +35,33 @@ m1=0.1; %kg
 k2=320;
 m2=0.5*m1;
 w1=sqrt(k1/m1)/(2*pi);
+w2=sqrt(k2/m2)/(2*pi);
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
-
-bandpassFile='C:\ANSYS\Temp\Validation\DuffingValDec17\HigherAmp.csv';
+% 
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\lowpass100hz10sec.csv';
 bandpass1=csvread(bandpassFile);
-bandpass=bandpass1(:,2);
-freq=bandpass; %Hz
-Amp=bandpass1(:,1);
-input=[freq Amp]; 
-input =[0.005 10.3753]; %amp and freq, Hz
+Values=bandpass1(:,2);
+Points=bandpass1(:,1);
+% dt=mean(diff(Points));
+% Values=doFilter2(Values,dt);
+% Y=[Points Values];
+% file='U:\_PhD\APDL\Validation\DuffingValDec17\lowpass100hz10sec.csv';
+% csvwrite(file,Y);
+% freq=bandpass; %Hz
+% Amp=bandpass1(:,1);
+% input=[freq Amp]; 
+% input =[20 w1*0.95]; %amp and freq, Hz
+%---------------------------------------------------
+% lenSig=5000; %length of generated signal for ODE45 to interpolate
+% samplePoints=linspace(tstart,tfinal,lenSig);
+% values=wgn(lenSig,1,0);
+input=griddedInterpolant(Points,Values,'linear');
+% plot(Points,Values)
 %---------------------------------------------------
 % ode options  - see 'odeset'
-opts = odeset('RelTol',1e-10,'AbsTol',1e-10,  'Events', @events); %'OutputFcn',@odeplot,
+opts = odeset('RelTol',1e-10,'AbsTol',1e-10,  'Events', @events); %'OutputFcn',@odeplot);
 %% System simulation
 
 % solve continuosly from tstart to tend at each terminal event
@@ -59,7 +72,7 @@ for i=1:10000
     %could probably write a code to keep iterating between the event (dont
     %stop) and event (stop) with a flag system.
     %---------------------------------------------------
-    [t,result,te,ye,ie] = ode45(@(t,y)nonLinear(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
+    [t,result,te,ye,ie] = ode23(@(t,y)nonLinear(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
 %     if ~ishold
 %         hold on
 %     end %check that the graph is on hold
@@ -123,14 +136,15 @@ grid on
 %---------------------------------------------------
 linkaxes([ax1,ax2],'y')
 
-%% Ratio of displacement between masses
-% U1=abs(u1);
-% U2=abs(u2);
-% Ux=U2/U1;
-% 
-% figure
-% plot(t,Ux)
-% 
+%% Displacement Time responses
+figure
+plot(eT,(u1),'b',eT,(u2),'r')
+grid on
+title('Time response magnitudes for a free-free AMM system with 7 units','FontSize',14)
+xlabel('Time, s','FontSize',14)
+ylabel('Magnitude, u','FontSize',14)
+legend({'mass_1','mass_2'},'FontSize',24)
+set(gca,'fontsize',20)
 %% Pwelch function
 % figure
 % [pxx,freq] = pwelch(u1,500,300,500,max(t));
@@ -145,11 +159,11 @@ linkaxes([ax1,ax2],'y')
 % 
 figure
 ax3=subplot(2,1,1);
-dt=mean(diff(eT));  %average time step done in the ode45 computation
+dt=mean(diff(Points));  %average time step done in the ode45 computation
 Fs=1/dt;
 n=length(eT);  %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft1=fft(u1,m)/n; % DFT of signal
+dft1=fft(Values,m)/n; % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft1);     
 plot(fr(1:floor(m/2)),fourier(1:floor(m/2)))
@@ -181,7 +195,7 @@ linkaxes([ax3,ax4],'x')
 figure
 % U1
 subplot(2,2,1);
-plot(result(:,1),result(:,2))
+plot(u1,yout(:,2))
 xlabel('U_1'); % Insert the x-axis label
 ylabel('dU_1/dt'); % Inserts the y-axis label
 title('Phase plane of m1') % Inserts the title in the plot
@@ -190,13 +204,13 @@ grid on
 % U2
 %---------------------------------------------------
 subplot(2,2,3);
-plot(result(:,3),result(:,4))
+plot(u2,yout(:,4))
 xlabel('U_2'); % Insert the x-axis label
 ylabel('dU_2/dt'); % Inserts the y-axis label
 title('Phase plane of m2') % Inserts the title in the plot
 grid on
 subplot(2,2,[2,4]);
-plot(result(:,1),result(:,3))
+plot(u1,u2)
 grid on
 title('Invariant manifold','FontSize',20)
 xlabel('displacement of mass1','FontSize',20)
@@ -276,8 +290,10 @@ toc
 % Using the TFESTIMATE function to compare input and output signals
 % txy = tfestimate(x,y) finds a transfer function estimate, txy, given an input signal, x, and an output signal, y.
 % input signal is our sine wave (or harmonic input) across the time length
-x=input(1)*(sin(input(2)*2*pi*t));
-[txy,frequencies]=tfestimate(u2,u1,[],[],[],1/dt);
+T=linspace(0,tfinal,length(tout));
+x=input(T);
+
+[txy,frequencies]=tfestimate(x,u1,[],[],[],1/dt);
 
 % plot
 figure
@@ -292,7 +308,7 @@ set(gca,'fontsize',14)
 % axis([0 10 -Inf 0])
 % legend({'linear AMM','noise insulation panel','nonlinear case 1','nonlinear case 2','nonlinear case 3','nonlinear case 4'},'FontSize',14)
 legend({'1 unit cell','2 unit cells','5 unit cells','10 unit cells'},'FontSize',14)
-set(graph,'LineWidth',1.5);
+set(graph,'LineWidth',1);
 alldatacursors = findall(gcf,'type','hggroup');
 set(alldatacursors,'FontSize',20)
 %%
@@ -305,12 +321,14 @@ grid on
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',20)
-legend({'linear AMM numerical result','nonlinear case 1 AMM numerical result','phononic crystal numerical result','nonlinear case 2 AMM numerical result'})
+legend({'linear AMM MATLAB result','nonlinear case 1 AMM numerical result','phononic crystal numerical result','nonlinear case 2 AMM numerical result'})
 set(graph1,'LineWidth',2);
+alldatacursors = findall(gcf,'type','hggroup');
+set(alldatacursors,'FontSize',20)
 %%
 figure
 % hold on
-[pxx,f] = periodogram(u2,[],[],1/dt);
+[pxx,f] = periodogram(u1,[],[],1/dt);
 plot(f/w1,10*log10(pxx),'b')
 grid on
 title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
@@ -327,7 +345,7 @@ function [value,isterminal,direction] = events(~,y)
            % detect when the bounds gets crossed
       isterminal = [0;0]; % halt integration, reverse direction 
       % 1 if the integration is to terminate when the ith event occurs. Otherwise, it is 0.
-      direction = [0;0]; % approaching the event from any which way
+      direction = [-1;1]; % approaching the event from any which way
       %0 if all zeros are to be located (the default). A value of +1 locates only zeros where the event function is increasing, ...
       % ... and -1 locates only zeros where the event function is decreasing
 end

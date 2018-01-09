@@ -1,7 +1,10 @@
 %% Piecewise Curve
-k2=240; %middle of the restoring force curve
-k1=1000; %edges of the restoring force curve
-s=4; % our distance function
+function F=piecewiseCurve(k1,k2,s)
+k2; %middle of the restoring force curve
+k1; %edges of the restoring force curve
+% when K2 is 0, the curve should be linear
+% the larger ratio (k1/k2) is, the more sharper the FD curve is
+% our distance function
 dy=1;
 y=(-10:dy:10)';  %column matrix
 f=k1*y;  %linear case

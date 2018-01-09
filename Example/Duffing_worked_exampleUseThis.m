@@ -7,9 +7,9 @@
 %% Coefficients 
 alpha=1;
 beta=5;
-delta=0.0;
-gamma=0.65;
-omega=1;
+delta=0.05;
+gamma=8;
+omega=0.45;
 tspan=[0 100];
 y0=[0 0]; %initial conditions
 %% ODE solver

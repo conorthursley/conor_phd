@@ -11,7 +11,7 @@ w1=sqrt((k1)/m1)/(2*pi);
 w2=sqrt((k2)/m2)/(2*pi);
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans149.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans130.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -37,33 +37,36 @@ dt=abs(mean(diff(t)));
 
 % plot
 % figure
-hold on
-graph=plot(frequencies/w1,20*log10(abs(txy)),'m');
-% axis([0 12 -Inf Inf])
-grid on
-title('Transfer function of metamaterial configurations','FontSize',14)
-xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
-ylabel('Magnitude, dB','FontSize',14)
-set(gca,'fontsize',14)
-% axis([0 10 -Inf 0])
-% legend({'linear AMM','noise insulation panel','nonlinear case 1','nonlinear case 2','nonlinear case 3','nonlinear case 4'},'FontSize',14)
-legend({'1 unit cell','2 unit cells','5 unit cells','10 unit cells'},'FontSize',14)
-set(graph,'LineWidth',1.5);
-alldatacursors = findall(gcf,'type','hggroup');
-set(alldatacursors,'FontSize',20)
-
-% %%
-% figure
 % % hold on
-% graph1=semilogx(frequencies/w1,abs(txy),'b');
-% % axis([0 3 0 Inf])
+% graph=plot(frequencies/w1,20*log10(abs(txy)),'m');
+% % axis([0 12 -Inf Inf])
 % grid on
-% % title('TF Estimate 5unitAMM NLH chain','FontSize',14)
+% title('Transfer function of metamaterial configurations','FontSize',14)
 % xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 % ylabel('Magnitude, dB','FontSize',14)
-% set(gca,'fontsize',20)
+% set(gca,'fontsize',14)
+% % axis([0 10 -Inf 0])
+% % legend({'linear AMM','noise insulation panel','nonlinear case 1','nonlinear case 2','nonlinear case 3','nonlinear case 4'},'FontSize',14)
+% legend({'1 unit cell','2 unit cells','5 unit cells','10 unit cells'},'FontSize',14)
+% set(graph,'LineWidth',1.5);
+% alldatacursors = findall(gcf,'type','hggroup');
+% set(alldatacursors,'FontSize',20)
+
+%%
+% figure
+hold on
+graph1=semilogx(frequencies/w1,abs(txy),'k');
+% axis([0 3 0 Inf])
+grid on
+% title('TF Estimate 5unitAMM NLH chain','FontSize',14)
+xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
+ylabel('Magnitude, dB','FontSize',14)
+set(gca,'fontsize',20)
+legend({'linear AMM','nonlinear case 1','nonlinear case 2','nonlinear case 3','nonlinear case 4'},'FontSize',14)
 % legend({'linear AMM numerical result','nonlinear case 1 AMM numerical result','phononic crystal numerical result','nonlinear case 2 AMM numerical result'})
-% set(graph1,'LineWidth',2);
+set(graph1,'LineWidth',2);
+alldatacursors = findall(gcf,'type','hggroup');
+set(alldatacursors,'FontSize',20)
 % %%
 % figure
 % % hold on

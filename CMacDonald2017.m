@@ -23,14 +23,14 @@ w1=sqrt(k1/m1)/(2*pi);
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
-input =[0.005 3.3*w1]; %amp and freq, Hz, 
+input =[0.005 w1]; %amp and freq, Hz, 
 % LM 1 = 10.3753 LM 2 = 19.5283
 
 
-opts = odeset('RelTol',1e-8,'AbsTol',1e-8, 'OutputFcn',@odeplot); %, 'Mass', mass, 'Events', @events);
+opts = odeset('RelTol',1e-10,'AbsTol',1e-10, 'OutputFcn',@odeplot); %, 'Mass', mass, 'Events', @events);
 %% System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t,result] = ode15s(@(t,y)nonLinear(t,y,input,k1,m1,k2,m2), tspan, y,opts); %,te,ye,ie
+[t,result] = ode15s(@(t,y)DuffingOsc(t,y,input,k1,m1,k2,m2), tspan, y,opts); %,te,ye,ie
 toc
 
 

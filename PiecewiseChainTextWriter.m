@@ -1,6 +1,6 @@
 %% Text file writer
 % creates a text file/inp file from MATLAB which is then run in ANSYS APDL
-strTitle='NonLinearAMMchain.txt';
+strTitle='PieceWiseAMMchain.txt';
 fileID = fopen(strTitle,'w');
 %-----------------------------------------------
 %% Intro comments and time stamp
@@ -18,8 +18,9 @@ fprintf(fileID,strFIN);
 m1=0.1; 
 m2=0.5*m1;
 k1=1000;
-k2L=320;
-k2NL=6400;
+k2L=640;
+k2PWL=320;
+s=4; % PWL distance before change over
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
@@ -46,7 +47,7 @@ fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the spring nonlinear element\nET,3,COMBIN39\nKEYOPT,2,1,0\nKEYOPT,2,2,0\nKEYOPT,2,3,0\nKEYOPT,2,4,0\nKEYOPT,2,6,0\nKEYOPT,2,3,2');
 % create the nonlinear spring curve using nonlinearCurve.m
-F = nonlinearCurve(k2L,k2NL);
+F = piecewiseCurve(k2L,k2PWL,s);
 % Loop the resultant curve data to form the spring parameters in ANSYS
 fprintf(fileID,'\nR,3,%d,%d,%d,%d,%d,%d,\n',F(1,1),F(1,2),F(2,1),F(2,2),F(3,1),F(3,2));
 var=4;
@@ -149,8 +150,8 @@ fprintf(fileID,'\nSAVE\nFINI\n');
 %% End
 % Copy text file contents to ANSYS' input file format, .inp
 fclose(fileID);
-fileID2 = fopen('APDL_conor.inp' ,'w');
-copyfile NonLinearAMMchain.txt APDL_NLchain.inp
+fileID2 = fopen('APDL_PWLchain.inp' ,'w');
+copyfile PieceWiseAMMchain.txt APDL_PWLchain.inp
 
 
 

@@ -13,17 +13,17 @@ x=linspace(0,lt,(steps));
 %generate random numbers between [-1,1] with a length of steps
 A=20;
 % r=-A+(2*A).*rand(steps,1);
-r=A.*sin(19.5283*2*pi*x);
+r=A.*sin(72.0176*2*pi*x);
 % r = Amplitude*sin(w*t), where t is the timesteps, or X
 
 % put it through the filter we created in bandpass filter toolbox thing
 % y=doFilter2(r,dt);
 % create vector to export to a csv file for APDL to read
 Y=[x' r'];
-
+figure
 plot(x,r,'b') %,x,y,'g')
 
-file='U:\_PhD\APDL\Validation\DuffingValDec17\ExExcitation2ndMode.csv';
+file='U:\_PhD\APDL\Validation\DuffingValDec17\NLcase4_secondMode.csv';
 csvwrite(file,Y);
 
 
