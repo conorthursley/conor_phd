@@ -13,10 +13,10 @@ tic
 tspan=[0 10];
 %---------------------------------------------------
 %% set parameters for stiffness, mass and IC
-m1=2;
+m1=0.1;
 m2=0.5*m1;  %kg
-k1=6;
-k2=3*k1;  % N/m
+k1=1000;
+k2=320;  % N/m
 y0=zeros(1,(n*2));
 % y0(3)=1e-3; %initial displacement of first mass
 %---------------------------------------------------

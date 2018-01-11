@@ -6,8 +6,8 @@ lt=300; %length of time
 il=10; %interval length
 A=2000; %amplitude 
 
-low=10; %low interval
-high=30; %high interval
+low=1.5; %low interval
+high=60; %high interval
 
 hf=high; %highest frequency
 dt=1/(10*hf); %time step size
@@ -30,6 +30,6 @@ var=[timeTotal' excel'];
 figure
 plot(timeTotal,(excel))
 
-file='C:\ANSYS\Temp\Validation\DuffingValDec17\DuffingExcelAmp.csv';
+file='U:\_PhD\APDL\Validation\DuffingValDec17\FreqSweepKE.csv';
 csvwrite(file,var);
 

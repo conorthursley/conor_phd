@@ -15,7 +15,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans160.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans176.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -25,7 +25,7 @@ ansys_amp_2 = M((1:length(M)),3);
 velo1=M((1:length(M)),4);
 velo2=M((1:length(M)),5);
 
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\NLmodeC1.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
 % [q,t5]=max(bandpass);
@@ -38,7 +38,7 @@ dt=abs(mean(diff(t)));
 figure
 ax1=subplot(2,1,1);
 dt=abs(mean(diff(t)));  %average time step done 
-Fs=1/dt;
+Fs=1/(dt);
 % y = fft(ansys_amp_1);  
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
@@ -94,24 +94,101 @@ set(gca,'fontsize',14)
 
 figure
 ax1b=subplot(2,2,1);
-plot(ansys_amp_1,velo1)
+plot(ansys_amp_1(90000:100000,:),velo1(90000:100000,:))
 grid on
 title('Phase plot of mass1','FontSize',20)
 xlabel('displacement of mass1','FontSize',20)
 ylabel('velocity of mass1','FontSize',20)
 
 ax2a=subplot(2,2,3);
-plot(ansys_amp_2,velo2);
+plot(ansys_amp_2(90000:100000,:),velo2(90000:100000,:));
 grid on
 title('Phase plot of mass2','FontSize',20)
 xlabel('displacement of mass2','FontSize',20)
 ylabel('velocity of mass2','FontSize',20)
 ax2c=subplot(2,2,[2,4]);
-plot(ansys_amp_1,ansys_amp_2)
+plot(ansys_amp_1(90000:100000,:),ansys_amp_2(90000:100000,:))
 grid on
 title('Invariant manifold','FontSize',20)
 xlabel('displacement of mass1','FontSize',20)
 ylabel('displacement of mass2','FontSize',20)
+%% *******************Acceleration**********************
+%-------------u1---------------
+time=ansys_time;
+u1=ansys_amp_1;
+u2=ansys_amp_2;
+velocity=velo1;
+nn = length(time); %Assume velocity vector is same length
+ta = [time(3),time',time(nn-2)];
+ve = [velocity(3),velocity',velocity(nn-2)];
+t1 = ta(1:nn); t2 = ta(2:nn+1); t3 = ta(3:nn+2);
+v1 = ve(1:nn); v2 = ve(2:nn+1); v3 = ve(3:nn+2);
+t21 = t2-t1; t32 = t3-t2; t31 = t3-t1;
+v21 = v2-v1; v32 = v3-v2;
+ac_u1 = (v21./t21.*t32+v32./t32.*t21)./t31; % Approx. acceleration values
+%----------------u2---------------
+velocity=velo2;
+ve = [velocity(3),velocity',velocity(nn-2)];
+v1 = ve(1:nn); v2 = ve(2:nn+1); v3 = ve(3:nn+2);
+v21 = v2-v1; v32 = v3-v2;
+ac_u2 = (v21./t21.*t32+v32./t32.*t21)./t31; % Approx. acceleration values
+%*******************Poincare Section**********************
+nnnn=size(time);
+%set the index of poincare points to 1
+%-----------------u1------------
+np_u1=1;
+for i=1:nnnn(1)
+        % detect the cros-section of the trajectory with the plane y1-y2
+        if (ac_u1(i)>=(2*pi)*np_u1)
+%             (time(i)>=((2*pi)/28.69)*np_u1)
+            % store detected cross-section point y1,y2 to ps1,ps2
+        ps_u1(np_u1,1)=u1(i);
+        ps_u1(np_u1,2)=velo1(i);
+        
+        % increase the index of poincare point
+                np_u1=np_u1+1;
+        end
+end
+%-----------------u2------------
+np_u2=1;
+for i=1:nnnn(1)
+        % detect the cros-section of the trajectory with the plane y1-y2
+        if (ac_u2(i)>=(2*pi)*np_u2)
+            % store detected cross-section point y1,y2 to ps1,ps2
+        ps_u2(np_u2,1)=u1(i);
+        ps_u2(np_u2,2)=velo2(i);
+        % increase the index of poincare point
+                np_u2=np_u2+1;
+        end
+end
+%% plot poincare section 
+figure
+subplot(2,1,1);
+% plot(u1,v1,'b--')
+hold on
+for i=1:np_u1-1
+    plot(ps_u1(i,1),ps_u1(i,2),'r.')
+    % use pause to folow the plot of the poincare section
+%     pause(0.5);
+
+end
+grid on
+title('Poincare Section','FontSize',20)
+xlabel('displacement of mass1','FontSize',20)
+ylabel('velocity of mass1','FontSize',20)
+
+subplot(2,1,2);
+hold on
+for i=1:np_u2-1
+    plot(ps_u2(i,1),ps_u2(i,2),'r.')
+    % use pause to folow the plot of the poincare section
+    %pause(0.5);
+end
+title('Poincare Section','FontSize',20)
+xlabel('displacement of mass2','FontSize',20)
+ylabel('velocity of mass2','FontSize',20)
+grid on
+%plot(ps(:,1),ps(:,2),'r+');
 %% Distribution of energy ratio
 KE1=(0.5*m1*ansys_amp_1.^2);
 KE2=(0.5*m1*ansys_amp_2.^2);
@@ -208,7 +285,7 @@ B=wT;
 C=A./B;
 
 meff=m1+(m2*wT^2)./(wT^2-A.^2);
-
+% 
 % figure
 % plot(meff/m1,C)
 % grid
@@ -217,9 +294,9 @@ meff=m1+(m2*wT^2)./(wT^2-A.^2);
 % Yao 2008 
 qL=2*asin(sqrt((meff)/(4*k1).*A.^2));
 
-% figure
-% plot(A/(2*pi),real(qL)/pi)
-% grid
+figure
+plot(A/(2*pi),real(qL)/pi)
+grid
 % axis([0 12 0 1])
 
 % Transmittance of cells
@@ -279,8 +356,10 @@ set(gca,'fontsize',14)
 %% External Work done by a single unit cell AMM
 time=linspace(0,100,1000);
 Amp=0.01;
-
-om1=1.080*w2;
+Mr=m2/m1; %mass ratio
+Sr=k2/k1; %stiffness ratio
+Tr=Mr/Sr;
+om1=1.0060*w2;
 om2=om1/w2;
 Kr=Sr;
 %-----------------------------------------

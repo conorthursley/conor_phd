@@ -10,7 +10,7 @@ tic
 %---------------------------------------------------
 % Time specification
 tstart = 0;
-tfinal = 10;
+tfinal = 100;
 tout = tstart;
 %---------------------------------------------------
 
@@ -29,39 +29,43 @@ teout = [];
 yeout = [];
 ieout = [];
 %---------------------------------------------------
-% Parameters
+%% *******************Parameters**********************
 k1=1000; %N/m
 m1=0.1; %kg
 k2=320;
+k2NL=0;
 m2=0.5*m1;
 w1=sqrt(k1/m1)/(2*pi);
 w2=sqrt(k2/m2)/(2*pi);
 %---------------------------------------------------
-% harmonic input frequency 
-% expressed in Hz and then converted to rad/s in the function
-% 
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\lowpass100hz10sec.csv';
+%% *******************Input Signal**********************
+
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
 bandpass1=csvread(bandpassFile);
 Values=bandpass1(:,2);
-Points=bandpass1(:,1);
-% dt=mean(diff(Points));
-% Values=doFilter2(Values,dt);
-% Y=[Points Values];
-% file='U:\_PhD\APDL\Validation\DuffingValDec17\lowpass100hz10sec.csv';
-% csvwrite(file,Y);
-% freq=bandpass; %Hz
-% Amp=bandpass1(:,1);
-% input=[freq Amp]; 
-% input =[20 w1*0.95]; %amp and freq, Hz
+Points=10*bandpass1(:,1);
 %---------------------------------------------------
-% lenSig=5000; %length of generated signal for ODE45 to interpolate
-% samplePoints=linspace(tstart,tfinal,lenSig);
-% values=wgn(lenSig,1,0);
+% using an interpolated function for the ode solver to read in the ode
+% function
 input=griddedInterpolant(Points,Values,'linear');
 % plot(Points,Values)
 %---------------------------------------------------
+%% *******************Spring Function**********************
+% nonliner spring function found in nonlinearCurve.m
+% need to call the function with the parameters declared earlier
+F=nonlinearCurve(k2,k2NL);
+nlPoints=F(:,1);
+nlValues=F(:,2);
+NLspring=griddedInterpolant(nlPoints,nlValues,'spline');
+
+% --------check--------
+% plot(nlPoints,nlValues,'b-o')
+% hold on
+% plot(nlPoints*0.5,NLspring(nlPoints*0.5),'r-*')
+%---------------------------------------------------
 % ode options  - see 'odeset'
-opts = odeset('RelTol',1e-10,'AbsTol',1e-10,  'Events', @events); %'OutputFcn',@odeplot);
+opts = odeset('RelTol',1e-10,'AbsTol',1e-10, 'Events', @events); %'OutputFcn',@odeplot);
+toc
 %% System simulation
 
 % solve continuosly from tstart to tend at each terminal event
@@ -72,7 +76,7 @@ for i=1:10000
     %could probably write a code to keep iterating between the event (dont
     %stop) and event (stop) with a flag system.
     %---------------------------------------------------
-    [t,result,te,ye,ie] = ode23(@(t,y)nonLinear(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
+    [t,result,te,ye,ie] = ode23(@(t,y)Linear(t,y,input,k1,m1,k2,m2), [tstart tfinal], y,opts);
 %     if ~ishold
 %         hold on
 %     end %check that the graph is on hold
@@ -112,7 +116,9 @@ toc
 % extract displacement from the results 
 %---------------------------------------------------
 u1=yout(:,1);
+vel1=yout(:,2);
 u2=yout(:,3);
+vel2=yout(:,4);
 eT=tout;
 %---------------------------------------------------
 figure
@@ -135,7 +141,71 @@ legend('u2')
 grid on
 %---------------------------------------------------
 linkaxes([ax1,ax2],'y')
-
+%% *******************Acceleration**********************
+%-------------u1---------------
+time=tout;
+velocity=vel1;
+nn = length(time); %Assume velocity vector is same length
+ta = [time(3),time',time(nn-2)];
+ve = [velocity(3),velocity',velocity(nn-2)];
+t1 = ta(1:nn); t2 = ta(2:nn+1); t3 = ta(3:nn+2);
+v1 = ve(1:nn); v2 = ve(2:nn+1); v3 = ve(3:nn+2);
+t21 = t2-t1; t32 = t3-t2; t31 = t3-t1;
+v21 = v2-v1; v32 = v3-v2;
+ac_u1 = (v21./t21.*t32+v32./t32.*t21)./t31; % Approx. acceleration values
+%----------------u2---------------
+velocity=vel2;
+ve = [velocity(3),velocity',velocity(nn-2)];
+v1 = ve(1:nn); v2 = ve(2:nn+1); v3 = ve(3:nn+2);
+v21 = v2-v1; v32 = v3-v2;
+ac_u2 = (v21./t21.*t32+v32./t32.*t21)./t31; % Approx. acceleration values
+%*******************Poincare Section**********************
+nnnn=size(time);
+%set the index of poincare points to 1
+%-----------------u1------------
+np_u1=1;
+for i=1:nnnn(1)
+        % detect the cros-section of the trajectory with the plane y1-y2
+        if (ac_u1(i)>=(2*pi)*np_u1)
+            % store detected cross-section point y1,y2 to ps1,ps2
+        ps_u1(np_u1,1)=u1(i);
+        ps_u1(np_u1,2)=vel1(i);
+        % increase the index of poincare point
+                np_u1=np_u1+1;
+        end
+end
+%-----------------u2------------
+np_u2=1;
+for i=1:nnnn(1)
+        % detect the cros-section of the trajectory with the plane y1-y2
+        if (ac_u2(i)>=(2*pi)*np_u2)
+            % store detected cross-section point y1,y2 to ps1,ps2
+        ps_u2(np_u2,1)=u1(i);
+        ps_u2(np_u2,2)=vel2(i);
+        % increase the index of poincare point
+                np_u2=np_u2+1;
+        end
+end
+%% plot poincare section 
+figure
+subplot(2,1,1);
+% plot(u1,v1,'b--')
+hold on
+for i=1:np_u1-1
+    plot(ps_u1(i,1),ps_u1(i,2),'r*')
+    % use pause to folow the plot of the poincare section
+%     pause(0.5);
+end
+grid on
+subplot(2,1,2);
+hold on
+for i=1:np_u2-1
+    plot(ps_u2(i,1),ps_u2(i,2),'r*')
+    % use pause to folow the plot of the poincare section
+    %pause(0.5);
+end
+grid on
+%plot(ps(:,1),ps(:,2),'r+');
 %% Displacement Time responses
 figure
 plot(eT,(u1),'b',eT,(u2),'r')
@@ -209,6 +279,7 @@ xlabel('U_2'); % Insert the x-axis label
 ylabel('dU_2/dt'); % Inserts the y-axis label
 title('Phase plane of m2') % Inserts the title in the plot
 grid on
+
 subplot(2,2,[2,4]);
 plot(u1,u2)
 grid on
@@ -341,9 +412,9 @@ ylabel('Magnitude, dB','FontSize',20)
 %---------------------------------------------------
 
 function [value,isterminal,direction] = events(~,y)
-      value = [double((y(3)-(y(1))<=-(5e-4))); double((y(3)-y(1))>=+(5e-4))]; %double((y(7)-(y(5))<=-(5e-4))); double((y(7)-y(5))>=+(5e-4));double((y(1)-y(5))>=+(1.5e-3))]; %need to use double to convert logical to numerical
+      value = [double((y(3)-(y(1))<=-(5e-1))); double((y(3)-y(1))>=+(5e-1))]; %double((y(7)-(y(5))<=-(5e-4))); double((y(7)-y(5))>=+(5e-4));double((y(1)-y(5))>=+(1.5e-3))]; %need to use double to convert logical to numerical
            % detect when the bounds gets crossed
-      isterminal = [0;0]; % halt integration, reverse direction 
+      isterminal = [1;1]; % halt integration, reverse direction 
       % 1 if the integration is to terminate when the ith event occurs. Otherwise, it is 0.
       direction = [-1;1]; % approaching the event from any which way
       %0 if all zeros are to be located (the default). A value of +1 locates only zeros where the event function is increasing, ...

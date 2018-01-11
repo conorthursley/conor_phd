@@ -19,8 +19,8 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2L=640;
-k2PWL=320;
-s=4; % PWL distance before change over
+k2PWL=60;
+s=0.02; % PWL distance before change over
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------

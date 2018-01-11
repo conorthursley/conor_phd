@@ -1,4 +1,4 @@
-function Xdot=nonLinear(t,y,input,k1,m1,k2,m2)
+function Xdot=nonLinear(t,y,input,NLspring,k1,m1,k2,m2)
 %Define parameters from model
 % k1=1000; % Not Used
 %------------------------------------------
@@ -21,16 +21,18 @@ y1=y(3);
 y2=y(4);
 %----------------------------------
 %set nonlinear term, k3, to 0
-NL=20;%********nonlinear ratio******** nonlinear/linear
-k3=k2*NL; 
+% NL=0;%********nonlinear ratio******** nonlinear/linear
+% k3=k2*NL; 
 % H=input(1)*cos(2*pi*input(2)*t); 
 H=input(t);
 % value = [double(y(3)<=(y(1)-(5e-4))); double(y(3)>=y(1)+(5e-4))]
 %define A matrix for EOM
 A=[x2; ...
-    H/m1-((k1/m1))*x1-((k2/m1))*(x1-y1)-((k3/m1)*((x1-y1).^3)); ...
+    H/m1-((k1/m1))*x1-(NLspring(x1-y1))/m1
+%     ((k2/m1))*(x1-y1)-((k3/m1)*((x1-y1).^3)); ...
     y2;...
-    -((k2/m2)*(y1-x1))-((k3/m2)*((y1-x1).^3))];
+    -(NLspring(y1-x1))/m1];
+% ((k2/m2)*(y1-x1))-((k3/m2)*((y1-x1).^3))
 %----------------------------------
 % input excitation
 % H=((input(1))*(sin(2*pi*input(2)*t)));
