@@ -1,5 +1,5 @@
 ! Script to examine the response for a nonlinear mass-spring system
-! Conor MacDonaldJanuary 10, 2018  3:16:34 PM
+! Conor MacDonaldJanuary 12, 2018  5:46:47 PM
 
 FINI
 /clear,all
@@ -8,13 +8,13 @@ FINI
 
 ! Define parameters
 m1=0.100000
-m2=0.050000
+m2=0.500000
 k1=1000.000000
 L=40.000000
 l=20.000000
-n=1.000000 !number of cells
+n=10.000000 !number of cells
 ival=0.000000
-fval=2.000000
+fval=20.000000
 
 ! Define the mass element
 ET,1,MASS21
@@ -39,17 +39,17 @@ KEYOPT,2,3,0
 KEYOPT,2,4,0
 KEYOPT,2,6,0
 KEYOPT,2,3,2
-R,3,-1.000000e-01,-5.240000e+01,-9.000000e-02,-4.600000e+01,-8.000000e-02,-3.960000e+01,
-RMORE,-7.000000e-02,-3.320000e+01,-6.000000e-02,-2.680000e+01,-5.000000e-02,-2.040000e+01,
-RMORE,-4.000000e-02,-1.400000e+01,-3.000000e-02,-7.600000e+00,-2.000000e-02,-1.200000e+00,
-RMORE,-1.000000e-02,-6.000000e-01,0,0,1.000000e-02,6.000000e-01,
-RMORE,2.000000e-02,1.200000e+00,3.000000e-02,7.600000e+00,4.000000e-02,1.400000e+01,
-RMORE,5.000000e-02,2.040000e+01,6.000000e-02,2.680000e+01,7.000000e-02,3.320000e+01,
-RMORE,8.000000e-02,3.960000e+01,9.000000e-02,4.600000e+01,
+R,3,-10,-3500,-9,-2860,-8,-2220,
+RMORE,-7,-1580,-6,-940,-5,-300,
+RMORE,-4,-240,-3,-180,-2,-120,
+RMORE,-1,-60,0,0,1,60,
+RMORE,2,120,3,180,4,240,
+RMORE,5,300,6,940,7,1580,
+RMORE,8,2220,9,2860,
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
-*DO,II,0,fval,1 ! For I = 0 to 2:
+*DO,II,0,fval,1 ! For I = 0 to 20:
 
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
@@ -66,7 +66,7 @@ TYPE,3! Change the element type to 3 (spring element)
 REAL,3! Change to real set 3 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,2, 2
+*DO, II,2,20, 2
 
 E,II,II+1
 *ENDDO
@@ -77,7 +77,7 @@ REAL,2! Change to real set 2 for the spring
 E,1,2
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,0, 2
+*DO, II,2,18, 2
 
 E,II,II+2
 *ENDDO
@@ -86,7 +86,7 @@ TYPE,1! Change the element type to 1 (mass element)
 REAL,1! Change to real set 1 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2 ,2, 2
+*DO, II,2 ,20, 2
 
 E,II
 *ENDDO
@@ -95,7 +95,7 @@ TYPE,4! Change the element type to 4 (mass element)
 REAL,4! Change to real set 4 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,3 ,3, 2
+*DO, II,3 ,21, 2
 
 E,II
 *ENDDO
