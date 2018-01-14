@@ -15,7 +15,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans197.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans213.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
 ansys_time = M((1:length(M)),1); % time
@@ -28,7 +28,7 @@ velo2=M((1:length(M)),5);
 % if signal was generated with multiple cells and want to compare the
 % difference
 bandpass= M((1:length(M)),6);
-% bandpass= 6000*cos(38.1*2*pi.*t);
+% bandpass= 6000*cos(30*2*pi.*t);
 
 % bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
 % bandpass1=csvread(bandpassFile);
@@ -164,7 +164,7 @@ end
 np_u2=1;
 for i=1:nnnn(1)
         % detect the cros-section of the trajectory with the plane y1-y2
-        if (ac_u2(i)>=(2*pi)*np_u2)
+        if (ac_u2(i)>=((2*pi)*np_u2))
             % store detected cross-section point y1,y2 to ps1,ps2
         ps_u2(np_u2,1)=u1(i);
         ps_u2(np_u2,2)=velo2(i);

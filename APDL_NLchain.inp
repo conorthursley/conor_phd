@@ -1,5 +1,5 @@
 ! Script to examine the response for a nonlinear mass-spring system
-! Conor MacDonaldJanuary 12, 2018  5:47:00 PM
+! Conor MacDonaldJanuary 14, 2018  6:32:31 PM
 
 FINI
 /clear,all
@@ -39,13 +39,13 @@ KEYOPT,2,3,0
 KEYOPT,2,4,0
 KEYOPT,2,6,0
 KEYOPT,2,3,2
-R,3,-10,-1603200,-9,-1169280,-8,-821760,
-RMORE,-7,-551040,-6,-347520,-5,-201600,
-RMORE,-4,-103680,-3,-44160,-2,-13440,
-RMORE,-1,-1920,0,0,1,1920,
-RMORE,2,13440,3,44160,4,103680,
-RMORE,5,201600,6,347520,7,551040,
-RMORE,8,821760,9,1169280,
+R,3,-10,-323200,-9,-236160,-8,-166400,
+RMORE,-7,-112000,-6,-71040,-5,-41600,
+RMORE,-4,-21760,-3,-9600,-2,-3200,
+RMORE,-1,-640,0,0,1,640,
+RMORE,2,3200,3,9600,4,21760,
+RMORE,5,41600,6,71040,7,112000,
+RMORE,8,166400,9,236160,
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 

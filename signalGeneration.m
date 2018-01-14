@@ -4,16 +4,16 @@
 clear all
 %highest frequency of interest we want to know
 hf=100;
-dt=1/(100*hf);
+dt=1/(10*hf);
 %length of time we want to find response for
-lt=10;
+lt=100;
 steps=(lt/dt);
 x=linspace(0,lt,(steps));
 % x=0:1/steps:lt;
 %generate random numbers between [-1,1] with a length of steps
-A=2000;
+A=6000;
 % r=-A+(2*A).*rand(steps,1);
-r=A.*sin(38.4518*2*pi*x);
+r=A.*sin(30*2*pi*x);
 % r = Amplitude*sin(w*t), where t is the timesteps, or X
 
 % put it through the filter we created in bandpass filter toolbox thing
@@ -23,7 +23,7 @@ Y=[x' r'];
 figure
 plot(x,r,'b') %,x,y,'g')
 
-file='U:\_PhD\APDL\Validation\DuffingValDec17\NLmodeC1.csv';
+file='U:\_PhD\APDL\Validation\DuffingValDec17\NLmodeC2.csv';
 csvwrite(file,Y);
 
 

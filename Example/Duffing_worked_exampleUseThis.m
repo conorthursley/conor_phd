@@ -10,7 +10,7 @@ beta=1;
 delta=0;
 gamma=8;
 omega=0.65;
-tspan=[0 100];
+tspan=[0 10];
 y0=[0 0]; %initial conditions
 %% ODE solver
 opts = odeset('RelTol',1e-10,'AbsTol',1e-10);

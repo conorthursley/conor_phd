@@ -19,7 +19,7 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2L=320;
-k2NL=1600;
+k2NL=1*k2L;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
