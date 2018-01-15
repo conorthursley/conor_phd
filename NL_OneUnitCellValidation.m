@@ -27,8 +27,11 @@ velo2=M((1:length(M)),5);
 
 % if signal was generated with multiple cells and want to compare the
 % difference
+ff=1.35; %forcing frequency
+wf1=w1*ff;
+wf2=w2*ff;
 bandpass= M((1:length(M)),6);
-% bandpass= 6000*cos(30*2*pi.*t);
+% bandpass= 1*cos(wf1*2*pi.*t);
 
 % bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
 % bandpass1=csvread(bandpassFile);
@@ -150,8 +153,8 @@ nnnn=size(time);
 np_u1=1;
 for i=1:nnnn(1)
         % detect the cros-section of the trajectory with the plane y1-y2
-        if (ac_u1(i)>=(2*pi)*np_u1)
-%             (time(i)>=((2*pi)/28.69)*np_u1)
+        if (time(i)>=(1/(wf1/(2*pi)))*np_u1)
+%             (ac_u1(i)>=(2*pi)*np_u1)
             % store detected cross-section point y1,y2 to ps1,ps2
         ps_u1(np_u1,1)=u1(i);
         ps_u1(np_u1,2)=velo1(i);
@@ -164,7 +167,8 @@ end
 np_u2=1;
 for i=1:nnnn(1)
         % detect the cros-section of the trajectory with the plane y1-y2
-        if (ac_u2(i)>=((2*pi)*np_u2))
+        if (time(i)>=(1/(wf2/(2*pi)))*np_u2)
+          %   (ac_u2(i)>=(2*pi)*np_u2)
             % store detected cross-section point y1,y2 to ps1,ps2
         ps_u2(np_u2,1)=u1(i);
         ps_u2(np_u2,2)=velo2(i);

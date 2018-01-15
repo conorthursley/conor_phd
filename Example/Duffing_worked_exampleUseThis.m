@@ -7,10 +7,10 @@
 %% Coefficients 
 alpha=5;
 beta=1;
-delta=0;
+delta=0.05;
 gamma=8;
 omega=0.65;
-tspan=[0 10];
+tspan=[0 1000];
 y0=[0 0]; %initial conditions
 %% ODE solver
 opts = odeset('RelTol',1e-10,'AbsTol',1e-10);
@@ -59,7 +59,7 @@ nnnn=size(time);
 np_u1=1;
 for i=1:nnnn(1)
         % detect the cros-section of the trajectory with the plane y1-y2
-        if (ac_u1(i)>=(2*pi)/gamma); %np_u1); 
+        if (ac_u1(i)>=(1/omega*np_u1)); 
 %             (time(i)>=((2*pi)/28.69)*np_u1)
             % store detected cross-section point y1,y2 to ps1,ps2
         ps_u1(np_u1,1)=u1(i);
