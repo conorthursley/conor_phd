@@ -3,11 +3,12 @@
 m1=0.1; 
 m2=0.5*m1;
 k1=1000;
-k2=320;
+k2=1.5*k1;
 k2NL=2e4;
 
 w1=sqrt((k1)/m1)/(2*pi);%Hz
 w2=sqrt((k2)/m2)/(2*pi);
+% w1=w2*2*pi;
 
 % effective mass
 theta=m2/m1;
@@ -15,28 +16,28 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans213.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans247.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 
-ansys_time = M((1:length(M)),1); % time
+ansys_time = M((1:length(M)),1); % time150000:
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)),2);
-ansys_amp_2 = M((1:length(M)),3);
-velo1=M((1:length(M)),4);
-velo2=M((1:length(M)),5);
+ansys_amp_2 = M((1:length(M)),2);
+velo1=M((1:length(M)),3);
+velo2=M((1:length(M)),3);
 
 % if signal was generated with multiple cells and want to compare the
 % difference
-ff=1.35; %forcing frequency
+ff=2.393; %forcing frequency
 wf1=w1*ff;
 wf2=w2*ff;
-bandpass= M((1:length(M)),6);
+% bandpass= M((1:length(M)),6);
 % bandpass= 1*cos(wf1*2*pi.*t);
 
-% bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
-% bandpass1=csvread(bandpassFile);
-% bandpass=bandpass1(:,2);
-% bandpass=ones(1,length(M));
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS3.csv';
+bandpass1=csvread(bandpassFile);
+bandpass=bandpass1(1:length(M),2);
+% bandpass=ones(1,);
 % bandpass=3000.*bandpass;
 
 
@@ -55,13 +56,13 @@ Fs=1/(dt);
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft=fft(bandpass,m); % DFT of signal
+dft1=fft(bandpass,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
-fourier = abs(dft); 
+fourier = abs(dft1); 
 f=Fs*(0:(n/2))/n;
-freq=fr(1:floor(m/2));
-P=fourier(1:floor(m/2));
-plot(freq,P)
+freq1=fr(1:floor(m/2));
+P1=fourier(1:floor(m/2));
+plot(freq1,P1)
 % plot(flop,abs(y),'LineWidth',2)
 title('FFT of input signal')
 grid on
@@ -103,30 +104,35 @@ legend({'mass_1','mass_2'},'FontSize',14)
 set(gca,'fontsize',14)
 
 %% Phase Plots and Invariant Manifolds
+x1=ansys_amp_1; %(900000:1000000);
+x2=ansys_amp_2;%(900000:1000000);
+v1=velo1; %(900000:1000000);
+v2=velo2; %(900000:1000000);
+
 
 figure
 ax1b=subplot(2,2,1);
-plot(ansys_amp_1,velo1)  %(90000:100000,:)
+plot(x1,v1)  %(900000:1000000,:)
 grid on
 title('Phase plot of mass1','FontSize',20)
 xlabel('displacement of mass1','FontSize',20)
 ylabel('velocity of mass1','FontSize',20)
 
 ax2a=subplot(2,2,3);
-plot(ansys_amp_2,velo2);
+plot(x2,v2);
 grid on
 title('Phase plot of mass2','FontSize',20)
 xlabel('displacement of mass2','FontSize',20)
 ylabel('velocity of mass2','FontSize',20)
 ax2c=subplot(2,2,[2,4]);
-plot(ansys_amp_1,ansys_amp_2)
+plot(x1,x2)
 grid on
 title('Invariant manifold','FontSize',20)
 xlabel('displacement of mass1','FontSize',20)
 ylabel('displacement of mass2','FontSize',20)
 %% *******************Acceleration**********************
 %-------------u1---------------
-time=ansys_time;
+time=ansys_time; %(900000:1000000);
 u1=ansys_amp_1;
 u2=ansys_amp_2;
 velocity=velo1;
@@ -140,7 +146,7 @@ v21 = v2-v1; v32 = v3-v2;
 ac_u1 = (v21./t21.*t32+v32./t32.*t21)./t31; % Approx. acceleration values
 % ac_u1 = M((1:length(M)),6);
 %----------------u2---------------
-velocity=velo2;
+% velocity=velo2;
 ve = [velocity(3),velocity',velocity(nn-2)];
 v1 = ve(1:nn); v2 = ve(2:nn+1); v3 = ve(3:nn+2);
 v21 = v2-v1; v32 = v3-v2;
@@ -178,6 +184,7 @@ for i=1:nnnn(1)
 end
 %% plot poincare section 
 figure
+% hold on
 subplot(2,1,1);
 % plot(u1,v1,'b--')
 hold on
@@ -191,7 +198,7 @@ grid on
 title('Poincare Section','FontSize',20)
 xlabel('displacement of mass1','FontSize',20)
 ylabel('velocity of mass1','FontSize',20)
-
+% set(gca,'LineWidth',5)
 subplot(2,1,2);
 hold on
 for i=1:np_u2-1
@@ -218,7 +225,29 @@ xlabel('Time, s','FontSize',14)
 ylabel('R_{DR}','FontSize',14)
 legend({'mass_{ratio}'},'FontSize',14)
 set(gca,'fontsize',14)
+%%
+% TF estimate
+% takes in input and output signal
+% bandpass filter input signal
+wind = kaiser(length(u1),25);
+% [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
+[txy,frequencies]=tfestimate(bandpass,u1,[],[],[],1/(dt));
+
+% plot
+figure
+% hold on
+graph=plot(frequencies,(20*log10(abs(txy))),'b');
+% axis([0 12 -Inf Inf])
+grid on
+% title('Transfer function of metamaterial configurations','FontSize',14)
+xlabel('Frequency, \omega','FontSize',14)
+ylabel('Magnitude, dB','FontSize',14)
+set(gca,'fontsize',14)
+% axis([0 10 -Inf 0])
+legend({'linear AMM','noise insulation panel','nonlinear case 1'},'FontSize',14)
+set(graph,'LineWidth',1.5);
 %% Loglog plot of frequency response
+dimFreq=logspace(-1,1,length(txy));
 figure
 loglog(freq,abs(P))
 y1=get(gca,'ylim');
@@ -227,30 +256,10 @@ title('Frequency response magnitudes for a 10 unit NLH spring mass-spring system
 xlabel('Frequency, Hz','FontSize',14)
 ylabel('magnitude','FontSize',14)
 % legend({'mass_1','mass_2'},'FontSize',14)
-%% TF estimate
-% takes in input and output signal
-% bandpass filter input signal
-
-% [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass,ansys_amp_1,[],[],[],1/dt);
-
-% plot
-figure
-% hold on
-graph=plot(frequencies/w1,20*log10(abs(txy)),'b');
-% axis([0 12 -Inf Inf])
-grid on
-title('Transfer function of metamaterial configurations','FontSize',14)
-xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
-ylabel('Magnitude, dB','FontSize',14)
-set(gca,'fontsize',14)
-% axis([0 10 -Inf 0])
-legend({'linear AMM','noise insulation panel','nonlinear case 1'},'FontSize',14)
-set(graph,'LineWidth',1.5);
 %%
 figure
 % hold on
-graph1=semilogx(frequencies/w1,abs(txy),'b');
+graph1=semilogx(frequencies,abs(txy),'b');
 % axis([0 3 0 Inf])
 grid on
 % title('TF Estimate 5unitAMM NLH chain','FontSize',14)
@@ -262,8 +271,9 @@ set(graph1,'LineWidth',2);
 %%
 figure
 % hold on
-[pxx,f] = periodogram(ansys_amp_1,[],[],1/dt);
-plot(f/w1,10*log10(pxx),'k')
+wind1 = kaiser(length(u1),35);
+[pxx,f] = periodogram(u1,wind,[],1/dt);
+plot(f,(10*log10(pxx)),'r')
 grid on
 title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
 xlabel('Frequency, \omega','FontSize',20)

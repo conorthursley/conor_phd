@@ -2,17 +2,17 @@
 clear all
 
 % input parameters
-lt=300; %length of time
-il=10; %interval length
-A=2000; %amplitude 
-
-low=1.5; %low interval
-high=60; %high interval
-
+% lt=300; %length of time
+Fsteps=0.25; %Hz 0.25 Hz each up step
+il=20; %interval length
+A=1; %amplitude 
+low=5; %low interval
+high=25; %high interval
+%
 hf=high; %highest frequency
-dt=1/(10*hf); %time step size
-
-Fsteps=(high-low)/(lt/il); %freq step size
+dt=1/(100*hf); %time step size
+lt=((high-low)/Fsteps)*il;
+% Fsteps=(high-low)/(lt/il); %freq step size
 Tsteps=dt;
 time=dt:Tsteps:il;
 excel=[];
@@ -30,6 +30,6 @@ var=[timeTotal' excel'];
 figure
 plot(timeTotal,(excel))
 
-file='U:\_PhD\APDL\Validation\DuffingValDec17\FreqSweepKE.csv';
+file='U:\_PhD\APDL\Validation\DuffingValDec17\TS6_FreqSweepUp_NL.csv';
 csvwrite(file,var);
 

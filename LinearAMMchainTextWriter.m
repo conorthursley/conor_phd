@@ -24,11 +24,11 @@ fprintf(fileID,strFIN);
 m1=0.1; 
 m2=0.5*m1;
 k1=1000;
-k2=k1/3.125;
+k2=1.5*k1;
 L=40; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=10; %number of cells, so we need 2xn number of nodes
+n=1; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -111,7 +111,7 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % Constrain the other end of the chain
 fprintf(fileID,'\n! Constrain the first node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
 fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
-fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
+fprintf(fileID,'\nD,%d,ALL,0\n',ival+1);
 %-----------------------------------------------
 
 
