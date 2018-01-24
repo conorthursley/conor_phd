@@ -13,18 +13,20 @@ w2=sqrt((k2)/m2)/(2*pi);
 % effective mass
 theta=m2/m1;
 % w2=sqrt(k2/m2);
+% alldatacursors = findall(gcf,'type','hggroup');
+% set(alldatacursors,'FontSize',20)
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans247.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans257.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
-
-ansys_time = M((1:length(M)),1); % time150000:
+cue=0;
+ansys_time = M((1:length(M)-cue),1); % time150000:
 t=ansys_time;
-ansys_amp_1 = M((1:length(M)),2);
-ansys_amp_2 = M((1:length(M)),2);
-velo1=M((1:length(M)),3);
-velo2=M((1:length(M)),3);
+ansys_amp_1 = M((1:length(M)-cue),6);
+ansys_amp_2 = M((1:length(M)-cue),7);
+velo1=M((1:length(M)-cue),8);
+velo2=M((1:length(M)-cue),9);
 
 % if signal was generated with multiple cells and want to compare the
 % difference
@@ -34,12 +36,14 @@ wf2=w2*ff;
 % bandpass= M((1:length(M)),6);
 % bandpass= 1*cos(wf1*2*pi.*t);
 
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS3.csv';
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS6.csv';
 bandpass1=csvread(bandpassFile);
-bandpass=bandpass1(1:length(M),2);
+bandpass=bandpass1(:,2);
 % bandpass=ones(1,);
 % bandpass=3000.*bandpass;
 
+x1=ansys_amp_1; 
+x2=ansys_amp_2;
 
 % [q,t5]=max(bandpass);
 % figure
@@ -56,7 +60,7 @@ Fs=1/(dt);
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft1=fft(bandpass,m); % DFT of signal
+dft1=fft(x1,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft1); 
 f=Fs*(0:(n/2))/n;
@@ -78,7 +82,7 @@ Fs=1/dt;
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft=fft(ansys_amp_1,m); % DFT of signal
+dft=fft(x2,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft); 
 f=Fs*(0:(n/2))/n;
@@ -86,13 +90,62 @@ freq=fr(1:floor(m/2));
 P=fourier(1:floor(m/2));
 plot(freq,P)
 % plot(flop,abs(y),'LineWidth',2)
-title('FFT of output amp of a free-free AMM system with 7 units')
+title('FFT of output amp')
 grid on
 xlabel('Normalised frequency, \Omega (Hz)')
 ylabel('|P1(f)|')
 linkaxes([ax1,ax2],'x')
-set(gca,'fontsize',14)
-
+set(gca,'fontsize',20)
+%% TEST FFT
+% Primary mass
+effS=1/dt;
+NFFT=length(x1);
+WHY=fft(x1,NFFT);
+F = ((0:1/NFFT:1-1/NFFT)*effS).';
+magnitudeY = abs(WHY);        % Magnitude of the FFT
+phaseY = unwrap(angle(WHY));  % Phase of the FFT
+%
+figure
+z1=subplot(2,2,1);
+plot(F(1:NFFT/2)/1e3,20*log10(magnitudeY(1:NFFT/2)));
+title('Mag mass 1')
+xlabel('Frequency in kHz')
+ylabel('dB')
+grid on;
+axis tight 
+z2=subplot(2,2,3);
+plot(F(1:NFFT/2)/1e3,phaseY(1:NFFT/2));
+title('Phase mass 1')
+xlabel('Frequency in kHz')
+ylabel('radians')
+grid on;
+axis tight
+linkaxes([z1 z2],'x')
+% Secondary Mass
+effS2=1/dt;
+NFFT2=length(x2);
+WHY2=fft(x2,NFFT2);
+F2 = ((0:1/NFFT2:1-1/NFFT2)*effS2).';
+magnitudeY2 = abs(WHY2);        % Magnitude of the FFT
+phaseY2 = unwrap(angle(WHY2));  % Phase of the FFT
+% plots
+z3=subplot(2,2,2);
+plot(F2(1:NFFT2/2)/1e3,20*log10(magnitudeY2(1:NFFT2/2)));
+title('Mag mass 2')
+xlabel('Frequency in kHz')
+ylabel('dB')
+grid on;
+axis tight 
+z4=subplot(2,2,4);
+plot(F2(1:NFFT2/2)/1e3,phaseY2(1:NFFT2/2));
+title('Phase mass 2')
+xlabel('Frequency in kHz')
+ylabel('radians')
+grid on;
+axis tight
+linkaxes([z3 z4],'x')
+linkaxes([z1 z3],'y')
+% linkaxes([z4 z2],'y')
 %% Displacement Time responses
 figure
 plot(ansys_time,(ansys_amp_1),ansys_time,(ansys_amp_2),'r','LineWidth',0.005)
@@ -212,26 +265,31 @@ ylabel('velocity of mass2','FontSize',20)
 grid on
 %plot(ps(:,1),ps(:,2),'r+');
 %% Distribution of energy ratio
-KE1=(0.5*m1*ansys_amp_1.^2);
-KE2=(0.5*m1*ansys_amp_2.^2);
-RDR=KE2./(KE1+KE2);
-RDR2=KE1./(KE1+KE2);
+% KE1=M((1:length(M)-cue),6);
+% KE2=M((1:length(M)-cue),7);
+KE1hat=(0.5*m1*velo1.^2);
+KE2hat=(0.5*m2*velo2.^2);
+% RDR=KE2./(KE1+KE2);
+RDRhat=KE2hat./(KE1hat+KE2hat);
+RDR_avg=mean(RDRhat);
+avg=ones(length(u1),1);
+avg=avg*RDR_avg;
 figure
-plot(ansys_time,RDR,'r')
+plot(t,RDRhat,'r.-',t,avg,'b') %,t,KE2)
 grid on
 % axis([0 1 -Inf Inf])
-title('Distribution of Energy','FontSize',14)
-xlabel('Time, s','FontSize',14)
-ylabel('R_{DR}','FontSize',14)
-legend({'mass_{ratio}'},'FontSize',14)
-set(gca,'fontsize',14)
+title('Distribution of Energy','FontSize',20)
+xlabel('Time, s','FontSize',20)
+ylabel('R_{DR}','FontSize',20)
+legend({'KE_{ANSYS KE}','KE_{Mean}'},'FontSize',20)
+set(gca,'fontsize',20)
 %%
 % TF estimate
 % takes in input and output signal
 % bandpass filter input signal
-wind = kaiser(length(u1),25);
+wind = kaiser(length(x1),15);
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(bandpass,u1,[],[],[],1/(dt));
+[txy,frequencies]=tfestimate(bandpass,x1,wind,[],[],1/(dt));
 
 % plot
 figure
@@ -271,8 +329,8 @@ set(graph1,'LineWidth',2);
 %%
 figure
 % hold on
-wind1 = kaiser(length(u1),35);
-[pxx,f] = periodogram(u1,wind,[],1/dt);
+wind1 = kaiser(length(x2),15);
+[pxx,f] = periodogram(x2,wind1,[],1/dt);
 plot(f,(10*log10(pxx)),'r')
 grid on
 title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
@@ -395,3 +453,35 @@ We=m1*Amp^2*w2^2*((Mr/Kr-om2^2-(Mr*om2^2)/(1-om2^2))*F1+(Mr*om2^2)/(1-om2^2)*F2)
 
 figure
 plot(time,We)
+%% 
+function helperFrequencyAnalysisPlot1(F,Ymag,Yangle,NFFT,ttlMag,ttlPhase)
+% Plot helper function for the FrequencyAnalysisExample
+
+% Copyright 2012 The MathWorks, Inc.
+
+figure
+subplot(2,1,1)
+plot(F(1:NFFT/2)/1e3,20*log10(Ymag(1:NFFT/2)));
+if nargin > 4 && ~isempty(ttlMag)
+  tstr = {'Magnitude response of the audio signal',ttlMag};
+else
+  tstr = {'Magnitude response of the audio signal'};
+end
+title(tstr)
+xlabel('Frequency in kHz')
+ylabel('dB')
+grid on;
+axis tight 
+subplot(2,1,2)
+plot(F(1:NFFT/2)/1e3,Yangle(1:NFFT/2));
+if nargin > 5
+  tstr = {'Phase response of the audio signal',ttlPhase};
+else  
+  tstr = {'Phase response of the audio signal'};
+end
+title(tstr)
+xlabel('Frequency in kHz')
+ylabel('radians')
+grid on;
+axis tight
+end
