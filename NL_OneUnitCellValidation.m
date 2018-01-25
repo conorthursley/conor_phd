@@ -18,15 +18,15 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans257.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans264.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 cue=0;
 ansys_time = M((1:length(M)-cue),1); % time150000:
 t=ansys_time;
-ansys_amp_1 = M((1:length(M)-cue),6);
-ansys_amp_2 = M((1:length(M)-cue),7);
-velo1=M((1:length(M)-cue),8);
-velo2=M((1:length(M)-cue),9);
+ansys_amp_1 = M((1:length(M)-cue),2);
+ansys_amp_2 = M((1:length(M)-cue),2);
+velo1=M((1:length(M)-cue),3);
+velo2=M((1:length(M)-cue),3);
 
 % if signal was generated with multiple cells and want to compare the
 % difference
@@ -36,7 +36,7 @@ wf2=w2*ff;
 % bandpass= M((1:length(M)),6);
 % bandpass= 1*cos(wf1*2*pi.*t);
 
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS6.csv';
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS7.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
 % bandpass=ones(1,);
@@ -60,7 +60,7 @@ Fs=1/(dt);
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft1=fft(x1,m); % DFT of signal
+dft1=fft(bandpass,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft1); 
 f=Fs*(0:(n/2))/n;
@@ -82,7 +82,7 @@ Fs=1/dt;
 % flop = (0:length(y)-1)*Fs/length(y);
 n=length(t); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
-dft=fft(x2,m); % DFT of signal
+dft=fft(x1,m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft); 
 f=Fs*(0:(n/2))/n;
