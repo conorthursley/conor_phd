@@ -19,11 +19,12 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2L=1.5*k1;
-k2NL=25;
+k2NL=750;
+c=0.001;
 L=40; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=10; %number of cells, so we need 2xn number of nodes
+n=1; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -40,9 +41,9 @@ fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n
 %-----------------------------------------------
 % Define the linear spring element, element type 2
 %keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1\n');
+fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1,%d\n',c);
 %-----------------------------------------------
-% Define the nonlinear spring element, element type 2
+% Define the nonlinear spring element, element type 3
 %keyopts, real constants, declare element type
 fprintf(fileID,'\n! Define the spring nonlinear element\nET,3,COMBIN39\nKEYOPT,2,1,0\nKEYOPT,2,2,0\nKEYOPT,2,3,0\nKEYOPT,2,4,0\nKEYOPT,2,6,0\nKEYOPT,2,3,2');
 % create the nonlinear spring curve using nonlinearCurve.m

@@ -18,15 +18,15 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans264.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans283.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 cue=0;
 ansys_time = M((1:length(M)-cue),1); % time150000:
 t=ansys_time;
 ansys_amp_1 = M((1:length(M)-cue),2);
-ansys_amp_2 = M((1:length(M)-cue),2);
-velo1=M((1:length(M)-cue),3);
-velo2=M((1:length(M)-cue),3);
+ansys_amp_2 = M((1:length(M)-cue),3);
+velo1=M((1:length(M)-cue),4);
+velo2=M((1:length(M)-cue),5);
 
 % if signal was generated with multiple cells and want to compare the
 % difference
@@ -36,7 +36,7 @@ wf2=w2*ff;
 % bandpass= M((1:length(M)),6);
 % bandpass= 1*cos(wf1*2*pi.*t);
 
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS7.csv';
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS10.csv';
 bandpass1=csvread(bandpassFile);
 bandpass=bandpass1(:,2);
 % bandpass=ones(1,);
@@ -277,7 +277,7 @@ avg=avg*RDR_avg;
 figure
 plot(t,RDRhat,'r.-',t,avg,'b') %,t,KE2)
 grid on
-% axis([0 1 -Inf Inf])
+axis([0 Inf 0 1])
 title('Distribution of Energy','FontSize',20)
 xlabel('Time, s','FontSize',20)
 ylabel('R_{DR}','FontSize',20)
@@ -294,7 +294,7 @@ wind = kaiser(length(x1),15);
 % plot
 figure
 % hold on
-graph=plot(frequencies,(20*log10(abs(txy))),'b');
+graph=plot(frequencies,(20*log10(abs(txy))),'r');
 % axis([0 12 -Inf Inf])
 grid on
 % title('Transfer function of metamaterial configurations','FontSize',14)
@@ -329,7 +329,7 @@ set(graph1,'LineWidth',2);
 %%
 figure
 % hold on
-wind1 = kaiser(length(x2),15);
+wind1 = kaiser(length(x1),5);
 [pxx,f] = periodogram(x2,wind1,[],1/dt);
 plot(f,(10*log10(pxx)),'r')
 grid on
@@ -361,7 +361,7 @@ upper=sqrt(1+Mr);
 lower=(1/sqrt(2))*sqrt((1+Mr+4*Tr)-sqrt((1+Mr+4*Tr)^2-16*Tr));
 
 
-w=linspace(0,w1*2*pi*2.5,80000);
+w=linspace(0,w1*2*pi*4,80000);
 wT=sqrt(k2/m2);
 A=w;
 B=wT;
@@ -377,9 +377,9 @@ meff=m1+(m2*wT^2)./(wT^2-A.^2);
 % Yao 2008 
 qL=2*asin(sqrt((meff)/(4*k1).*A.^2));
 
-% figure
-% plot(A/(2*pi),real(qL)/pi)
-% grid
+figure
+plot(A/(2*pi),real(qL)/pi)
+grid
 % axis([0 12 0 1])
 
 % Transmittance of cells

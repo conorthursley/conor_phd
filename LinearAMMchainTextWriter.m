@@ -25,6 +25,7 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2=1.5*k1;
+c=0.001;
 L=40; %length between unit cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
@@ -49,11 +50,11 @@ fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n
 %-----------------------------------------------
 % Define the linear spring element, element type 2
 %keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1\n');
+fprintf(fileID,'\n! Define the linear spring element\nET,2,COMBIN14\nKEYOPT,2,3,2\nR,2,k1,%d\n',c);
 %-----------------------------------------------
 % Define the secondary linear spring element, element type 3
 %keyopts, real constants, declare element type
-fprintf(fileID,'\n! Define the linear spring element\nET,3,COMBIN14\nKEYOPT,2,3,2\nR,3,k2\n');
+fprintf(fileID,'\n! Define the linear spring element\nET,3,COMBIN14\nKEYOPT,2,3,2\nR,3,k2,%d\n',c);
 %-----------------------------------------------
 % Define mass 2, element 4
 fprintf(fileID,'\n! Define the mass element\nET,4,MASS21\nKEYOPT,1,3,4\nR,4,m2\n');
@@ -109,9 +110,9 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % fprintf(fileID,'\nF,1,FX,1');
 %-----------------------------------------------
 % Constrain the other end of the chain
-fprintf(fileID,'\n! Constrain the first node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
-fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
-fprintf(fileID,'\nD,%d,ALL,0\n',ival+1);
+% fprintf(fileID,'\n! Constrain the first node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
+% fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
+% fprintf(fileID,'\nD,%d,ALL,0\n',ival+1);
 %-----------------------------------------------
 
 

@@ -1,7 +1,7 @@
 %% force displacement curve for nonlinear stiffness
 function F = nonlinearCurve(k1,k2)
-kn=k2;
-k1=k1;
+kn=750;
+k1=1500;
 dy=1;
 y=(-10:dy:10)';  %column matrix
 f=k1*y;  %linear case

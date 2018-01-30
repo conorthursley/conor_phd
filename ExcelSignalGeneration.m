@@ -39,7 +39,7 @@ file='U:\_PhD\APDL\Validation\DuffingValDec17\LinearSweepTS3.csv';
 csvwrite(file,var);
 %% Sweep Plot
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans260.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans265.csv';
 M=csvread(file,1,0); %start reading from row 3, column 1
 
 time = M((1:end),1);      % excitation frequency

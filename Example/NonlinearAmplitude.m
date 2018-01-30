@@ -3,7 +3,7 @@
 %% File read from APDL simulation
 
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans174.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans265.csv';
 M=csvread(file,1,0); %start reading from row 3, column 1
 
 time = M((1:end),1);      % excitation frequency
