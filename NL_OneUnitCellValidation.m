@@ -18,15 +18,16 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans283.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans293.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 cue=0;
-ansys_time = M((1:length(M)-cue),1); % time150000:
+lenSig=1:length(M)-cue; %1:length(M)
+ansys_time = M(lenSig,1); % time150000:
 t=ansys_time;
-ansys_amp_1 = M((1:length(M)-cue),2);
-ansys_amp_2 = M((1:length(M)-cue),3);
-velo1=M((1:length(M)-cue),4);
-velo2=M((1:length(M)-cue),5);
+ansys_amp_1 = M(lenSig-cue,2);
+ansys_amp_2 = M(lenSig-cue,3);
+velo1=M(lenSig,4);
+velo2=M(lenSig,5);
 
 % if signal was generated with multiple cells and want to compare the
 % difference
@@ -36,9 +37,9 @@ wf2=w2*ff;
 % bandpass= M((1:length(M)),6);
 % bandpass= 1*cos(wf1*2*pi.*t);
 
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS10.csv';
+bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\LinearModeTS16.csv';
 bandpass1=csvread(bandpassFile);
-bandpass=bandpass1(:,2);
+bandpass=bandpass1(lenSig,2);
 % bandpass=ones(1,);
 % bandpass=3000.*bandpass;
 
@@ -287,7 +288,7 @@ set(gca,'fontsize',20)
 % TF estimate
 % takes in input and output signal
 % bandpass filter input signal
-wind = kaiser(length(x1),15);
+wind = kaiser(length(x1),105);
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
 [txy,frequencies]=tfestimate(bandpass,x1,wind,[],[],1/(dt));
 
@@ -329,8 +330,8 @@ set(graph1,'LineWidth',2);
 %%
 figure
 % hold on
-wind1 = kaiser(length(x1),5);
-[pxx,f] = periodogram(x2,wind1,[],1/dt);
+wind1 = kaiser(length(x2),50);
+[pxx,f] = periodogram(x1,wind1,[],1/dt);
 plot(f,(10*log10(pxx)),'r')
 grid on
 title('Periodogram PSD of 10 unit cell linear system','FontSize',20)
@@ -378,7 +379,7 @@ meff=m1+(m2*wT^2)./(wT^2-A.^2);
 qL=2*asin(sqrt((meff)/(4*k1).*A.^2));
 
 figure
-plot(A/(2*pi),real(qL)/pi)
+plot((A/(2*pi))/w2,real(qL)/pi)
 grid
 % axis([0 12 0 1])
 

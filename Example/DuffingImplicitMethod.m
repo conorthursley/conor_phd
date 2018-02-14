@@ -61,7 +61,7 @@ legend S1 S2 S3
 %% Old Script 
 %% plotting duffing relation
 % 
-close all
+% close all
 m=0.1;
 a=25.6/m;
 y=200/m;

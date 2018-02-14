@@ -1,5 +1,5 @@
 ! Script to examine the response for a nonlinear mass-spring system
-! Conor MacDonaldJanuary 30, 2018  6:21:55 PM
+! Conor MacDonaldFebruary 04, 2018  6:41:29 PM
 
 FINI
 /clear,all
@@ -10,8 +10,8 @@ FINI
 m1=0.100000
 m2=0.050000
 k1=1000.000000
-L=40.000000
-l=20.000000
+L=0.500000
+l=0.250000
 n=1.000000 !number of cells
 ival=0.000000
 fval=2.000000
@@ -54,7 +54,7 @@ RMORE,8,396000,9,560250,
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
 
-posx=II*L		! calculate nodal position with spacing, =40
+posx=II*L		! calculate nodal position with spacing, =5.000000e-01
 
 N,II+1,posx,0,0			! define the node
 *ENDDO

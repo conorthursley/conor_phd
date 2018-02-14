@@ -19,9 +19,9 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2L=1.5*k1;
-k2NL=750;
+k2NL=100*k2L;
 c=0.001;
-L=40; %length between cells (cell is two masses)
+L=0.5; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
 n=1; %number of cells, so we need 2xn number of nodes

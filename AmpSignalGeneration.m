@@ -9,7 +9,7 @@ k2=1.5*k1;
 
 
 Fsteps=0.25; %Hz 0.25 Hz each up step
-il=20; %interval length
+il=30; %interval length
 A=1; %amplitude 
 low=10; %low interval
 high=40; %high interval
@@ -22,10 +22,10 @@ freq=34;
 Tsteps=dt;
 time=dt:Tsteps:il;
 excel=[];
-A=0.01:0.02:1;
+A=0.09:0.01:0.25;
 tim=[];
 %% create vector, then write to csv file.
-for i=1:50 %how many intervals
+for i=1:17 %how many intervals
         data=A(i)*sin(time.*freq*2*pi);
         
         excel=[excel data];
@@ -39,5 +39,5 @@ var=[timeTotal' excel'];
 figure
 plot(timeTotal,(excel))
 
-file='U:\_PhD\APDL\Validation\DuffingValDec17\LinearSweepTS5.csv';
+file='U:\_PhD\APDL\Validation\DuffingValDec17\LinearSweepTS6.csv';
 csvwrite(file,var);

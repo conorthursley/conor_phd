@@ -14,26 +14,26 @@ y1=y(3);
 y2=y(4);
 
 
-k3=k2;
-% w0=sqrt(k2/m2);
 
+% w0=sqrt(k2/m2);
+func=input(1)*sin(input(2)*t);
 
 % Define A matrix
 A=[x2; ...
-    -((k1/m1)+(k3/m1))*(x1)+((k3/m1)*y1); ...
+    x1*((k1+k2)/m1)-y1*((k2/m1)); ...
     y2; ...
-    ((k3/m2)*x1)-((k3/m2)*y1)];
+    -((k2/m2)*x1)+((k2/m2)*y1)];
 
 % Input excitation force
 %sinusodial harmonic
-H=input(t);
+H=input(2)*sin(input(1));
 
 %sawtooth with random noise
 % s=sawtooth(t);
 % noise=awgn(s,0.5);   
 % 
 % % random noise
-% R=0.1*randn(size(t));
+% R=input(1)*randn(size(t));
 B = [0 H/m1 0 0];
 
 

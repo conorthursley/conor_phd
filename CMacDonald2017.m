@@ -17,20 +17,21 @@ y=[0 0 0 0];
 % Parameters
 k1=1e3; %N/m
 m1=0.1; %kg
-k2=320;
+k2=1500;
 m2=0.5*m1;
 w1=sqrt(k1/m1)/(2*pi);
+w2=sqrt(k2/m2)/(2*pi);
 %---------------------------------------------------
 % harmonic input frequency 
 % expressed in Hz and then converted to rad/s in the function
-input =[0.005 w1]; %amp and freq, Hz, 
+input =[0.1 40]; %amp and freq, Hz, 
 % LM 1 = 10.3753 LM 2 = 19.5283
 
 
 opts = odeset('RelTol',1e-10,'AbsTol',1e-10, 'OutputFcn',@odeplot); %, 'Mass', mass, 'Events', @events);
 %% System simulation
 % [t, y] = ode45(@sys, t, y1);
-[t,result] = ode15s(@(t,y)DuffingOsc(t,y,input,k1,m1,k2,m2), tspan, y,opts); %,te,ye,ie
+[t,result] = ode45(@(t,y)Linear(t,y,input,k1,m1,k2,m2), tspan, y,opts); %,te,ye,ie
 toc
 
 
@@ -60,6 +61,14 @@ legend('u2')
 grid on
 %---------------------------------------------------
 linkaxes([ax1,ax2],'x')
+%% Combined Displacement
+plot(t,u1,t,u2)
+xlabel('time'); % Insert the x-axis label
+ylabel('displacement'); % Inserts the y-axis label
+title('mass-in-mass 1D system') % Inserts the title in the plot
+legend('u1','u2')
+grid on
+
 %% Ratio of displacement between masses
 % U1=abs(u1);
 % U2=abs(u2);
@@ -182,7 +191,7 @@ set(graph1,'LineWidth',2);
 %%
 figure
 % hold on
-[pxx,f] = periodogram(result(:,1),[],[],1/dt);
+[pxx,f] = periodogram(u1,[],[],1/dt);
 plot(f/w1,10*log10(pxx),'b')
 grid on
 title('Periodogram PSD of 10 unit cell linear system','FontSize',20)

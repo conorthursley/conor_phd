@@ -4,7 +4,7 @@
 %----------------------
 % variables
 k1=1e5;
-k2=1e4;
+k2=1e7;
 m=1;
 
 alpha=k1/m; %for a single mass value for both masses

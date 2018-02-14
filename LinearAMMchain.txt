@@ -1,5 +1,5 @@
 ! Script to examine the response for a linear mass-spring system
-! Conor MacDonaldJanuary 30, 2018  3:49:54 PM
+! Conor MacDonaldFebruary 05, 2018  7:52:09 AM
 
 FINI
 /clear,all
@@ -30,12 +30,12 @@ R,4,m2
 ! Define the linear spring element
 ET,2,COMBIN14
 KEYOPT,2,3,2
-R,2,k1,1.000000e-03
+R,2,k1,2.000000e-03
 
 ! Define the linear spring element
 ET,3,COMBIN14
 KEYOPT,2,3,2
-R,3,k2,1.000000e-03
+R,3,k2,2.000000e-03
 
 ! Define the mass element
 ET,4,MASS21

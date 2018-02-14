@@ -10,7 +10,7 @@ k2=1.5*k1;
 
 Fsteps=0.25; %Hz 0.25 Hz each up step
 il=10; %interval length
-A=1; %amplitude 
+A=0.16; %amplitude 
 low=10; %low interval
 high=40; %high interval
 %
