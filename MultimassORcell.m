@@ -2,7 +2,7 @@ clear all
 
 
 
-n=3;
+n=1;
 %---------------------------------------------------
 m1=0.1;
 m2=0.5*m1;%kg 
@@ -12,6 +12,19 @@ mr=m2/m1;
 kr=k2/k1;
 w2=sqrt(k2/m2)/(2*pi);
 w1=sqrt(k1/m1)/(2*pi);
+zeta1=0.0002;
+zeta2=0.0002;
+c1=zeta1*2*sqrt(k1/m1);
+c2=zeta2*2*sqrt(k2/m2);
+
+%---------------------------------------------------
+% damping matrix
+C=zeros(n*2);
+C(1,1)=c2+2*c1;
+C(1,2)=-c2;
+C(2,1)=-c2;
+C(2,2)=c2;
+
 %---------------------------------------------------
 % first row, uses the first cell's secondary mass's displacement, y(2)
 %calculate the stiffness using the piecewise function
@@ -85,7 +98,7 @@ disp=zeros(2*n);
 for i=1:length(w_norm)
     B((2*n)-1)=0.1*k1;
 %     B=[0 0.1*k1*sin(1.8)];
-    K_d=K-(w(i)^2)*M;
+    K_d=K-(w(i)^2)*M-(w(i))*C;
 %     displacements
     disp(:,i)=inv(K_d)*B';
       

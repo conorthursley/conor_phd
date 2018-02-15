@@ -3,7 +3,7 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2=1.5*k1;
-c2=0.00;
+c2=0.005;
 c1=c2;
 
 % numerator
@@ -39,25 +39,25 @@ grid on
 set(findall(gcf,'Type','text'),'FontSize',20)
 set(findall(gcf,'Type','axes'),'FontSize',20,'LineWidth',1,'XColor','black','YColor','black')
 %% SS
-[A,B,C,D]=tf2ss(num,den)
-
-Fs = 5;
-dt = 1/Fs;
-N = 50;
-t = dt*(0:N-1);
-
-ux = [1 zeros(1,N-1)];
-u0 = zeros(1,N);
-u = [ux;u0];
-
-x = [0;0;0;0];
-for k = 1:N
-    y(:,k) = C*x + D*u(:,k);
-    x = A*x + B*u(:,k)';
-end
-[b,a] = ss2tf(A,B,C,D);
-G=H(b,a)
-
-bode(G)
+% [A,B,C,D]=tf2ss(num,den)
+% 
+% Fs = 5;
+% dt = 1/Fs;
+% N = 50;
+% t = dt*(0:N-1);
+% 
+% ux = [1 zeros(1,N-1)];
+% u0 = zeros(1,N);
+% u = [ux;u0];
+% 
+% x = [0;0;0;0];
+% for k = 1:N
+%     y(:,k) = C*x + D*u(:,k);
+%     x = A*x + B*u(:,k)';
+% end
+% [b,a] = ss2tf(A,B,C,D);
+% G=H(b,a)
+% 
+% bode(G)
 
 
