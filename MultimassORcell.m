@@ -12,8 +12,8 @@ mr=m2/m1;
 kr=k2/k1;
 w2=sqrt(k2/m2)/(2*pi);
 w1=sqrt(k1/m1)/(2*pi);
-zeta1=0.0002;
-zeta2=0.0002;
+zeta1=0.0000002;
+zeta2=0.0000002;
 c1=zeta1*2*sqrt(k1/m1);
 c2=zeta2*2*sqrt(k2/m2);
 
