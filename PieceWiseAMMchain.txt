@@ -1,0 +1,121 @@
+! Script to examine the response for a nonlinear mass-spring system
+! Conor MacDonaldJanuary 12, 2018  5:46:47 PM
+
+FINI
+/clear,all
+! Start the preprocessor
+/prep7
+
+! Define parameters
+m1=0.100000
+m2=0.500000
+k1=1000.000000
+L=40.000000
+l=20.000000
+n=10.000000 !number of cells
+ival=0.000000
+fval=20.000000
+
+! Define the mass element
+ET,1,MASS21
+KEYOPT,1,3,4
+R,1,m1
+
+! Define the mass element
+ET,4,MASS21
+KEYOPT,1,3,4
+R,4,m2
+
+! Define the linear spring element
+ET,2,COMBIN14
+KEYOPT,2,3,2
+R,2,k1
+
+! Define the spring nonlinear element
+ET,3,COMBIN39
+KEYOPT,2,1,0
+KEYOPT,2,2,0
+KEYOPT,2,3,0
+KEYOPT,2,4,0
+KEYOPT,2,6,0
+KEYOPT,2,3,2
+R,3,-10,-3500,-9,-2860,-8,-2220,
+RMORE,-7,-1580,-6,-940,-5,-300,
+RMORE,-4,-240,-3,-180,-2,-120,
+RMORE,-1,-60,0,0,1,60,
+RMORE,2,120,3,180,4,240,
+RMORE,5,300,6,940,7,1580,
+RMORE,8,2220,9,2860,
+! Define a DO loop using the command
+!*DO, counter, InitialVAL, FinalVAL, INCrement
+
+*DO,II,0,fval,1 ! For I = 0 to 20:
+
+! Define the nodes using the command
+! N, NODE, X, Y, Z, THXY, THYZ, THZX
+
+posx=II*L		! calculate nodal position with spacing, =40
+
+N,II+1,posx,0,0			! define the node
+*ENDDO
+
+! Now that all the nodes are defined
+! One can define the elements that link them together
+
+TYPE,3! Change the element type to 3 (spring element)
+REAL,3! Change to real set 3 for the spring
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,2,20, 2
+
+E,II,II+1
+*ENDDO
+
+TYPE,2! Change the element type to 2 (spring element)
+REAL,2! Change to real set 2 for the spring
+
+E,1,2
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,2,18, 2
+
+E,II,II+2
+*ENDDO
+
+TYPE,1! Change the element type to 1 (mass element)
+REAL,1! Change to real set 1 for the mass
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,2 ,20, 2
+
+E,II
+*ENDDO
+
+TYPE,4! Change the element type to 4 (mass element)
+REAL,4! Change to real set 4 for the mass
+
+!*DO, Par, IVAL, FVAL, INC
+*DO, II,3 ,21, 2
+
+E,II
+*ENDDO
+
+! Constrain the end node, which is numbered 1
+! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6
+! Defines degree-of-freedom constraints at nodes.
+D,1,UX,0
+
+!*
+ANTYPE,4
+!*
+TRNOPT,FULL
+LUMPM,0
+!*
+NSUBST,100000,100000,100000
+OUTRES,ERASE
+OUTRES,NSOL,ALL
+OUTRES,V,ALL
+TIME,10
+
+SAVE
+FINI
