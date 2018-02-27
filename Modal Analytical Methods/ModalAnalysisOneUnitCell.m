@@ -26,36 +26,57 @@ Ug=0.1; % Forcing amplitude
 
 M=[m1 0;0 m2];
 
-K=[2*k1+k2 -k2;-k2 k2];
+K=[k1+k2 -k2;-k2 k2];
 
-C=[2*c1+c2 -c2; -c2 c2];
+C=[c1+c2 -c2; -c2 c2];
 
 %---------------------------
 % Need to create system matrix A to solve for eigvalues
 %---------------------------
-
-% by inspection;
-A=[0 1 0 0; -(2*k1+k2)/m1 2*c1+c2 k2/m1 -c2; 0 0 0 1;k2/m2 c2 -k2/m2 -c2];
+% by inspection with no damping;
+A1=[0 1 0 0; -(k1+k2)/m1 0 k2/m1 0; 0 0 0 1;k2/m2 0 -k2/m2 0];
+% by inspection with damping;
+A2=[0 1 0 0; -(2*k1+k2)/m1 2*c1+c2 k2/m1 -c2; 0 0 0 1;k2/m2 c2 -k2/m2 -c2];
 
 B=[0; k1*Ug; 0;0];
 CC=[1 0 0 0; 0 0 1 0];
 D=[0];
-sys=ss(A,B,CC,D);
+sys=ss(A1,B,CC,D);
 bode(sys)
 % eigenvalues
-[Zm,lambda]=eig(A);
+[Xm,lambda]=eig(A1);
 
-lambda=diag(lambda);
-eigvalues=abs(lambda);
-w1=eigvalues(1);
-w2=eigvalues(3);
+lambdad=diag(lambda);
+[lambdao,index]=sort(abs(imag(lambdad)));
 
+W=zeros(2,1);
+W(1)=lambdao(1);
+W(2)=lambdao(3);
+
+
+%%
 %---------------------------
 % Modal Matrix
 %---------------------------
 % will need to do this for different cases, so write code to determine it
 % pls.
+% for z2 chosen as a reference
+% thus z1/z2 = (k2-w1^2*m2)/k2
+Z1=zeros(1,2);
+Z2=ones(1,2);
+for i=1:2
+    Z1(i)=(k2-W(i)^2*m2)/k2;
+end
+Zm=[Z1;Z2];
+Q=diag(M);
 
+q1=sqrt((Q(1)*(Zm(1,1))^2+Q(2)*(Zm(2,1))^2));
+q2=sqrt((Q(1)*(Zm(1,2))^2+Q(2)*(Zm(2,2))^2));
+Zn1=Zm(:,1)/q1;
+Zn2=Zm(:,2)/q2;
+
+Zn=[Zn1 Zn2];
+%% ----------------------------------------
 % determine mode shapes of each natural frequency
 a1=-m2/k2*w1^2+1;
 a2=-m2/k2*w2^2+1;
