@@ -2,7 +2,7 @@ clear all
 close all
 
 
-n=1;
+n=5;
 %---------------------------------------------------
 m1=0.1;
 m2=0.5*m1;%kg 
@@ -22,28 +22,28 @@ K(1,2)=-k2;
 K(2,1)=-k2;
 K(2,2)=k2;
 % %---------------------------------------------------
-% % last 2x2 diagonal, uses the last cell's secondary mass, y(end)
-% % populate
-% q=2*n;
-% K(q,q)=k2;
-% K(q-1,q-1)=k2+k1;
-% K(q-1,q)=-k2;
-% K(q,q-1)=-k2;
-% K(q-1,q-2)=-k1;
-% K(q-2,q-1)=-k1;
+% last 2x2 diagonal, uses the last cell's secondary mass, y(end)
+% populate
+q=2*n;
+K(q,q)=k2;
+K(q-1,q-1)=k2+k1;
+K(q-1,q)=-k2;
+K(q,q-1)=-k2;
+K(q-1,q-2)=-k1;
+K(q-2,q-1)=-k1;
 %---------------------------------------------------
 % Iteration of remainder of cell, ignoring the first row and last diagonal
-% for i=2:((2*n)-2)
-%     if mod(i,2)==1  % odd number and therefore a primary mass
-%         K(i,i)=k2+(k1);
-%         K(i,i-1)=-k1;
-%         K(i-1,i)=-k1;
-%     elseif mod(i,2)==0 % even number and therefore a secondary mass
-%         K(i,i)=k2+k1;
-%         K(i,i-1)=-k2;
-%         K(i-1,i)=-k2
-%     end
-% end
+for i=2:((2*n)-2)
+    if mod(i,2)==1  % odd number and therefore a primary mass
+        K(i,i)=k2+(k1);
+        K(i,i-1)=-k1;
+        K(i-1,i)=-k1;
+    elseif mod(i,2)==0 % even number and therefore a secondary mass
+        K(i,i)=k2+k1;
+        K(i,i-1)=-k2;
+        K(i-1,i)=-k2;
+    end
+end
 % K=[9 -3;-3 3];
 %---------------------------------------------------
 % Mass matrix
@@ -71,8 +71,8 @@ w_norm=w;
 disp=zeros(2*n);
 
 for i=1:length(w_norm)
-%     B((2*n)-1)=1;
-    B=[0 0.1*k1*sin(1.8)];
+    B((2*n)-1)=1;
+%     B=[0 0.1*k1*sin(5)];
     K_d=K-(w(i)^2)*M;
 %     displacements
     disp(:,i)=inv(K_d)*B';
@@ -87,7 +87,7 @@ figure
 plot(w_norm/(w2*2*pi),(disp(1,:)),'b-',w_norm/(w2*2*pi),(disp(2,:)),'r-')
 % axis([0 5 -20 20])
 grid on
-str = sprintf('Natural scale frequency response function for a %d mass-spring undamped system with m_1=%d, k_1=%d, m_2=%d, and k_2=%d', n*2,m1,k1,m2,k2);
+str = sprintf('Natural scale frequency response function for a %d AMM unit cell system with m_1=%d, k_1=%d, m_2=%d, and k_2=%d', n,m1,k1,m2,k2);
 title(str,'FontSize',14)
 xlabel('Excitation frequency, \Omega','FontSize',14)
 ylabel('Magnitude','FontSize',14)

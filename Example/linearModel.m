@@ -3,7 +3,7 @@
 clear all
 close all
 % Time specification
-t = 0:0.01:100;
+t = 0:0.01:10;
 
 % Initial conditions
 y=[0;0;0;0];
@@ -64,3 +64,18 @@ ylabel('|P1(f)|')
 
 %% Impulse Reaction Plot
 % displacement over time [0-0.1]s
+function [dA] = sys(t,y)
+m1=0.1;
+m2=0.05;
+x1=y(1);
+x2=y(2);
+y1=y(3);
+y2=y(4);
+dy1=x2;
+dy2=x1/m1-y1/m1;
+dy3=y2;
+dy4=x1/m2-y1/m1;
+dy=[dy1;dy2;dy3;dy4];
+B=[0 0.1*sin(5*2*pi*t) 0 0];
+dA=dy+B';
+end

@@ -10,7 +10,7 @@ tic
 %---------------------------------------------------
 % Time specification
 tstart = 0;
-tfinal = 100;
+tfinal = 10;
 tout = tstart;
 %---------------------------------------------------
 
@@ -32,22 +32,22 @@ ieout = [];
 %% *******************Parameters**********************
 k1=1000; %N/m
 m1=0.1; %kg
-k2=320;
+k2=1500;
 k2NL=0;
 m2=0.5*m1;
 w1=sqrt(k1/m1)/(2*pi);
 w2=sqrt(k2/m2)/(2*pi);
 %---------------------------------------------------
 %% *******************Input Signal**********************
-
-bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
-bandpass1=csvread(bandpassFile);
-Values=bandpass1(:,2);
-Points=10*bandpass1(:,1);
+input=[0.1 5];
+% bandpassFile='U:\_PhD\APDL\Validation\DuffingValDec17\HigherAmp.csv';
+% bandpass1=csvread(bandpassFile);
+% Values=bandpass1(:,2);
+% Points=10*bandpass1(:,1);
 %---------------------------------------------------
 % using an interpolated function for the ode solver to read in the ode
 % function
-input=griddedInterpolant(Points,Values,'linear');
+% input=griddedInterpolant(Points,Values,'linear');
 % plot(Points,Values)
 %---------------------------------------------------
 %% *******************Spring Function**********************

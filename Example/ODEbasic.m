@@ -1,7 +1,7 @@
 %% ODE computation of single mass spring system - BASIC
 
 
-tspan = [0 1000];
+tspan = [0 10];
 y0=[0,0];
 
 [t,y]=ode45(@fun, tspan, y0);

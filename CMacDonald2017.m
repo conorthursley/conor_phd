@@ -11,14 +11,14 @@ tspan = [0 10];
 % displacement for m1 is 1e-3 from the fixed wall (L spacing)
 % displacement for m2 is 1E-3 from the wall (5e-4 away from m1, within)
 % y=[u1;v1;u2;v2]
-<<<<<<< HEAD
+% <<<<<<< HEAD
 y=[1e-3;0;1e-3;0];
 opts = odeset('RelTol',1e-5,'AbsTol',1e-7);
 % System simulation
 % [t, y] = ode45(@sys, t, y1);
 [t, result] = ode15s(@sys1, tspan, y, opts);
 toc
-=======
+% =======
 % y=[1e-3;0;1e-3;0];
 y=[0 0 0 0];
 %---------------------------------------------------
@@ -34,7 +34,7 @@ w2=sqrt(k2/m2)/(2*pi);
 % expressed in Hz and then converted to rad/s in the function
 input =[0.1 40]; %amp and freq, Hz, 
 % LM 1 = 10.3753 LM 2 = 19.5283
->>>>>>> master
+% >>>>>>> master
 
 
 opts = odeset('RelTol',1e-10,'AbsTol',1e-10, 'OutputFcn',@odeplot); %, 'Mass', mass, 'Events', @events);
