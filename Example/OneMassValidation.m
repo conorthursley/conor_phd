@@ -39,7 +39,8 @@ w_norm=w/w1;
 disp=zeros(n);
 
 for i=1:length(w_norm)
-    K_d=K-(w(i)^2)*M-w(i)*C;
+    K_d=K-(w(i)^2)*M-w(i);
+    B=[1*sin(w(i)*i)];
     %     displacements
     disp(:,i)=inv(K_d)*B';
       

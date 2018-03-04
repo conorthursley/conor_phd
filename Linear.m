@@ -20,7 +20,7 @@ func=input(1)*sin(input(2)*t);
 
 % Define A matrix
 A=[x2; ...
-    x1*((k1+k2)/m1)-y1*((k2/m1)); ...
+    1+x1*((k1+k2)/m1)-y1*((k2/m1)); ...
     y2; ...
     -((k2/m2)*x1)+((k2/m2)*y1)];
 
@@ -34,11 +34,11 @@ H=input(2)*sin(input(1));
 % 
 % % random noise
 % R=input(1)*randn(size(t));
-B = [0 H/m1 0 0];
+% B = [0 1 0 0];
 
 
 %output result as the equation 
-dy=A+B';
+dy=A;
 % dy=A*y;
 
 end

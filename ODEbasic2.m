@@ -3,10 +3,10 @@ clear all
 
 tspan = [0 100];
 y0=zeros(4,1);
-broadband=wgn(1000000,1,0);
+% broadband=wgn(1000000,1,0);
 
 
-[t,y]=ode23(@fun, tspan, y0);
+[t,y]=ode23s(@fun, tspan, y0);
 
 a=1;
 
