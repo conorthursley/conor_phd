@@ -49,14 +49,15 @@ ylabel('Displacement (dB re 1m)');
 title('PSD of Displacement of Mass');
 %% Amplitude and resonance 
 Xamp=zeros(length(omega),2)';
-Wn=zeros(length(omega),2)';
+Wn=zeros(length(omega),1)';
 for jj=1:length(omega)
-    Wn(:,jj)=[omega(jj);omega(jj)];
+    Wn(jj)=[omega(jj)]; %omega(jj)];
     [amp]=forced_vibration(K,M,f,Wn(jj));
-    Xamp(:,jj)=amp;
+    
+    Xamp(jj)=amp;
 end
 figure
-plot(omega,abs(Xamp))
+plot(omega,(Xamp))
 %% TF estimate
 % takes in input and output signal
 % bandpass filter input signal
@@ -129,7 +130,11 @@ function X = forced_vibration(K,M,f,omega)
 % omega is the forcing frequency, in radians/sec.
 % The function computes a vector X, giving the amplitude of
 % each degree of freedom
-%
-X = (K-M*omega^2)\f;
+h=eig(K,M);
+s=h/(2*pi);
+r=(omega./s(2));
+% X = (K-M*omega^2)\f;
+X = 1/sqrt((1-(r).^2).^2+(2*0.000002*r).^2);
+
 
 end

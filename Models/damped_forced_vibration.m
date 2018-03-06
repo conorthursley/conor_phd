@@ -11,7 +11,7 @@ function [amp,phase] = damped_forced_vibration(D,M,f,omega)
 % which gives the phase of each degree of freedom
 %
 
-Y0 = (D+M.*sqrt(-1)*omega)\f;  % The i here is sqrt(-1)
+Y0 = (D+M.*1i*omega)\f;  % The i here is sqrt(-1)
 % We dont need to calculate Y0bar - we can just change the sign of
 % the imaginary part of Y0 using the 'conj' command
 for j =1:length(f)/2

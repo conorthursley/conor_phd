@@ -8,10 +8,10 @@
 % Parameters
 %---------------------------
 
-k1=1000;
-k2=1.5*k1;
-m1=0.1;
-m2=0.5*m1;
+k1=10;
+k2=2;
+m1=1;
+m2=4;
 %---------------------------
 cr1=2*sqrt(k1*m1);
 cr2=2*sqrt(k2*m2);
@@ -26,7 +26,7 @@ Ug=0.1; % Forcing amplitude
 
 M=[m1 0;0 m2];
 
-K=[k1+k2 -k2;-k2 k2];
+K=[k1+k2 -k2;-k2 k2+k1];
 
 C=[c1+c2 -c2; -c2 c2];
 
@@ -34,7 +34,7 @@ C=[c1+c2 -c2; -c2 c2];
 % Need to create system matrix A to solve for eigvalues
 %---------------------------
 % by inspection with no damping;
-A1=[0 1 0 0; -(k1+k2)/m1 0 k2/m1 0; 0 0 0 1;k2/m2 0 -k2/m2 0];
+A1=[0 1 0 0; -(k1+k2)/m1 0 k2/m1 0; 0 0 0 1;k2/m2 0 -(k2+k1)/m2 0];
 % by inspection with damping;
 A2=[0 1 0 0; -(2*k1+k2)/m1 2*c1+c2 k2/m1 -c2; 0 0 0 1;k2/m2 c2 -k2/m2 -c2];
 
@@ -52,7 +52,8 @@ lambdad=diag(lambda);
 W=zeros(2,1);
 W(1)=lambdao(1);
 W(2)=lambdao(3);
-
+w1=W(1);
+w2=W(2);
 
 %%
 %---------------------------
@@ -65,7 +66,7 @@ W(2)=lambdao(3);
 Z1=zeros(1,2);
 Z2=ones(1,2);
 for i=1:2
-    Z1(i)=(k2-W(i)^2*m2)/k2;
+    Z1(i)=((k1+k2)-W(i)^2*m2)/k2;
 end
 Zm=[Z1;Z2];
 Q=diag(M);
