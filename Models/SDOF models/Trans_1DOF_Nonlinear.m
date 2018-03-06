@@ -6,12 +6,13 @@ dt=1/fs;        % [s] delta t
 t=0:dt:500;      % [s] time scale
 tic
 %% Initial conditions: x(0) = 0, x'(0)=0 
-initial_x    = 0;
-initial_dxdt = 0;
+initial_x    = 3;
+initial_dxdt = 4;
 
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
-[t,x]=ode45(@(t,y) rhs(t,y), t, [initial_x initial_dxdt],options );
+[t,x]=ode45(@(t,y) rhs(t,y), t, [initial_x initial_dxdt],options);
+[t1,x1]=ode45(@(t,y) rhs(t,y), t, [initial_x+0.1 initial_dxdt+0.1],options);
 toc
 %% Import comparison 
 M='U:\_PhD\Datathief\SDOF_nonlinear_ThompsonStewartNonlinearDyn\SDOF_phase_tilt.csv';
@@ -20,7 +21,7 @@ M1='U:\_PhD\Datathief\SDOF_nonlinear_ThompsonStewartNonlinearDyn\SDOF_nonlinear_
 data1=csvread(M1,1,0);
 %% Plot the results
 figure
-plot1=plot(t,x(:,1)); %,data1(:,1),data1(:,2)); %,data(:,1),data(:,2),'g');
+plot1=plot(t,x(:,1),t1,x1(:,1)); %,data1(:,1),data1(:,2)); %,data(:,1),data(:,2),'g');
 set(plot1,'LineWidth',2)
 xlabel('t'); ylabel('x');
 title('Time Series')
@@ -29,7 +30,7 @@ legend 'ODE45' 'DataThief'
 set(gca,'fontsize',20) 
 
 figure
-plot2=plot(x(:,1),x(:,2),data(:,1),data(:,2));
+plot2=plot(x(:,1),x(:,2),data(:,1),data(:,2),x1(:,1),x1(:,2));
 set(plot2,'LineWidth',2)
 xlabel('t'); ylabel('x');
 title('Phase potrait')
@@ -54,6 +55,27 @@ Fs=1/(dt);
 n=length(t); %length of signal = number of samples
 m=pow2(nextpow2(n));  %transform length
 dft1=fft(x(:,1),m); % DFT of signal
+fr = (0:m-1)*(Fs/m);
+fourier = abs(dft1); 
+f=Fs*(0:(n/2))/n;
+freq1=fr(1:floor(m/2));
+P1=fourier(1:floor(m/2));
+plot(freq1,P1)
+% plot(flop,abs(y),'LineWidth',2)
+title('FFT')
+grid on
+xlabel('Frequency,  (Hz)')
+ylabel('|P1(f)|')
+set(gca,'fontsize',20)
+hold on
+% plot of different initial conditions of the same system 
+dt=abs(mean(diff(t)));  %average time step done 
+Fs=1/(dt);
+% y = fft(ansys_amp_1);  
+% flop = (0:length(y)-1)*Fs/length(y);
+n=length(t); %length of signal = number of samples
+m=pow2(nextpow2(n));  %transform length
+dft1=fft(x1(:,1),m); % DFT of signal
 fr = (0:m-1)*(Fs/m);
 fourier = abs(dft1); 
 f=Fs*(0:(n/2))/n;
