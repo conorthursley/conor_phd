@@ -18,7 +18,7 @@ theta=m2/m1;
 
 %% File read from APDL simulation (numerical)
 
-file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans293.csv';
+file = 'U:\_PhD\APDL\Validation\DuffingValDec17\DuffOneUnitTrans224.csv';
 M=csvread(file,1,0); %start reading from row 1, column 1
 cue=0;
 lenSig=1:length(M)-cue; %1:length(M)
@@ -393,10 +393,10 @@ T4=(k1)./(k1*(2-T5)-meff.*A.^2);
 T3=(k1)./(k1*(2-T4)-meff.*A.^2);
 T2=(k1)./(k1*(2-T3)-meff.*A.^2);
 T1=(k1)./(k1*(2-T2)-meff.*A.^2);
-% figure
+figure
 Tall=T7+T6+T5+T4+T3+T2+T1;
-% semilogy(B,abs(Tall))
-% grid
+semilogy(B,abs(Tall))
+grid
 
 %% Graph 3 plots together (dispersion relation, theoretical transmittance,
 % numerical transmittance)

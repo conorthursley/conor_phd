@@ -1,6 +1,6 @@
 %% Analytical Code for AMM model
 
-n=2; % number of metamaterial units in the chain
+n=7; % number of metamaterial units in the chain
 
 %% Parameters for AMM unit cell
 % parameters should be passed through ODE45 to avoid reptitive changing of
@@ -60,7 +60,7 @@ end
 %% Plots
 % vibraiton amplitude - note: NOT TRANSMITTANCE 
 figure
-plot1=loglog(omega_axis,X);
+plot1=loglog(omega_axis,X(1,:),omega_axis,X((n-1),:));
 title('Amplitude Response')
 grid on
 xlabel('Frequency,  (Hz)')
@@ -68,6 +68,17 @@ ylabel('Amp')
 set(plot1,'LineWidth',1.5)
 legend 'Outer mass' 'Inner mass'
 set(gca,'fontsize',20)
+
+% Transmission
+
+U=X((2*n-1),:)./(X(1,:));
+
+figure
+plot2=plot(omega_axis/w2, 20*log(U));
+title('Transmission')
+grid on
+xlabel('Frequency ratio, (Hz)')
+ylabel('Transmission')
 
 %% Dispersion Diagram
 figure

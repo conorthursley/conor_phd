@@ -3,7 +3,7 @@ clear all
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:50000;      % [s] time scale
+t=0:dt:50;      % [s] time scale
 tic
 %% Initial conditions: x(0) = 0, x'(0)=0 
 initial_x    = 3;

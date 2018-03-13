@@ -2,7 +2,7 @@
 function [K] = spring_matrix(n,k1,k2)
 
 K=zeros(n*2);
-K(1,1)=k2+(k1);
+K(1,1)=k2+(2*k1);
 K(1,2)=-k2;
 K(2,1)=-k2;
 K(2,2)=k2;
