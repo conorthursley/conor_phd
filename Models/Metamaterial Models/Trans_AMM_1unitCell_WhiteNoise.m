@@ -3,14 +3,14 @@ clear all
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:60;      % [s] time scale
+t=0:dt:1000;      % [s] time scale
 
 mass1=101.10e-3;		% [kg]
 mass2=46.47e-3;
 stiff1=117;    % [N/m]
 stiff2=74;
 w2=sqrt(stiff2/mass2)/(2*pi);
-
+tic
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
 initial_x    = 0e-3;
 initial_dxdt = 0;
@@ -18,14 +18,31 @@ initial_y    = 0e-3;
 initial_dydt = 0;
 
 z=[initial_x initial_dxdt initial_y initial_dydt];
+%% Whitenoise signal generation
+whitenoise = -1 + (2).*rand(length(t),1);
+
+figure
+plot(t, whitenoise)
+%%------Use lowpass signal filter
+WN=doFilter(whitenoise);
+plot(t,WN)
+%----- time parameter to pass to ODE solver to interp in ODE function
+tpsi=t;
+%--- Gridded interpolant to pass into the ODE
+S=griddedInterpolant(t,WN);
+%------------------
+fs_white=1000;
+FFTsize=1024;
+[P_LP50Hz_force,Freq_LP50Hz_force]=pwelch(WN,hanning(FFTsize),[],FFTsize,fs_white);
+%------- Plot filtered signal
+figure
+plot(Freq_LP50Hz_force,10*log10(abs(P_LP50Hz_force)))
+
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
-[t,x]=ode45(@rhs, t, z, options);
-%% Import comparison 
-% M='U:\_PhD\Datathief\MDOF_freeResponse-InmanEngVib\figure12_mode1.csv';
-% data=csvread(M,1,0);
-% N='U:\_PhD\Datathief\MDOF_freeResponse-InmanEngVib\figure12_mode2.csv';
-% data1=csvread(N,1,0);
+[t,x]=ode45(@(t,z) rhs(t,z,S),t,z,options);
+toc
+
 %% Plot the results
 % Plot the time series
 figure
@@ -86,18 +103,6 @@ xlabel('Frequency,  (Hz)')
 ylabel('|P1(f)|')
 set(gca,'fontsize',20)
 
-%% Amplitude and resonance 
-% Xamp=zeros(length(omega),2)';
-% Wn=zeros(length(omega),1)';
-% for jj=1:length(omega)
-%     Wn(jj)=[omega(jj)]; %omega(jj)];
-%     [amp]=forced_vibration(K,M,f,Wn(jj));
-%     
-%     Xamp(jj)=amp;
-% end
-% figure
-% plot(omega,(Xamp))
-
 %% Transmission
 % U=Xn/X1
 U=abs(x(:,3))./abs(x(:,1));
@@ -110,13 +115,13 @@ periodogram(x(:,3))
 % bandpass filter input signal
 wind = kaiser(length(x(:,1)),35);
 w=5;
-signal=1*sin(2*pi*w*t);
+signal=WN;
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
 [txy,frequencies]=tfestimate(signal,x(:,1),[],[],[],1/(dt));
 % plot
 figure
 % hold on
-graph=plot(frequencies,(20*log10(abs(txy))),'r');
+graph=plot(frequencies/w2,(20*log10(abs(txy))),'r');
 % axis([0 12 -Inf Inf])
 grid on
 % title('Transfer function of metamaterial configurations','FontSize',14)
@@ -124,7 +129,7 @@ xlabel('Frequency, \omega','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',14)
 % axis([0 10 -Inf 0])
-legend({'linear AMM','noise insulation panel','nonlinear case 1'},'FontSize',14)
+legend({'linear AMM'},'FontSize',14)
 set(graph,'LineWidth',1.5);
 %% semilog txy
 figure
@@ -135,28 +140,28 @@ grid on
 xlabel('Normalised frequency, \omega/\omega_0','FontSize',14)
 ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',20)
-legend({'linear AMM numerical result','nonlinear case 1 AMM numerical result','phononic crystal numerical result','nonlinear case 2 AMM numerical result'})
+legend({'linear AMM numerical result'})
 set(graph1,'LineWidth',2);
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
-function dxdt=rhs(t,x)
+function dxdt=rhs(t,x,S)
         mass1=101.10e-3;		% [kg]
         mass2=46.47e-3;
         stiff1=117;    % [N/m]
         stiff2=74;
-
+        signal=S(t);
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
-        w=5; % Hz, forcing frequency 
+        
      
         %---------------------------------------
         % first unit cell
         % first mass
         dxdt_1 = x(2);
-        dxdt_2 = -((damp1+damp2)/mass1)*x(2)- ((stiff1+stiff2)/mass1)*x(1) +(stiff2/mass1)*x(3)+(damp2/mass1)*x(4)...
-          +(f/mass1)*sin(2*pi*w*t);
+        dxdt_2 = -((2*damp1+damp2)/mass1)*x(2)- ((2*stiff1+stiff2)/mass1)*x(1) +(stiff2/mass1)*x(3)+(damp2/mass1)*x(4)...
+          +(f/mass1)*signal;
         % second mass
         dydt_1= x(4);
         dydt_2= -(stiff2/mass2)*x(3) - (damp2/mass2)*x(4) + (stiff2/mass2)*x(1) + (damp2/mass2)*x(2);
@@ -164,22 +169,4 @@ function dxdt=rhs(t,x)
                 
         % final solution 
         dxdt=[dxdt_1; dxdt_2; dydt_1; dydt_2];
-end
-%% forced vibration 
-function X = forced_vibration(K,M,f,omega)
-% Function to calculate steady state amplitude of
-% a forced linear system.
-% K is nxn the stiffness matrix
-% M is the nxn mass matrix
-% f is the n dimensional force vector
-% omega is the forcing frequency, in radians/sec.
-% The function computes a vector X, giving the amplitude of
-% each degree of freedom
-h=eig(K,M);
-s=h/(2*pi);
-r=(omega./s(2));
-% X = (K-M*omega^2)\f;
-X = 1/sqrt((1-(r).^2).^2+(2*0.000002*r).^2);
-
-
 end

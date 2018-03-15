@@ -1,6 +1,6 @@
 %% Analytical Code for AMM model
 
-n=7; % number of metamaterial units in the chain
+n=1; % number of metamaterial units in the chain
 
 %% Parameters for AMM unit cell
 % parameters should be passed through ODE45 to avoid reptitive changing of
@@ -11,21 +11,29 @@ stiff1=117;    % [N/m]
 stiff2=74;
 damp1=0.0002;     % [Ns/m] keep as a small number to fix solver errors
 damp2=0.0002;
-w=27*2*pi; % driving frequency
+w=10*2*pi; % driving frequency
 
 omega_axis=logspace(-1,3,4000);
 
 %% Ratio parameters
-theta=mass2/mass1;  % mass ratio 
+theta=0.5;  % mass ratio 
+%---------------------------------------
 w1=sqrt(stiff1/mass1);
 w2=sqrt(stiff2/mass2);
+%---------------------------------------
 % exctiation frequency 
 w=linspace(0,200,2000);
+%---------------------------------------
+meff=mass1+((mass2*w2^2)./(w2^2-w.^2)); % M_effective - effective mass ratio 
 eta_r=w/w2;       %ratio of excitation frequency to mass2 frequency 
 % this value will be the independent varaible for the bandgap diagram
 eta_s=w2/w1;        % structural frequency ratio
-
+%---------------------------------------
 Qa=acos(1-(((1-eta_r.^2+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
+qa=2*asin(sqrt((meff.*w)/(4*stiff1)));
+qL=acos(1-(meff.*w.^2/(2*stiff1)));
+qL(isnan(qL))=0;
+
 %% Matrices of parameters
 %---------------------------------------------------
 % mass matrix
@@ -60,7 +68,7 @@ end
 %% Plots
 % vibraiton amplitude - note: NOT TRANSMITTANCE 
 figure
-plot1=loglog(omega_axis,X(1,:),omega_axis,X((n-1),:));
+plot1=loglog(omega_axis,X(2*n,:),omega_axis,X(1,:));
 title('Amplitude Response')
 grid on
 xlabel('Frequency,  (Hz)')
@@ -71,7 +79,7 @@ set(gca,'fontsize',20)
 
 % Transmission
 
-U=X((2*n-1),:)./(X(1,:));
+U=X((2*n),:)./(X(1,:));
 
 figure
 plot2=plot(omega_axis/w2, 20*log(U));
@@ -82,7 +90,9 @@ ylabel('Transmission')
 
 %% Dispersion Diagram
 figure
-plot(w/w2,real(Qa)/pi,w/w2,abs(imag(Qa)/(pi)))
+% plot(w/w2,real(Qa)/pi,w/w2,abs(imag(Qa)/(pi))); hold on
+plot(real(qL)/pi,eta_r)
+
 
 
 %% Forced Vibraiton Amplitude function 

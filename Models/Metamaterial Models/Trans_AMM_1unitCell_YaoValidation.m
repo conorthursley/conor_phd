@@ -3,7 +3,7 @@ clear all
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:60;      % [s] time scale
+t=0:dt:600;      % [s] time scale
 
 mass1=101.10e-3;		% [kg]
 mass2=46.47e-3;
@@ -45,24 +45,43 @@ xlabel('Frequency (Hz)');
 ylabel('Displacement (dB re 1m)');
 title('PSD of Displacement of Mass');
 %% Normalised Displacement to mass 1
-
+% extract end of time series, when transient signals have disappeared
+% I want the last 0.8 seconds of the series to match Yao's displacment
+t_find=1.9;
+p=find(t==(t(end)-t_find));
+% new time vector
+newt=598119:598919;
 % max value of m1 to normalise
-max_m1=max(x(:,1));
+max_m1=max(x(newt,1));
 
-m1_x=x(:,1);
-m2_x=x(:,3);
+m1_x=x(newt,1);
+m2_x=x(newt,3);
 % normalise both 
 m1_nx=m1_x./max_m1;
 m2_nx=m2_x./max_m1;
-
+% Ok, have got the right displacements, now to create new time vector from
+% 0:0.8 in steps of dt
+newTime=0:dt:0.8;
+% Import comparison
+M='U:\_PhD\Datathief\Experimental_displacement_Yao\experimental_values_mass1.csv';
+data=csvread(M,1,0);
+N='U:\_PhD\Datathief\Experimental_displacement_Yao\experimental_values_mass2.csv';
+data1=csvread(N,1,0);
+M1='U:\_PhD\Datathief\Experimental_displacement_Yao\theoretical_values_mass1.csv';
+data2=csvread(M1,1,0);
+M2='U:\_PhD\Datathief\Experimental_displacement_Yao\theoretical_values_mass2.csv';
+data3=csvread(M2,1,0);
 % figure
 figure
-plot1=plot(t,(m1_nx),'b',t,(m2_nx),'r');
-set(plot1,'LineWidth',2)
-xlabel('t'); ylabel('Normalised displacemtn, x');
+plot1=plot(newTime,(m1_nx),'b',newTime,(m2_nx),'r'); hold on
+plot2=plot(data(:,1),data(:,2),'g',data1(:,1),data1(:,2),'c');
+plot3=plot(data2(:,1),data2(:,2),'k:',data3(:,1),data3(:,2),'k--');
+plotx=[plot1 plot2 plot3];
+set(plotx,'LineWidth',2)
+xlabel('t'); ylabel('x');
 title('Time Series')
 grid on
-legend 'ODE45 mass1' 'ODE45 mass2' 
+legend 'ODE45 mass1' 'ODE45 mass2' 'Yao Experimental mass1' 'Yao Experimental mass2' 'Yao Theoretical mass1' 'Yao Theoretical mass2'
 set(gca,'fontsize',20) 
 %% FFT
 figure
@@ -108,15 +127,14 @@ periodogram(x(:,3))
 %% TF estimate
 % takes in input and output signal
 % bandpass filter input signal
-wind = kaiser(length(x(:,1)),35);
-w=5;
-signal=1*sin(2*pi*w*t);
+wind = kaiser(length(x(:,3)),105);
+signal=x(:,1);
 % [txy,frequencies]=tfestimate(bandpass(:,2),ansys_amp_1,[],[],[],500);
-[txy,frequencies]=tfestimate(signal,x(:,1),[],[],[],1/(dt));
+[txy,frequencies]=tfestimate(signal,x(:,3),wind,[],[],1/(dt));
 % plot
 figure
 % hold on
-graph=plot(frequencies,(20*log10(abs(txy))),'r');
+graph=plot(frequencies/w2,(20*log10(abs(txy))),'r');
 % axis([0 12 -Inf Inf])
 grid on
 % title('Transfer function of metamaterial configurations','FontSize',14)
@@ -149,7 +167,7 @@ function dxdt=rhs(t,x)
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
-        w=5; % Hz, forcing frequency 
+        w=7.57; % Hz, forcing frequency 
      
         %---------------------------------------
         % first unit cell

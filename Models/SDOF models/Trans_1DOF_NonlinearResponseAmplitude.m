@@ -3,7 +3,7 @@ clear all
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:100;      % [s] time scale
+t=0:dt:50;      % [s] time scale
 tic
 %% Initial conditions: x(0) = 0, x'(0)=0 
 initial_x    = 0;
@@ -16,13 +16,13 @@ vec_rev=vec;
 options=odeset('InitialStep',dt,'MaxStep',dt);
 parfor i =1:length(w)
     w_f=w(i);
-    t=0:dt:100;
+    t=0:dt:50;
     [t,x]=ode45(@(t,y) rhs(t,y,w_f), t, [initial_x initial_dxdt],options );
-    rms=sqrt(mean(x(:,1).^2));
+    rms=max(abs(x((t(end-10000):t(end)),1)));
     vec(i)=rms;
     w_f=w_rev(i);
     [t,x]=ode45(@(t,y) rhs(t,y,w_f), t, [initial_x initial_dxdt],options );
-    rms=sqrt(mean(x(:,1).^2));
+    rms=max(abs(x((t(end-10000):t(end)),1)));
     vec_rev(i)=rms;
 end
 
