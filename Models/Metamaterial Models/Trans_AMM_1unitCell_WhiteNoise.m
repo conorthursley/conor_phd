@@ -3,12 +3,12 @@ clear all
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:1000;      % [s] time scale
+t=0:dt:10000;      % [s] time scale
 
-mass1=101.10e-3;		% [kg]
-mass2=46.47e-3;
-stiff1=117;    % [N/m]
-stiff2=74;
+mass1=0.1;		% [kg]
+mass2=mass1*0.5;
+stiff1=1000;    % [N/m]
+stiff2=1.5*stiff1;
 w2=sqrt(stiff2/mass2)/(2*pi);
 tic
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
@@ -121,7 +121,7 @@ signal=WN;
 % plot
 figure
 % hold on
-graph=plot(frequencies/w2,(20*log10(abs(txy))),'r');
+graph=plot(frequencies,(20*log10(abs(txy))),'r');
 % axis([0 12 -Inf Inf])
 grid on
 % title('Transfer function of metamaterial configurations','FontSize',14)
@@ -146,10 +146,10 @@ set(graph1,'LineWidth',2);
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
 function dxdt=rhs(t,x,S)
-        mass1=101.10e-3;		% [kg]
-        mass2=46.47e-3;
-        stiff1=117;    % [N/m]
-        stiff2=74;
+        mass1=0.1;		% [kg]
+        mass2=mass1*0.5;
+        stiff1=1000;    % [N/m]
+        stiff2=1.5*stiff1;
         signal=S(t);
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;

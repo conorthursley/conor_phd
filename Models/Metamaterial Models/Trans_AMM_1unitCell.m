@@ -5,10 +5,10 @@ fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
 t=0:dt:60;      % [s] time scale
 
-mass1=101.10e-3;		% [kg]
-mass2=46.47e-3;
-stiff1=117;    % [N/m]
-stiff2=74;
+mass1=0.1;		% [kg]
+mass2=mass1*0.5;
+stiff1=1000;    % [N/m]
+stiff2=1.5*stiff1;
 w2=sqrt(stiff2/mass2)/(2*pi);
 
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
@@ -141,11 +141,10 @@ set(graph1,'LineWidth',2);
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
 function dxdt=rhs(t,x)
-        mass1=101.10e-3;		% [kg]
-        mass2=46.47e-3;
-        stiff1=117;    % [N/m]
-        stiff2=74;
-
+        mass1=0.1;		% [kg]
+        mass2=mass1*0.5;
+        stiff1=1000;    % [N/m]
+        stiff2=1.5*stiff1;
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
@@ -155,7 +154,7 @@ function dxdt=rhs(t,x)
         % first unit cell
         % first mass
         dxdt_1 = x(2);
-        dxdt_2 = -((damp1+damp2)/mass1)*x(2)- ((stiff1+stiff2)/mass1)*x(1) +(stiff2/mass1)*x(3)+(damp2/mass1)*x(4)...
+        dxdt_2 = -((2*damp1+damp2)/mass1)*x(2)- ((2*stiff1+stiff2)/mass1)*x(1) +(stiff2/mass1)*x(3)+(damp2/mass1)*x(4)...
           +(f/mass1)*sin(2*pi*w*t);
         % second mass
         dydt_1= x(4);

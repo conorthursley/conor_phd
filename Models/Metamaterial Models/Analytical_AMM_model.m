@@ -5,34 +5,35 @@ n=1; % number of metamaterial units in the chain
 %% Parameters for AMM unit cell
 % parameters should be passed through ODE45 to avoid reptitive changing of
 % inputs
-mass1=101.1e-3;		% [kg]
-mass2=46.47e-3;
-stiff1=117;    % [N/m]
-stiff2=74;
-damp1=0.0002;     % [Ns/m] keep as a small number to fix solver errors
-damp2=0.0002;
+mass1=0.1;		% [kg]
+mass2=mass1*0.5;
+stiff1=1000;    % [N/m]
+stiff2=1.5*stiff1;
+damp1=0.02;     % [Ns/m] keep as a small number to fix solver errors
+damp2=1*damp1;
 w=10*2*pi; % driving frequency
 
 omega_axis=logspace(-1,3,4000);
 
 %% Ratio parameters
-theta=0.5;  % mass ratio 
-%---------------------------------------
-w1=sqrt(stiff1/mass1);
-w2=sqrt(stiff2/mass2);
-%---------------------------------------
-% exctiation frequency 
-w=linspace(0,200,2000);
-%---------------------------------------
-meff=mass1+((mass2*w2^2)./(w2^2-w.^2)); % M_effective - effective mass ratio 
-eta_r=w/w2;       %ratio of excitation frequency to mass2 frequency 
-% this value will be the independent varaible for the bandgap diagram
-eta_s=w2/w1;        % structural frequency ratio
-%---------------------------------------
-Qa=acos(1-(((1-eta_r.^2+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
-qa=2*asin(sqrt((meff.*w)/(4*stiff1)));
-qL=acos(1-(meff.*w.^2/(2*stiff1)));
-qL(isnan(qL))=0;
+% theta=1;  % mass ratio 
+% mass1=theta*mass2;
+% %---------------------------------------
+% w2=sqrt(stiff2/mass2);
+% w1=1*w2;
+% %---------------------------------------
+% % exctiation frequency 
+% w=linspace(0,200,20000);
+% %---------------------------------------
+% meff=mass1+((mass2*w2^2)./(w2^2-w.^2)); % M_effective - effective mass ratio 
+% eta_r=w/w2;       %ratio of excitation frequency to mass2 frequency 
+% % this value will be the independent varaible for the bandgap diagram
+% eta_s=0.5;        % structural frequency ratio
+% %---------------------------------------
+% Qa=acos(1-(((1-eta_r.^2+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
+% qa=2*asin(sqrt((meff.*w)/(4*stiff1)));
+% qL=acos(1-(meff.*w.^2/(2*stiff1)));
+% qL(imag(qL)~=0) = nan;
 
 %% Matrices of parameters
 %---------------------------------------------------
@@ -68,7 +69,8 @@ end
 %% Plots
 % vibraiton amplitude - note: NOT TRANSMITTANCE 
 figure
-plot1=loglog(omega_axis,X(2*n,:),omega_axis,X(1,:));
+omega_real=omega_axis/(2*pi);
+plot1=loglog(omega_real,X(2*n,:),omega_real,X(1,:));
 title('Amplitude Response')
 grid on
 xlabel('Frequency,  (Hz)')
@@ -77,23 +79,32 @@ set(plot1,'LineWidth',1.5)
 legend 'Outer mass' 'Inner mass'
 set(gca,'fontsize',20)
 
-% Transmission
+%-----------------Transmission
 
 U=X((2*n),:)./(X(1,:));
+%-----------------Import comparison 
+N1='U:\_PhD\Datathief\Experimental_displacement_Yao\Ratio of displacements\Ratio_displacements_yao_up.csv';
+data=csvread(N1,1,0);
+N='U:\_PhD\Datathief\Experimental_displacement_Yao\Ratio of displacements\Ratio_displacements_yao_down.csv';
+data1=csvread(N,1,0);
 
 figure
-plot2=plot(omega_axis/w2, 20*log(U));
-title('Transmission')
+plot2=plot(omega_axis/(2*pi),(U)); %,data(:,1),data(:,2),'g',data1(:,1),data1(:,2),'g');
+title('Ratio of displacement amplitudes $|x|/|X|$','FontAngle','italic','Interpreter','Latex')
 grid on
 xlabel('Frequency ratio, (Hz)')
 ylabel('Transmission')
+legend 'MATLAB' %'Yao Experimental'
 
 %% Dispersion Diagram
 figure
-% plot(w/w2,real(Qa)/pi,w/w2,abs(imag(Qa)/(pi))); hold on
-plot(real(qL)/pi,eta_r)
-
-
+% plot(w/w2,real(Qa)/pi,w/w2,abs(imag(Qa)/(pi))); 
+plot((Qa)/pi,eta_r)
+title('Comparison of band structures having $\theta_s=1$','FontAngle','italic','Interpreter','Latex')
+grid on
+xlabel('Wavenumber')
+ylabel('Frequency ratio, \omega/\omega_0')
+legend '\eta=2' '\eta=1' '\eta=0.5'
 
 %% Forced Vibraiton Amplitude function 
 function [amp,phase] = damped_forced_vibration(D,M,f,omega)
