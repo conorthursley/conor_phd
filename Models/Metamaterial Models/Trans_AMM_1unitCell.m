@@ -1,9 +1,10 @@
 %% Plots the transient response of a forced 2DOF mass spring damper system 
 clear all
+tic
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:60;      % [s] time scale
+t=0:dt:600;      % [s] time scale
 
 mass1=0.1;		% [kg]
 mass2=mass1*0.5;
@@ -21,6 +22,7 @@ z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
 [t,x]=ode45(@rhs, t, z, options);
+toc
 %% Import comparison 
 % M='U:\_PhD\Datathief\MDOF_freeResponse-InmanEngVib\figure12_mode1.csv';
 % data=csvread(M,1,0);
@@ -101,8 +103,9 @@ set(gca,'fontsize',20)
 %% Transmission
 % U=Xn/X1
 U=abs(x(:,3))./abs(x(:,1));
-figure
+% figure
 % plot(t,20*log10(U))
+figure
 periodogram(x(:,3))
 
 %% TF estimate
@@ -148,7 +151,7 @@ function dxdt=rhs(t,x)
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
-        w=5; % Hz, forcing frequency 
+        w=28; % Hz, forcing frequency 
      
         %---------------------------------------
         % first unit cell

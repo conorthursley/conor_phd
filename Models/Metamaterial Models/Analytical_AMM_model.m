@@ -16,24 +16,23 @@ w=10*2*pi; % driving frequency
 omega_axis=logspace(-1,3,4000);
 
 %% Ratio parameters
-% theta=1;  % mass ratio 
-% mass1=theta*mass2;
-% %---------------------------------------
-% w2=sqrt(stiff2/mass2);
-% w1=1*w2;
-% %---------------------------------------
-% % exctiation frequency 
-% w=linspace(0,200,20000);
-% %---------------------------------------
-% meff=mass1+((mass2*w2^2)./(w2^2-w.^2)); % M_effective - effective mass ratio 
-% eta_r=w/w2;       %ratio of excitation frequency to mass2 frequency 
-% % this value will be the independent varaible for the bandgap diagram
-% eta_s=0.5;        % structural frequency ratio
-% %---------------------------------------
-% Qa=acos(1-(((1-eta_r.^2+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
-% qa=2*asin(sqrt((meff.*w)/(4*stiff1)));
-% qL=acos(1-(meff.*w.^2/(2*stiff1)));
-% qL(imag(qL)~=0) = nan;
+theta=mass2/mass1;  % mass ratio 
+%---------------------------------------
+w2=sqrt(stiff2/mass2);
+w1=sqrt(stiff1/mass1);
+%---------------------------------------
+% exctiation frequency 
+w=linspace(0,500,20000);
+%---------------------------------------
+meff=mass1+((mass2*w2^2)./(w2^2-w.^2)); % M_effective - effective mass ratio 
+eta_r=w/w2;       %ratio of excitation frequency to mass2 frequency 
+% this value will be the independent varaible for the bandgap diagram
+eta_s=w2/w1;        % structural frequency ratio
+%---------------------------------------
+Qa=acos(1-(((1-eta_r.^2+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
+qa=2*asin(sqrt((meff.*w)/(4*stiff1)));
+qL=acos(1-(meff.*w.^2/(2*stiff1)));
+qL(imag(qL)~=0) = nan;
 
 %% Matrices of parameters
 %---------------------------------------------------
@@ -98,13 +97,15 @@ legend 'MATLAB' %'Yao Experimental'
 
 %% Dispersion Diagram
 figure
-% plot(w/w2,real(Qa)/pi,w/w2,abs(imag(Qa)/(pi))); 
-plot((Qa)/pi,eta_r)
-title('Comparison of band structures having $\theta_s=1$','FontAngle','italic','Interpreter','Latex')
+plot(qL/pi,w/(2*pi)); %,w/w2,abs(imag(qL)/(pi))); 
+% plot((Qa)/pi,eta_r)
+title_text=['Band structures having $\theta=',num2str(theta),'$'];
+title(title_text,'FontAngle','italic','Interpreter','Latex')
 grid on
 xlabel('Wavenumber')
-ylabel('Frequency ratio, \omega/\omega_0')
-legend '\eta=2' '\eta=1' '\eta=0.5'
+ylabel('Frequency \omega')
+legend_text=['\eta=',num2str(eta_s),''];
+legend(legend_text,'FontAngle','italic','Interpreter','Latex')
 
 %% Forced Vibraiton Amplitude function 
 function [amp,phase] = damped_forced_vibration(D,M,f,omega)

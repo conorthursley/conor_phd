@@ -13,7 +13,7 @@ w2=sqrt(stiff2/mass2)/(2*pi);
 tic
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
 initial_x    = 0e-3;
-initial_dxdt = 0;
+initial_dxdt = 0;   
 initial_y    = 0e-3;
 initial_dydt = 0;
 
