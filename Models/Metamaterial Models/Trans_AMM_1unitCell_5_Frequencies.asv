@@ -5,7 +5,7 @@ tic
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;    % [s] delta t
 % for loop parameters
-t_end=1000;   % t limit
+t_end=1500;   % t limit
 t=0:dt:t_end;      % [s] time scale
 t_find=600; % the time to safely assume SS has been reached 600 seconds after initial transient begins
 p=find(t==600); q=find(t==t_end);
@@ -26,61 +26,72 @@ initial_dydt = 0;
 
 z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Set the frequency range
-freq_step=0.25;
-swept_sine_range=10:freq_step:43; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
+f1=10;
+f2=17;
+f3=26;
+f4=37;
+f5=43;
 
-amplitude=zeros(length(swept_sine_range),4); %vector to store amps of displacement and velocity 
+freq_range=[f1 f2 f3 f4 f5]; % range from 10 Hz to 43 Hz 
+% select which mass we want to observe the frequency response for 
+res=1; % result of the m1 displacement = 1, m2 displacement = 3
+freq_results=zeros(length(p:q),length(freq_range));% p and q are the new time start/end to cut 
+% the steay state portion of the signal
+
 
 %% Solve the model
-for i=1:length(swept_sine_range)
-    omega=swept_sine_range(i);
+for i=1:length(freq_range)
+    omega=freq_range(i);
     options=odeset('InitialStep',dt,'MaxStep',dt);
     [t,result]=ode45(@(t,z) rhs(t,z,omega),t,z,options);
     
     % change result to show the steady state portion of the time history
     x=result(p:q,:); % x becomes the steady state result
-    amplitude(i,:)=max(x);
+    freq_results(:,i)=x(:,res); %store the displacement history in freq_results
 end
 toc
 %% Results
-% extract displacement amplitudes from vector, "amplitude"
-% amplitude = [displacement1 velo1 disp2 velo2]
-% displacement
-m1_disp=amplitude(:,1);
-m2_disp=amplitude(:,3);
-% velocity 
-m1_velo=amplitude(:,2);
-m2_velo=amplitude(:,4);
+% results are stored in freq_results vector
+% integration loop of the different FFT results
+freq_int=zeros(5,1);
+% need to perform a for loop to create 5 figures of 5 FFTs.
+for i=1:length(freq_range)
+    
+    % FFT loop
+    figure(i)
+    dt=abs(mean(diff(t)));  %average time step done
+    Fs=1/(dt);
+    % y = fft(ansys_amp_1);
+    % flop = (0:length(y)-1)*Fs/length(y);
+    n=length(t); %length of signal = number of samples
+    m=pow2(nextpow2(n));  %transform length
+    dft1=fft(freq_results(:,i),m); % DFT of signal
+    fr = (0:m-1)*(Fs/m);
+    fourier = abs(dft1);
+    f=Fs*(0:(n/2))/n;
+    freq1=fr(1:floor(m/2));
+    P1=fourier(1:floor(m/2));
+    plot(freq1,P1)
+    % plot(flop,abs(y),'LineWidth',2)
+    title(['FFT of AMM system at ', num2str(freq_range(i)), ' Hz'])
+    grid on
+    xlabel('Frequency,  (Hz)')
+    ylabel('|P1(f)|')
+    set(gca,'fontsize',20)
+    
+    % Integration loop
+    freq_int(i)=trapz(freq1,P1);
+end
 
-%% Plot the results
-% Plot the time series
+%% Plot int values as function of freq
 figure
-plot1=loglog(swept_sine_range,m1_disp,swept_sine_range,m2_disp);
-set(plot1,'LineWidth',2)
-xlabel('Freqency range (Hz)'); ylabel('Displacment (m)');
-title('Swept Sine results for displacement')
+plot(freq_range,freq_int,'r--d')
+title('Total energy within the system')
 grid on
-legend 'mass1' 'mass2' 
-set(gca,'fontsize',20) 
+xlabel('Frequency,  (Hz)')
+ylabel('Area under the curve')
+set(gca,'fontsize',20)
 
-% Plot the Kinetic Energy ratio
-%------------------numerical
-KE1=0.5*mass1.*(m1_velo.^2);
-KE2=0.5*mass2.*(m2_velo.^2);
-RDR=KE2./(KE1+KE2);   %ratio
-%------------------analytical
-RDR_a=theta./((1-(swept_sine_range./w2).^2).^2+theta);
-
-figure
-plot1=plot(swept_sine_range/w2,RDR); hold on
-plot2=plot(swept_sine_range/w2,RDR_a,'r--');
-set([plot1 plot2],'LineWidth',3.5)
-xlabel('Normalised freqency \omega/\omega_2'); ylabel('Ratio of Kinetic Energy');
-title('Swept Sine results for energy distribution rate of the AMM model')
-grid on
-legend_text=['\theta=',num2str(theta)];
-legend(legend_text,'Analytical Result','FontAngle','italic','Interpreter','Latex')
-set(gca,'fontsize',20) 
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
