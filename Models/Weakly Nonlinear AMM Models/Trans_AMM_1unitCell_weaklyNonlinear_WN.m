@@ -5,7 +5,7 @@ tic
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;    % [s] delta t
 % for loop parameters
-t_end=3000;   % t limit
+t_end=6000;   % t limit
 t=0:dt:t_end;      % [s] time scale
 
 mass1=0.1;		% [kg]
@@ -14,7 +14,7 @@ stiff1=1000;    % [N/m]
 stiff2=1.5*stiff1;
 % nonlinear parameter
 stiff3=250;
-k3=stiff3;
+k3=100*stiff2;
 % driving frequency 
 % omega=37;
 

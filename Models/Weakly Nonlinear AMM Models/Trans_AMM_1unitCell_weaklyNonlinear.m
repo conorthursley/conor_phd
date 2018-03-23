@@ -5,7 +5,7 @@ tic
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;    % [s] delta t
 % for loop parameters
-t_end=1500;   % t limit
+t_end=2000;   % t limit
 t=0:dt:t_end;      % [s] time scale
 t_find=600; % the time to safely assume SS has been reached 600 seconds after initial transient begins
 p=find(t==600); q=find(t==t_end);
@@ -15,7 +15,7 @@ mass2=mass1*0.5;
 stiff1=1000;    % [N/m]
 stiff2=1.5*stiff1;
 % nonlinear parameter
-stiff3=250;
+stiff3=100*stiff2;
 k3=stiff3;
 % driving frequency 
 omega=37;
@@ -37,13 +37,22 @@ z=[initial_x initial_dxdt initial_y initial_dydt];
 options=odeset('InitialStep',dt,'MaxStep',dt);
 [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
 x=result(p:q,:); % x becomes the steady state result
-t=t(p:q);
+t_new=t(p:q);
 toc
 %% Plot the results
 % Plot the time series
-
+% Original time series
 figure
-plot1=plot(t,x(:,1),t,x(:,3));
+plot1=plot(t,result(:,1),t,result(:,3));
+set(plot1,'LineWidth',2)
+xlabel('t'); ylabel('x');
+title('Time Series')
+grid on
+legend 'ODE45 mode1' 'ODE45 mode2' 
+set(gca,'fontsize',20) 
+% Clipped time series 
+figure
+plot1=plot(t_new,x(:,1),t_new,x(:,3));
 set(plot1,'LineWidth',2)
 xlabel('t'); ylabel('x');
 title('Time Series')
@@ -76,7 +85,7 @@ freq1=fr(1:floor(m/2));
 P1=fourier(1:floor(m/2));
 plot(freq1,P1)
 % plot(flop,abs(y),'LineWidth',2)
-title(['FFT of AMM system at ', omega, ' Hz'])
+title(['FFT of AMM system at ', num2str(omega), ' Hz'])
 grid on
 xlabel('Frequency,  (Hz)')
 ylabel('|P1(f)|')
