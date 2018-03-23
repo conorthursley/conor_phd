@@ -5,9 +5,9 @@ tic
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;    % [s] delta t
 % for loop parameters
-t_end=1000;   % t limit
+t_end=800;   % t limit
 t=0:dt:t_end;      % [s] time scale
-t_find=600; % the time to safely assume SS has been reached 600 seconds after initial transient begins
+t_find=400; % the time to safely assume SS has been reached 600 seconds after initial transient begins
 p=find(t==600); q=find(t==t_end);
 
 mass1=0.1;		% [kg]
@@ -27,16 +27,16 @@ initial_dydt = 0;
 z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Set the frequency range
 freq_step=0.1;
-swept_sine_range=10:freq_step:43; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
+swept_sine_range=10:freq_step:150; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
 
 amplitude=zeros(length(swept_sine_range),4); %vector to store amps of displacement and velocity 
 
 %% set the nonlinear strength
-sigma=[5 10 25 50 100 250];
+sigma=[5 10 25 50 100 250 500 750];
 
 %% Solve the model
-for j=1:length(sigma)
-    k3=sigma(j);
+% for j=1:length(sigma)
+    k3=sigma(6);
     for i=1:length(swept_sine_range)
         omega=swept_sine_range(i);
         options=odeset('InitialStep',dt,'MaxStep',dt);
@@ -86,7 +86,7 @@ grid on
 legend_text=['\theta=',num2str(theta)];
 legend(legend_text,'Analytical Result','FontAngle','italic','Interpreter','Latex')
 set(gca,'fontsize',20) 
-end
+% end
 
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
@@ -101,16 +101,20 @@ function dxdt=rhs(t,x,omega,k3)
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
         w=omega; % Hz, forcing frequency 
+        u=x(1);    %disp mass2
+        du=x(2);    %velo mass1
+        v=x(3);   %disp mass2
+        dv=x(4);  % velo mass2
      
         %---------------------------------------
         % first unit cell
         % first mass
-        dxdt_1 = x(2);
-        dxdt_2 = -((2*damp1+damp2)/mass1)*x(2)- ((2*stiff1+stiff2)/mass1)*x(1)-(stiff3/mass1)*x(1)^3 +(stiff2/mass1)*x(3)+(stiff3/mass1)*x(3)^3+(damp2/mass1)*x(4)...
-          +(f/mass1)*sin(2*pi*w*t);
+        dxdt_1 = du;
+        dxdt_2 = -((2*damp1+damp2)/mass1)*du- ((2*stiff1)/mass1)*u-(stiff2/mass1)*(u-v) -...
+            (stiff3/mass1)*(u-v)^3+(damp2/mass1)*dv+(f/mass1)*sin(2*pi*w*t);
         % second mass
-        dydt_1= x(4);
-        dydt_2= -(stiff2/mass2)*x(3)-(stiff3/mass2)*x(3)^3 - (damp2/mass2)*x(4) + (stiff2/mass2)*x(1)+(stiff3/mass2)*x(1)^3 + (damp2/mass2)*x(2);
+        dydt_1= dv;
+        dydt_2= -(stiff2/mass2)*(v-u)-(stiff3/mass2)*(v-u)^3 - (damp2/mass2)*dv + (damp2/mass2)*du;
         %---------------------------------------
                 
         % final solution 

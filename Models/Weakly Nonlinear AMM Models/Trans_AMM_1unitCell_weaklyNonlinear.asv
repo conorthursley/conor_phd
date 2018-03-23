@@ -9,11 +9,17 @@ t_end=1500;   % t limit
 t=0:dt:t_end;      % [s] time scale
 t_find=600; % the time to safely assume SS has been reached 600 seconds after initial transient begins
 p=find(t==600); q=find(t==t_end);
-
+% model parameters
 mass1=0.1;		% [kg]
 mass2=mass1*0.5;
 stiff1=1000;    % [N/m]
 stiff2=1.5*stiff1;
+% nonlinear parameter
+stiff3=250;
+k3=stiff3;
+% dri
+omega=37;
+
 
 w2=sqrt(stiff2/mass2)/(2*pi);
 theta=mass2/mass1;
@@ -25,72 +31,56 @@ initial_y    = 0e-3;
 initial_dydt = 0;
 
 z=[initial_x initial_dxdt initial_y initial_dydt];
-%% Set the frequency range
-f1=10;
-f2=17;
-f3=26;
-f4=37;
-f5=43;
-
-freq_range=[f1 f2 f3 f4 f5]; % range from 10 Hz to 43 Hz 
-% select which mass we want to observe the frequency response for 
-res=1; % result of the m1 displacement = 1,
-% m2 displacement = 3
-freq_results=zeros(length(p:q),length(freq_range));% p and q are the new time start/end to cut 
-% the steay state portion of the signal
 
 %% Solve the model
-for i=1:length(freq_range)
-    omega=freq_range(i);
-    options=odeset('InitialStep',dt,'MaxStep',dt);
-    [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
-    
-    % change result to show the steady state portion of the time history
-    x=result(p:q,:); % x becomes the steady state result
-    freq_results(:,i)=x(:,res); %store the displacement history in freq_results
-end
-toc
-%% Results
-% results are stored in freq_results vector
-% integration loop of the different FFT results
-freq_int=zeros(5,1);
-% need to perform a for loop to create 5 figures of 5 FFTs.
-for i=1:length(freq_range)
-    
-    % FFT loop
-    figure(i)
-    dt=abs(mean(diff(t)));  %average time step done
-    Fs=1/(dt);
-    % y = fft(ansys_amp_1);
-    % flop = (0:length(y)-1)*Fs/length(y);
-    n=length(t); %length of signal = number of samples
-    m=pow2(nextpow2(n));  %transform length
-    dft1=fft(freq_results(:,i),m); % DFT of signal
-    fr = (0:m-1)*(Fs/m);
-    fourier = abs(dft1);
-    f=Fs*(0:(n/2))/n;
-    freq1=fr(1:floor(m/2));
-    P1=fourier(1:floor(m/2));
-    plot(freq1,P1)
-    % plot(flop,abs(y),'LineWidth',2)
-    title(['FFT of AMM system at ', num2str(freq_range(i)), ' Hz'])
-    grid on
-    xlabel('Frequency,  (Hz)')
-    ylabel('|P1(f)|')
-    set(gca,'fontsize',20)
-    
-    % Integration loop
-    freq_int(i)=trapz(freq1,P1);
-end
 
-%% Plot int values as function of freq
+options=odeset('InitialStep',dt,'MaxStep',dt);
+[t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
+
+toc
+%% Plot the results
+% Plot the time series
+x=result;
 figure
-plot(freq_range,freq_int,'r--d')
-title('Total energy within the system')
+plot1=plot(t,x(:,1),t,x(:,3));
+set(plot1,'LineWidth',2)
+xlabel('t'); ylabel('x');
+title('Time Series')
+grid on
+legend 'ODE45 mode1' 'ODE45 mode2' 
+set(gca,'fontsize',20) 
+%% Plot the phase plane
+x=result;
+figure
+plot1=plot(t,x(:,2),t,x(:,4));
+set(plot1,'LineWidth',2)
+xlabel('t'); ylabel('x');
+title('Phase Portrait')
+grid on
+legend 'ODE45 mode1' 'ODE45 mode2' 
+set(gca,'fontsize',20) 
+%% FFT
+figure
+dt=abs(mean(diff(t)));  %average time step done
+Fs=1/(dt);
+% y = fft(ansys_amp_1);
+% flop = (0:length(y)-1)*Fs/length(y);
+n=length(t); %length of signal = number of samples
+m=pow2(nextpow2(n));  %transform length
+dft1=fft(x(:,1),m); % DFT of signal
+fr = (0:m-1)*(Fs/m);
+fourier = abs(dft1);
+f=Fs*(0:(n/2))/n;
+freq1=fr(1:floor(m/2));
+P1=fourier(1:floor(m/2));
+plot(freq1,P1)
+% plot(flop,abs(y),'LineWidth',2)
+title(['FFT of AMM system at ', omega, ' Hz'])
 grid on
 xlabel('Frequency,  (Hz)')
-ylabel('Area under the curve')
+ylabel('|P1(f)|')
 set(gca,'fontsize',20)
+
 
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
@@ -100,20 +90,25 @@ function dxdt=rhs(t,x,omega,k3)
         mass2=mass1*0.5;
         stiff1=1000;    % [N/m]
         stiff2=1.5*stiff1;
+        stiff3=k3;
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
         w=omega; % Hz, forcing frequency 
+        u=x(1);    %disp mass2
+        du=x(2);    %velo mass1
+        v=x(3);   %disp mass2
+        dv=x(4);  % velo mass2
      
         %---------------------------------------
         % first unit cell
         % first mass
-        dxdt_1 = x(2);
-        dxdt_2 = -((2*damp1+damp2)/mass1)*x(2)- ((2*stiff1+stiff2)/mass1)*x(1) +(stiff2/mass1)*x(3)+(damp2/mass1)*x(4)...
-          +(f/mass1)*sin(2*pi*w*t);
+        dxdt_1 = du;
+        dxdt_2 = -((2*damp1+damp2)/mass1)*du- ((2*stiff1)/mass1)*u-(stiff2/mass1)*(u-v) -...
+            (stiff3/mass1)*(u-v)^3+(damp2/mass1)*dv+(f/mass1)*sin(2*pi*w*t);
         % second mass
-        dydt_1= x(4);
-        dydt_2= -(stiff2/mass2)*x(3) - (damp2/mass2)*x(4) + (stiff2/mass2)*x(1) + (damp2/mass2)*x(2);
+        dydt_1= dv;
+        dydt_2= -(stiff2/mass2)*(v-u)-(stiff3/mass2)*(v-u)^3 - (damp2/mass2)*dv + (damp2/mass2)*du;
         %---------------------------------------
                 
         % final solution 

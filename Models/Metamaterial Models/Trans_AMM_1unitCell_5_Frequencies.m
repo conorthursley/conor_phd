@@ -38,40 +38,40 @@ res=1; % result of the m1 displacement = 1,
 % m2 displacement = 3
 freq_results=zeros(length(p:q),length(freq_range));% p and q are the new time start/end to cut 
 % the steay state portion of the signal
-%% Total energy into the system 
-% need to find total energy into the system. We have frequencies, so need
-% to simulate for same length of time and calculate total energy under the
-% curve
-freq_input=zeros(length(p:q),length(freq_range));
-freq_input_int=zeros(5,1);
-
-for i=1:length(freq_range)
-    input_signal=sin(2*pi*freq_range(i)*t(p:q));
-    % FFT loop
-    figure(i)
-    dt=abs(mean(diff(t)));  %average time step done
-    Fs=1/(dt);
-    % y = fft(ansys_amp_1);
-    % flop = (0:length(y)-1)*Fs/length(y);
-    n=length(t); %length of signal = number of samples
-    m=pow2(nextpow2(n));  %transform length
-    dft1=fft(input_signal,m); % DFT of signal
-    fr = (0:m-1)*(Fs/m);
-    fourier = abs(dft1);
-    f=Fs*(0:(n/2))/n;
-    freq1=fr(1:floor(m/2));
-    P1=fourier(1:floor(m/2));
-    plot(freq1,P1)
-    % plot(flop,abs(y),'LineWidth',2)
-    title(['FFT of AMM system at ', num2str(freq_range(i)), ' Hz'])
-    grid on
-    xlabel('Frequency,  (Hz)')
-    ylabel('|P1(f)|')
-    set(gca,'fontsize',20)
-    
-    % Integration loop
-    freq_input_int(i)=trapz(freq1,P1);
-end
+% %% Total energy into the system 
+% % need to find total energy into the system. We have frequencies, so need
+% % to simulate for same length of time and calculate total energy under the
+% % curve
+% freq_input=zeros(length(p:q),length(freq_range));
+% freq_input_int=zeros(5,1);
+% 
+% for i=1:length(freq_range)
+%     input_signal=sin(2*pi*freq_range(i)*t(p:q));
+%     % FFT loop
+%     figure(i)
+%     dt=abs(mean(diff(t)));  %average time step done
+%     Fs=1/(dt);
+%     % y = fft(ansys_amp_1);
+%     % flop = (0:length(y)-1)*Fs/length(y);
+%     n=length(t); %length of signal = number of samples
+%     m=pow2(nextpow2(n));  %transform length
+%     dft1=fft(input_signal,m); % DFT of signal
+%     fr = (0:m-1)*(Fs/m);
+%     fourier = abs(dft1);
+%     f=Fs*(0:(n/2))/n;
+%     freq1=fr(1:floor(m/2));
+%     P1=fourier(1:floor(m/2));
+%     plot(freq1,P1)
+%     % plot(flop,abs(y),'LineWidth',2)
+%     title(['FFT of AMM system at ', num2str(freq_range(i)), ' Hz'])
+%     grid on
+%     xlabel('Frequency,  (Hz)')
+%     ylabel('|P1(f)|')
+%     set(gca,'fontsize',20)
+%     
+%     % Integration loop
+%     freq_input_int(i)=trapz(freq1,P1);
+% end
 %% Solve the model
 for i=1:length(freq_range)
     omega=freq_range(i);
@@ -87,6 +87,7 @@ toc
 % results are stored in freq_results vector
 % integration loop of the different FFT results
 freq_int=zeros(5,1);
+freq_max=zeros(5,1);
 % need to perform a for loop to create 5 figures of 5 FFTs.
 for i=1:length(freq_range)
     
@@ -114,6 +115,7 @@ for i=1:length(freq_range)
     
     % Integration loop
     freq_int(i)=trapz(freq1,P1);
+    freq_max(i)=max(P1);
 end
 
 %% Plot int values as function of freq
