@@ -15,10 +15,10 @@ mass2=mass1*0.5;
 stiff1=1000;    % [N/m]
 stiff2=1.5*stiff1;
 % nonlinear parameter
-stiff3=0*stiff2;
+stiff3=100*stiff2;
 k3=stiff3;
 % driving frequency 
-omega=10;
+omega=37;
 
 
 w2=sqrt(stiff2/mass2)/(2*pi);
@@ -60,7 +60,7 @@ grid on
 legend 'ODE45 mode1' 'ODE45 mode2' 
 set(gca,'fontsize',20) 
 %% Plot the phase plane
-% x=result;
+x=result;
 figure
 plot1=plot(x(:,2),x(:,4));
 set(plot1,'LineWidth',2)
@@ -91,36 +91,6 @@ xlabel('Frequency,  (Hz)')
 ylabel('|P1(f)|')
 set(gca,'fontsize',20)
 
-%% Work and Energy functions
-%-----------Results----------------------
-% extract displacement amplitudes from vector, "x"
-% x = [displacement1 velo1 disp2 velo2]
-% displacement
-m1_disp=x(:,1);
-m2_disp=x(:,3);
-% velocity 
-m1_velo=x(:,2);
-m2_velo=x(:,4);
-%------------Work-----------------------------
-% Looking at the dynamic model, apply the energy approach for KE and PE and
-% find the total KE and PE of the system
-% KE=KE1 + KE2
-% PE=PEu1+PEu1+PE(u2-u1) (PEu1 is done twice as we have two k1 springs on
-% either side of the model)
-% KE------------
-% Kinetic Energy = 0.5*m_i*v_i^2
-KE=0.5*mass1*m1_velo.^2 + 0.5*mass2*m2_velo.^2;
-% PE------------
-% Potential Energy = 0.5*m_i*v_i^2
-PE=stiff1*m1_disp.^2+0.5*stiff2*(m2_disp-m1_disp).^2;
-
-figure
-plot(t_new,KE,'r',t_new,PE,'b',t_new,(PE+KE),'k:');
-xlabel('t'); ylabel('Work/PE/KE');
-title(['Work/Energy Calculations at ', num2str(omega), ' Hz'])
-grid on
-legend 'KE' 'PE' 'Work' 
-set(gca,'fontsize',20) 
 
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
