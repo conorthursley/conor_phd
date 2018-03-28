@@ -27,16 +27,16 @@ initial_dydt = 0;
 z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Set the frequency range
 freq_step=0.1;
-swept_sine_range=10:freq_step:150; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
+swept_sine_range=10:freq_step:50; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
 
 amplitude=zeros(length(swept_sine_range),4); %vector to store amps of displacement and velocity 
 
 %% set the nonlinear strength
-sigma=[5 10 25 50 100 250 500 750];
+sigma=[5 10 25 50 100 250 500 750]*stiff2;
 
 %% Solve the model
 % for j=1:length(sigma)
-    k3=sigma(6);
+    k3=0;
     for i=1:length(swept_sine_range)
         omega=swept_sine_range(i);
         options=odeset('InitialStep',dt,'MaxStep',dt);

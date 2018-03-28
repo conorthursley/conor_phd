@@ -13,8 +13,8 @@ mass2=mass1*0.5;
 stiff1=1000;    % [N/m]
 stiff2=1.5*stiff1;
 % nonlinear parameter
-stiff3=250;
-k3=100*stiff2;
+% stiff3=250;
+k3=200*stiff2;
 % driving frequency 
 % omega=37;
 
@@ -164,7 +164,7 @@ function dxdt=rhs(t,x,S,k3)
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
-        signal=S(t); % WN
+        signal=2*S(t); % WN
         u=x(1);    %disp mass2
         du=x(2);    %velo mass1
         v=x(3);   %disp mass2
