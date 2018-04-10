@@ -2,10 +2,10 @@
 clear 
 tic
 %% simulation parameters
-fs=1000;        % [Hz] sampling frequency
+fs=500;        % [Hz] sampling frequency
 dt=1/fs;    % [s] delta t
 % for loop parameters
-t_end=800;   % t limit
+t_end=1000;   % t limit
 t=0:dt:t_end;      % [s] time scale
 t_find=400; % the time to safely assume SS has been reached 600 seconds after initial transient begins
 p=find(t==600); q=find(t==t_end);
@@ -26,18 +26,19 @@ initial_dydt = 0;
 
 z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Set the frequency range
-freq_step=0.1;
-swept_sine_range=10:freq_step:150; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
-
+freq_step=0.01;
+swept_sine_range=0:freq_step:50; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
+swept_sine_range=fliplr(swept_sine_range);  % flip to investigate 
 amplitude=zeros(length(swept_sine_range),4); %vector to store amps of displacement and velocity 
 
 %% set the nonlinear strength
-sigma=[5 10 25 50 100 250 500 750];
+sigma=[0]*stiff2;
 
 %% Solve the model
-% for j=1:length(sigma)
-    k3=sigma(6);
-    for i=1:length(swept_sine_range)
+for j=1:length(sigma)
+    k3=sigma(j);
+    parfor i=1:length(swept_sine_range)
+        t=0:dt:t_end; 
         omega=swept_sine_range(i);
         options=odeset('InitialStep',dt,'MaxStep',dt);
         [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
@@ -68,7 +69,7 @@ grid on
 legend 'mass1' 'mass2' 
 set(gca,'fontsize',20) 
 
-% Plot the Kinetic Energy ratio
+%% Plot the Kinetic Energy ratio
 %------------------numerical
 KE1=0.5*mass1.*(m1_velo.^2);
 KE2=0.5*mass2.*(m2_velo.^2);
@@ -86,8 +87,31 @@ grid on
 legend_text=['\theta=',num2str(theta)];
 legend(legend_text,'Analytical Result','FontAngle','italic','Interpreter','Latex')
 set(gca,'fontsize',20) 
-% end
+%% Work and Energy functions
+%------------Work-----------------------------
+% Looking at the dynamic model, apply the energy approach for KE and PE and
+% find the total KE and PE of the system
+% KE=KE1 + KE2
+% PE=PEu1+PEu1+PE(u2-u1) (PEu1 is done twice as we have two k1 springs on
+% either side of the model)
+% KE------------
+% Kinetic Energy = 0.5*m_i*v_i^2
+KE=0.5*mass1*m1_velo.^2 + 0.5*mass2*m2_velo.^2;
+% PE------------
+% Potential Energy = 0.5*m_i*v_i^2
+PE=stiff1*m1_disp.^2+0.5*stiff2*(m2_disp-m1_disp).^2;
 
+figure
+loglog(swept_sine_range,KE,'r',swept_sine_range,PE,'b',swept_sine_range,(PE+KE),'k:');
+xlabel('Frequency, Hz'); ylabel('Work/PE/KE');
+title(['Work/Energy Calculations at k3= ',num2str(k3),' NL'])
+grid on
+legend 'KE' 'PE' 'Work' 
+set(gca,'fontsize',20) 
+
+end
+
+toc
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.

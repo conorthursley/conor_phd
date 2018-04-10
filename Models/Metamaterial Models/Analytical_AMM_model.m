@@ -1,6 +1,6 @@
 %% Analytical Code for AMM model
 
-n=1; % number of metamaterial units in the chain
+n=2; % number of metamaterial units in the chain
 
 %% Parameters for AMM unit cell
 % parameters should be passed through ODE45 to avoid reptitive changing of
@@ -29,7 +29,7 @@ eta_r=w/w2;       %ratio of excitation frequency to mass2 frequency
 % this value will be the independent varaible for the bandgap diagram
 eta_s=w2/w1;        % structural frequency ratio
 %---------------------------------------
-Qa=acos(1-(((1-eta_r.^2+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
+Qa=acos(1-(((1-(eta_r.^2)+theta)/(2*(1-eta_r.^2)))*eta_r.^2*eta_s^2));
 qa=2*asin(sqrt((meff.*w)/(4*stiff1)));
 qL=acos(1-(meff.*w.^2/(2*stiff1)));
 qL(imag(qL)~=0) = nan;
