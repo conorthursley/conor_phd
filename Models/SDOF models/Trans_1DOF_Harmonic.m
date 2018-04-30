@@ -4,19 +4,30 @@ tic
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t_end=1000;   % t limit
+t_end=10000;   % t limit
 t=0:dt:t_end;      % [s] time scale
-t_find=600; % the time to safely assume SS has been reached 600 seconds after initial transient begins
-p=find(t==600); q=find(t==t_end); 
+t_find=6000; % the time to safely assume SS has been reached 600 seconds after initial transient begins
+p=find(t==6000); q=find(t==t_end); 
 
-omega=16;
+omega=25;
+% work period/cycle
+% from 8000 seconds
+t_b=8000;
+t_cycle=2*pi*sqrt(1/((omega*(2*pi)))^2);
+t_a=((t_b+t_cycle));
+[m_min,i_min]=min(abs(t(:)-t_a));
+p=i_min; q=find(t==t_b); 
+
 %% Initial conditions: x(0) = 0, x'(0)=0
 initial_x    = 0;
 initial_dxdt = 0;
 K=1000;
 mass1=0.1;
-f=1;
+force=1;
+damp=0.0002;
 z=[initial_x initial_dxdt];
+w_nat=sqrt(K/mass1);
+
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
 [t,x]=ode45(@(t,z) rhs(t,z,omega),t,z,options);
@@ -44,7 +55,7 @@ title('Phase potrait')
 grid on
 legend 'ODE45' 
 set(gca,'fontsize',20) 
-%%% Calculate the PSD of the time series
+%% Calculate the PSD of the time series
 FFTsize=2048;
 [PSD_theory_f10Hz,F_theory_f10Hz]=pwelch(x(:,1),hanning(FFTsize),[],FFTsize,fs);
 figure
@@ -93,7 +104,8 @@ set(gca,'fontsize',20)
 % extract displacement amplitudes from vector, "x"
 % x = [displacement1 velo1 disp2 velo2]
 % displacement
-x_new=x(p:q,:);
+x_new=x(q:p,:);
+t_new=t(q:p);
 m1_disp=x_new(:,1);
 % velocity 
 m1_velo=x_new(:,2);
@@ -103,21 +115,42 @@ m1_velo=x_new(:,2);
 % KE=KE1 + KE2
 % PE=PEu1+PEu1+PE(u2-u1) (PEu1 is done twice as we have two k1 springs on
 % either side of the model)
-% KE------------
+% -------------KE------------
 % Kinetic Energy = 0.5*m_i*v_i^2
 KE=0.5*mass1*((m1_velo).^2);
-% PE------------
+% -------------PE------------
 % Potential Energy = 0.5*k_i*u_i^2
 PE=0.5*K*((m1_disp).^2);
 
+% Damping loss = pi*damping*driving_freq*amp^2
+dampLoss=pi*damp*(omega*2*pi)*(max(m1_disp))^2;
+
+% total mechanical energy
+ME=PE+KE-dampLoss;
+workIn=abs(m1_disp);
+% RMS values
+y1=rms(ME);
+y2=rms(workIn);
+
+%-------Carl's method------%
+% harmonic solution assumed for F and x_disp
+% Input Force
+In=force*sin(omega*2*pi*t_new);
+% Output motion 
+Out=-mass1*(omega*2*pi)^2*m1_disp + K*m1_disp;
 figure
-plot(t_new,KE,'r',t_new,PE,'b',t_new,(PE+KE),'k:',t_new,abs(m1_velo),'g');
-xlabel('t'); ylabel('Work =(PE+KE)');
+plot(t_new,In,'b',t_new,Out,'r')
+%% Work and Energy Figure
+figure
+plot1=plot(t_new,KE,'r',t_new,PE,'b',t_new,ME,'k',[t_b,t_a],[y1, y1],'m:',...
+    t_new,workIn,'g',[t_b,t_a],[y2, y2],'c:');
+xlabel('t'); ylabel('Work (J)');
+set(plot1,'LineWidth',2.5)
 title(['Work/Energy Calculations at ', num2str(omega), ' Hz'])
 grid on
-%axis([600 600.1 -Inf Inf])
-legend 'KE' 'PE' 'Work Input' 'Work Output'  
-set(gca,'fontsize',20) 
+axis([t_b t_a -Inf Inf]);
+legend 'KE' 'PE' 'Work Output' 'Work Output RMS' 'Work Input'  'Work Input RMS'
+set(gca,'fontsize',24) 
 %% *******************Poincare Section**********************
 nnnn=length(t);
 %set the index of poincare points to 1
@@ -162,7 +195,7 @@ toc
     function dxdt=rhs(t,x,omega)
         mass1=0.1;		% [kg]
         stiff1=1000;    % [N/m]
-        damp=0.02;     % [Ns/m] keep as a small number to fix solver errors
+        damp=0.002;     % [Ns/m] keep as a small number to fix solver errors
         f=1;           % [N] amplitude of driving force
         w=omega;
 

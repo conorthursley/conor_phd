@@ -26,13 +26,13 @@ initial_dydt = 0;
 
 z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Set the frequency range
-freq_step=0.01;
-swept_sine_range=0:freq_step:50; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
+freq_step=0.1;
+swept_sine_range=1:freq_step:50; % range from 10 Hz to 43 Hz in steps of 0.25 Hz
 swept_sine_range=fliplr(swept_sine_range);  % flip to investigate 
 amplitude=zeros(length(swept_sine_range),4); %vector to store amps of displacement and velocity 
 
 %% set the nonlinear strength
-sigma=[0]*stiff2;
+sigma=[1600]*stiff2;
 
 %% Solve the model
 for j=1:length(sigma)
@@ -68,6 +68,28 @@ title(['Swept Sine results for displacement with k3 = ',num2str(sigma(j))])
 grid on
 legend 'mass1' 'mass2' 
 set(gca,'fontsize',20) 
+
+%% FFT
+figure
+dt=abs(mean(diff(t)));  %average time step done 
+Fs=1/(dt);
+% y = fft(ansys_amp_1);  
+% flop = (0:length(y)-1)*Fs/length(y);
+n=length(t); %length of signal = number of samples
+m=pow2(nextpow2(n));  %transform length
+dft1=fft(x(:,1),m); % DFT of signal
+fr = (0:m-1)*(Fs/m);
+fourier = abs(dft1); 
+f=Fs*(0:(n/2))/n;
+freq1=fr(1:floor(m/2));
+P1=fourier(1:floor(m/2));
+plot(freq1,P1)
+% plot(flop,abs(y),'LineWidth',2)
+title('FFT')
+grid on
+xlabel('Frequency,  (Hz)')
+ylabel('|P1(f)|')
+set(gca,'fontsize',20)
 
 %% Plot the Kinetic Energy ratio
 %------------------numerical

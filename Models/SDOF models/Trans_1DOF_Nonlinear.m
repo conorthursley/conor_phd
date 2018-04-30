@@ -6,21 +6,16 @@ dt=1/fs;        % [s] delta t
 t=0:dt:50;      % [s] time scale
 tic
 %% Initial conditions: x(0) = 0, x'(0)=0 
-initial_x    = 3;
-initial_dxdt = 4;
-
+initial_x    = 0;
+initial_dxdt = 0;
+z=[initial_x initial_dxdt];
+omega=10;
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
-[t,x]=ode45(@(t,y) rhs(t,y), t, [initial_x initial_dxdt],options);
+[t,x]=ode45(@(t,z) rhs(t,z,omega),t,z,options);
 % [t1,x1]=ode45(@(t,y) rhs(t,y), t, [initial_x+0.1 initial_dxdt+0.1],options);
 toc
-%% Import comparison 
-% M='U:\_PhD\Datathief\SDOF_nonlinear_ThompsonStewartNonlinearDyn\SDOF_phase_tilt.csv';
-% data=csvread(M,1,0);
-% M1='U:\_PhD\Datathief\SDOF_nonlinear_ThompsonStewartNonlinearDyn\SDOF_nonlinear_disp.csv';
-% data1=csvread(M1,1,0);
-M='U:\_PhD\Datathief\PoincareSections_ThompsonStewartNonlinearChaos\Figure1_5_edit_part3.csv';
-data=csvread(M,1,0);
+
 %% Plot the results
 figure
 plot1=plot(t,x(:,1)); %,t1,x1(:,1)); %,data1(:,1),data1(:,2)); %,data(:,1),data(:,2),'g');
@@ -131,13 +126,13 @@ toc
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
-    function dxdt=rhs(t,x)
-        mass1=1;		% [kg]
-        stiff1=-0.2;    % [N/m]
-        stiff2=1;
-        damp=0.05;     % [Ns/m] keep as a small number to fix solver errors
-        f=7.5; %*sin(2*pi*10*t);            % [N] amplitude of driving force
-        w=1;
+    function dxdt=rhs(t,x,omega)
+        mass1=0.1;		% [kg]
+        stiff1=1000;    % [N/m]
+        stiff2=1500;
+        damp=0.0002;     % [Ns/m] keep as a small number to fix solver errors
+        f=1; %*sin(2*pi*10*t);            % [N] amplitude of driving force
+        w=omega;
         
         dxdt_1 = x(2);
         dxdt_2 = -(damp/(mass1))*x(2) - (stiff1/mass1)*x(1) -(stiff2/mass1).*x(1)^3 + (f/mass1)*sin(w*t);

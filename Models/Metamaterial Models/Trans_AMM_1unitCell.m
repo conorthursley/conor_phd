@@ -4,14 +4,26 @@ tic
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t=0:dt:600;      % [s] time scale
+
+t_end=1000;   % t limit
+t=0:dt:t_end;      % [s] time scale
+t_find=700; % the time to safely assume SS has been reached 600 seconds after initial transient begins
+p=find(t==700); q=find(t==t_end); 
 
 mass1=0.1;		% [kg]
 mass2=mass1*0.5;
 stiff1=1000;    % [N/m]
 stiff2=1.5*stiff1;
 w2=sqrt(stiff2/mass2)/(2*pi);
-
+force=1;
+omega=28;      % forcing frequency
+% work period/cycle
+% from 700 seconds
+t_b=700;
+t_cycle=2*pi*sqrt(1/((omega*(2*pi)))^2);
+t_a=((t_b+t_cycle));
+[m_min,i_min]=min(abs(t(:)-t_a));
+p=i_min; q=find(t==t_b); 
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
 initial_x    = 0e-3;
 initial_dxdt = 0;
@@ -21,7 +33,7 @@ initial_dydt = 0;
 z=[initial_x initial_dxdt initial_y initial_dydt];
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
-[t,x]=ode45(@rhs, t, z, options);
+[t,x]=ode45(@(t,z) rhs(t,z,omega),t,z,options);
 toc
 %% Import comparison 
 % M='U:\_PhD\Datathief\MDOF_freeResponse-InmanEngVib\figure12_mode1.csv';
@@ -61,7 +73,7 @@ m2_nx=m2_x./max_m1;
 figure
 plot1=plot(t,(m1_nx),'b',t,(m2_nx),'r');
 set(plot1,'LineWidth',2)
-xlabel('t'); ylabel('Normalised displacemtn, x');
+xlabel('t'); ylabel('Normalised displacment, x');
 title('Time Series')
 grid on
 legend 'ODE45 mass1' 'ODE45 mass2' 
@@ -87,18 +99,6 @@ grid on
 xlabel('Frequency,  (Hz)')
 ylabel('|P1(f)|')
 set(gca,'fontsize',20)
-
-%% Amplitude and resonance 
-% Xamp=zeros(length(omega),2)';
-% Wn=zeros(length(omega),1)';
-% for jj=1:length(omega)
-%     Wn(jj)=[omega(jj)]; %omega(jj)];
-%     [amp]=forced_vibration(K,M,f,Wn(jj));
-%     
-%     Xamp(jj)=amp;
-% end
-% figure
-% plot(omega,(Xamp))
 
 %% Transmission
 % U=Xn/X1
@@ -140,10 +140,34 @@ ylabel('Magnitude, dB','FontSize',14)
 set(gca,'fontsize',20)
 legend({'linear AMM numerical result','nonlinear case 1 AMM numerical result','phononic crystal numerical result','nonlinear case 2 AMM numerical result'})
 set(graph1,'LineWidth',2);
+%% Work and Energy functions
+%-----------Results----------------------
+% extract displacement amplitudes from vector, "x"
+% x = [displacement1 velo1 disp2 velo2]
+x_new=x(q:p,:);
+t_new=t(q:p);
+% mass1 displacement and velocity
+m1_disp=x_new(:,1);
+% velocity 
+m1_velo=x_new(:,2);
+% mass2 disp and velo
+m2_disp=x_new(:,3);
+% velocity 
+m2_velo=x_new(:,4);
+%------------Work-----------------------------
+%-------Carl's method------%
+% harmonic solution assumed for F and x_disp
+% Input Force
+In=force*sin(omega*2*pi*t_new);
+% Output motion 
+Out=-mass1*(omega*2*pi)^2*m1_disp + (2*stiff1+stiff2)*m1_disp...
+    -stiff2*m2_disp;
+figure
+plot(t_new,In,'b',t_new,Out,'r')
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
-function dxdt=rhs(t,x)
+function dxdt=rhs(t,x,omega)
         mass1=0.1;		% [kg]
         mass2=mass1*0.5;
         stiff1=1000;    % [N/m]
@@ -151,7 +175,7 @@ function dxdt=rhs(t,x)
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
         f=1; %*(stepfun(t,0)-stepfun(t,0.01));
-        w=28; % Hz, forcing frequency 
+        w=omega; % Hz, forcing frequency 
      
         %---------------------------------------
         % first unit cell
@@ -166,22 +190,4 @@ function dxdt=rhs(t,x)
                 
         % final solution 
         dxdt=[dxdt_1; dxdt_2; dydt_1; dydt_2];
-end
-%% forced vibration 
-function X = forced_vibration(K,M,f,omega)
-% Function to calculate steady state amplitude of
-% a forced linear system.
-% K is nxn the stiffness matrix
-% M is the nxn mass matrix
-% f is the n dimensional force vector
-% omega is the forcing frequency, in radians/sec.
-% The function computes a vector X, giving the amplitude of
-% each degree of freedom
-h=eig(K,M);
-s=h/(2*pi);
-r=(omega./s(2));
-% X = (K-M*omega^2)\f;
-X = 1/sqrt((1-(r).^2).^2+(2*0.000002*r).^2);
-
-
 end

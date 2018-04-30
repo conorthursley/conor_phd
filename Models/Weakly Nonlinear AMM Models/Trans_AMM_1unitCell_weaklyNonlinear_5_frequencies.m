@@ -1,5 +1,5 @@
 %% Plots the transient response of a forced 2DOF mass spring damper system 
-clear all
+clear 
 tic
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
@@ -34,7 +34,7 @@ f5=43;
 
 freq_range=[f1 f2 f3 f4 f5]; % range from 10 Hz to 43 Hz 
 % select which mass we want to observe the frequency response for 
-res=3; % result of the m1 displacement = 1,
+res=1; % result of the m1 displacement = 1,
 % m2 displacement = 3
 freq_results=zeros(length(p:q),length(freq_range));% p and q are the new time start/end to cut 
 % the steay state portion of the signal
@@ -72,14 +72,15 @@ freq_results=zeros(length(p:q),length(freq_range));% p and q are the new time st
 %     % Integration loop
 %     freq_input_int(i)=trapz(freq1,P1);
 % end
-k_three=[0.01 0.02 0.05 0.1 0.2 0.5]*500;
+k_three=stiff2*1600;
 freq_int=zeros(5,6);
 freq_max=zeros(5,6);
 %% Solve the model
 for j=1:length(k_three)
     k3=k_three(j);
-    for i=1:length(freq_range)
+    parfor i=1:length(freq_range)
         omega=freq_range(i);
+        t=0:dt:t_end;      % [s] time scale
         options=odeset('InitialStep',dt,'MaxStep',dt);
         [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
         
@@ -120,6 +121,7 @@ toc
         % Integration loop
         freq_int(ii,j)=trapz(freq1,P1);
         freq_max(ii,j)=max(P1);
+        
     end
 end
 %% Plot int values as function of freq
