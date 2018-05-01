@@ -7,11 +7,11 @@ dt=1/fs;        % [s] delta t
 t_end=10000;   % t limit
 t=0:dt:t_end;      % [s] time scale
 t_find=6000; % the time to safely assume SS has been reached 600 seconds after initial transient begins
-p=find(t==6000); q=find(t==t_end); 
+q=find(t==6000); p=find(t==t_end); 
 
 omega=25;
-% work period/cycle
-% from 8000 seconds
+%work period/cycle
+%from 8000 seconds
 t_b=8000;
 t_cycle=2*pi*sqrt(1/((omega*(2*pi)))^2);
 t_a=((t_b+t_cycle));
@@ -31,7 +31,7 @@ w_nat=sqrt(K/mass1);
 %% Solve the model
 options=odeset('InitialStep',dt,'MaxStep',dt);
 [t,x]=ode45(@(t,z) rhs(t,z,omega),t,z,options);
-t_new=t(p:q);
+t_new=t(q:p);
 toc
 %% Import comparison 
 % M='U:\_PhD\Datathief\Figure3-InmanEngvib\figure3.csv';
@@ -106,9 +106,9 @@ set(gca,'fontsize',20)
 % displacement
 x_new=x(q:p,:);
 t_new=t(q:p);
-m1_disp=x_new(:,1);
+m1_disp=x_new(:,1)';
 % velocity 
-m1_velo=x_new(:,2);
+m1_velo=x_new(:,2)';
 %------------Work-----------------------------
 % Looking at the dynamic model, apply the energy approach for KE and PE and
 % find the total KE and PE of the system
@@ -123,11 +123,11 @@ KE=0.5*mass1*((m1_velo).^2);
 PE=0.5*K*((m1_disp).^2);
 
 % Damping loss = pi*damping*driving_freq*amp^2
-dampLoss=pi*damp*(omega*2*pi)*(max(m1_disp))^2;
+dampLoss=pi*damp*(omega*2*pi)*(max(m1_disp)).^2;
 
 % total mechanical energy
 ME=PE+KE-dampLoss;
-workIn=abs(m1_disp);
+workIn=(force*sin(omega*2*pi*t_new)).*((m1_disp));
 % RMS values
 y1=rms(ME);
 y2=rms(workIn);
@@ -135,9 +135,9 @@ y2=rms(workIn);
 %-------Carl's method------%
 % harmonic solution assumed for F and x_disp
 % Input Force
-In=force*sin(omega*2*pi*t_new);
+In=(force)*sin(omega*2*pi*t_new).*m1_disp;
 % Output motion 
-Out=-mass1*(omega*2*pi)^2*m1_disp + K*m1_disp;
+Out=-0.5*mass1*(omega*2*pi)^2*(m1_disp.^2) + 0.5*K*(m1_disp.^2);
 figure
 plot(t_new,In,'b',t_new,Out,'r')
 %% Work and Energy Figure
@@ -195,7 +195,7 @@ toc
     function dxdt=rhs(t,x,omega)
         mass1=0.1;		% [kg]
         stiff1=1000;    % [N/m]
-        damp=0.002;     % [Ns/m] keep as a small number to fix solver errors
+        damp=0.0002;     % [Ns/m] keep as a small number to fix solver errors
         f=1;           % [N] amplitude of driving force
         w=omega;
 
