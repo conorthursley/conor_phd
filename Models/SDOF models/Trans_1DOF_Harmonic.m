@@ -106,9 +106,11 @@ set(gca,'fontsize',20)
 % displacement
 x_new=x(q:p,:);
 t_new=t(q:p);
-m1_disp=x_new(:,1)';
+m1_disp=x_new(:,1);
 % velocity 
-m1_velo=x_new(:,2)';
+m1_velo=x_new(:,2);
+%freq
+w=omega*2*pi;
 %------------Work-----------------------------
 % Looking at the dynamic model, apply the energy approach for KE and PE and
 % find the total KE and PE of the system
@@ -135,9 +137,11 @@ y2=rms(workIn);
 %-------Carl's method------%
 % harmonic solution assumed for F and x_disp
 % Input Force
-In=(force)*sin(omega*2*pi*t_new).*m1_disp;
+In=abs((force)*sin(w*t_new).*(m1_disp));
 % Output motion 
-Out=-0.5*mass1*(omega*2*pi)^2*(m1_disp.^2) + 0.5*K*(m1_disp.^2);
+% Out=force.*max(m1_disp)*(sin(w*t_new)).^2;
+Out=0.5*mass1*(m1_velo.^2) + 0.5*K*(m1_disp.^2);
+% Out=0.25*(max(m1_disp))^2*(mass1*w^2+K+cos(2*w*t_new)*(mass1*w^2-K));
 figure
 plot(t_new,In,'b',t_new,Out,'r')
 %% Work and Energy Figure

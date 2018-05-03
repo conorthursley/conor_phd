@@ -22,26 +22,32 @@ theta=mass2/mass1;
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
 z=zeros(1,2*4); % n=2 and there are 4 DOF per unit cell, hence 4 initial conditions;
 %% Set the frequency range
-freq_step=0.25;
+freq_step=10;
 swept_sine_range=freq_step:freq_step:60; % range from 10 Hz to 45 Hz in steps of 0.25 Hz
 
-amplitude=zeros(length(swept_sine_range),length(z)); %vector to store amps of displacement and velocity 
-
 %% set the nonlinear strength
-k3=1600*stiff2;
+sigma=[0 100 200 400 800 1600]*stiff2;
+%% set the storage cell
+amplitude=cell(length(sigma),length(swept_sine_range),length(z)); %cell to store amps of displacement and velocity 
+
 %% Solve the model
-parfor i=1:length(swept_sine_range)
-    t=0:dt:t_end;
-    omega=swept_sine_range(i);
-    options=odeset('InitialStep',dt,'MaxStep',dt);
-    [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
-    
-    % change result to show the steady state portion of the time history
-    x=result(p:q,:); % x becomes the steady state result
-    amplitude(i,:)=max(x);
-end
-t_new=t(p:q);
-toc
+for j=1:length(sigma)
+    k3=sigma(j);
+    amplitude(j,:,:)=k3;
+    parfor i=1:length(swept_sine_range)
+        t=0:dt:t_end;
+        omega=swept_sine_range(i);
+        options=odeset('InitialStep',dt,'MaxStep',dt);
+        [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
+        
+        % change result to show the steady state portion of the time history
+        x=result(p:q,:); % x becomes the steady state result
+        amplitude(i,:)=max(x);
+    end
+    t_new=t(p:q);
+    toc
+%% Save the results
+save 2UweaklyNL.mat amplitude swept_sine_range t t_new
 %% Results
 % extract displacement amplitudes from vector, "amplitude"
 % amplitude = [displacement1 velo1 disp2 velo2 disp'n' velo'n' .....]
