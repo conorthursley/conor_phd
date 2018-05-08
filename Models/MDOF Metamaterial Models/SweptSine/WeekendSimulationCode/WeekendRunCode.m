@@ -8,52 +8,52 @@
 close 
 clear 
 
-%% Run 2U 5_Frequencies code with error handling capabilities
-a=1;    %flag for successful iteration 
-try 
-    Trans_AMM_2unitCell_WeaklyNL_FiveFrequencies    % no need to add the .m at the end of it
-catch ME
-    warning('Problem using the 2U Five Freq simulation. Sending email.')
-%     exception = MException.last.message;
-    a=0;
-    msgtext = getReport(ME);
-    sendolmail('conor.macdonald@adelaide.edu.au','2U Five Freq simulation failed',...
-    ['2U failed due to ' msgtext newline ' -----------:End message:--------']);
-end
-% loop to determine if "a" is still true
-if a==1
-    sendolmail('conor.macdonald@adelaide.edu.au','2U FiveFreq simulation complete',...
-    '2U FiveFreq is complete with no errors');
-else
-    
-end
-
-close all 
-clear all
-%% Run 2U system code with error handling capabilities
-b=1;    %flag for successful iteration 
-try 
-    NL_MIM_2U_SweptSine    % no need to add the .m at the end of it
-
-catch ME
-    warning('Problem using the 2U simulation. Sending email.')
-%     exception = MException.last;
-    b=0;
-    msgtext = getReport(ME);
-    sendolmail('conor.macdonald@adelaide.edu.au','2U simulation failed',...
-    ['2U failed due to ' msgtext newline ' -----------:End message:--------']);
-
-end
-figureFile2='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\2UweaklyNL.fig';
-%loop for flag checking
-if b==1
-    sendolmail('conor.macdonald@adelaide.edu.au','2U simulation complete',...
-    '2U simulation with figure',{figureFile2});
-else
-end
-
-close all 
-clear all
+% %% Run 2U 5_Frequencies code with error handling capabilities
+% a=1;    %flag for successful iteration 
+% try 
+%     Trans_AMM_2unitCell_WeaklyNL_FiveFrequencies    % no need to add the .m at the end of it
+% catch ME
+%     warning('Problem using the 2U Five Freq simulation. Sending email.')
+% %     exception = MException.last.message;
+%     a=0;
+%     msgtext = getReport(ME);
+%     sendolmail('conor.macdonald@adelaide.edu.au','2U Five Freq simulation failed',...
+%     ['2U failed due to ' msgtext newline ' -----------:End message:--------']);
+% end
+% % loop to determine if "a" is still true
+% if a==1
+%     sendolmail('conor.macdonald@adelaide.edu.au','2U FiveFreq simulation complete',...
+%     '2U FiveFreq is complete with no errors');
+% else
+%     
+% end
+% 
+% close all 
+% clear all
+% %% Run 2U system code with error handling capabilities
+% b=1;    %flag for successful iteration 
+% try 
+%     NL_MIM_2U_SweptSine    % no need to add the .m at the end of it
+% 
+% catch ME
+%     warning('Problem using the 2U simulation. Sending email.')
+% %     exception = MException.last;
+%     b=0;
+%     msgtext = getReport(ME);
+%     sendolmail('conor.macdonald@adelaide.edu.au','2U simulation failed',...
+%     ['2U failed due to ' msgtext newline ' -----------:End message:--------']);
+% 
+% end
+% figureFile2='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\2UweaklyNL.fig';
+% %loop for flag checking
+% if b==1
+%     sendolmail('conor.macdonald@adelaide.edu.au','2U simulation complete',...
+%     '2U simulation with figure',{figureFile2});
+% else
+% end
+% 
+% close all 
+% clear all
 %% Run 5U system code
 c=1;    %flag for successful iteration 
 try 

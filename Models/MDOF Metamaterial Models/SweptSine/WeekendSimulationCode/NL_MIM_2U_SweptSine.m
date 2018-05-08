@@ -1,5 +1,5 @@
 %% Plots the transient response of a forced 2 unit cell MDOF metamaterial model
-clear
+
 tic
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
@@ -22,7 +22,7 @@ theta=mass2/mass1;
 %% Initial conditions: x(0) = 0, x'(0)=0 ,y(0)=0, y'(0)=0
 z=zeros(1,2*4); % n=2 and there are 4 DOF per unit cell, hence 4 initial conditions;
 %% Set the frequency range
-freq_step=10;
+freq_step=0.05;
 swept_sine_range=freq_step:freq_step:60; % range from 10 Hz to 45 Hz in steps of 0.25 Hz
 
 %% set the nonlinear strength
