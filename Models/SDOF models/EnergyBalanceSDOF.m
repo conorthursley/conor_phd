@@ -3,18 +3,18 @@ fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
 t_end=4000;   % t limit
 t=0:dt:t_end;      % [s] time scale
-
+tic
 omega=25;
 %work period/cycle
 %from 8000 seconds
 t_b=3500;
-t_cycle=2*pi*sqrt(1/((omega*(2*pi)))^2);
+t_cycle=2*pi/(omega*2*pi); %*sqrt(1/((omega*(2*pi)))^2);
 t_a=((t_b+t_cycle));
 [m_min,i_min]=min(abs(t(:)-t_a));
 p=i_min; q=find(t==t_b); 
 
 %% Initial conditions: x(0) = 0, x'(0)=0
-initial_x    = 0;
+initial_x    = 1;
 initial_dxdt = 0;
 K=1000;
 mass1=0.1;
@@ -46,7 +46,7 @@ m1_velo=x_new(:,2);
 % Input Force
 In=(force)*sin(omega*2*pi*t_new);
 % Output motion 
-Out=-mass1*((omega*2*pi)^2)*(m1_disp) + K*(m1_disp);
+Out=mass1*((omega*2*pi)^2)*(max(m1_disp))^2 + K*(m1_disp);
 %plot
 figure
 plot(t_new,In,'b',t_new,Out,'r--')
@@ -58,13 +58,13 @@ legend 'Input, F' 'Output, -mw^2x+kx'
 % find the total KE and PE of the system
 % -------------KE------------
 % Kinetic Energy = 0.5*m_i*v_i^2
-KE=0.5*mass1*((m1_velo).^2);
+KE=0.25*mass1*(max(m1_velo).^2);
 % -------------PE------------
 % Potential Energy = 0.5*k_i*u_i^2
-PE=0.5*K*((m1_disp).^2);
+PE=0.25*K*(max(m1_disp).^2);
 %--------total mechanical energy-----------
 ME=PE+KE;
-workIn=(force*sin(omega*2*pi*t_new)).*((m1_disp));
+workIn=(force*sin(omega*2*pi*t_new)).*((m1_disp(end)-m1_disp(1)));
 %plot
 figure
 plot(t_new,workIn,'b',t_new,ME,'r--')
@@ -77,8 +77,8 @@ legend 'Input, Fx' 'Output, PE+KE'
     function dxdt=rhs(t,x,omega)
         mass1=0.1;		% [kg]
         stiff1=1000;    % [N/m]
-        damp=0.002;     % [Ns/m] keep as a small number to fix solver errors
-        f=1;           % [N] amplitude of driving force
+        damp=0.000;     % [Ns/m] keep as a small number to fix solver errors
+        f=0;           % [N] amplitude of driving force
         w=omega;
 
         dxdt_1 = x(2);
