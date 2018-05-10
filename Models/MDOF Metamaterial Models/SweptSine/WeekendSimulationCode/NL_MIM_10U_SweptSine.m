@@ -86,8 +86,8 @@ for j=1:length(sigma)
     hold on
 end
 %% Save the results
-save 10UweaklyNL.mat amplitude swept_sine_range t t_new
-savefig('10UweaklyNL.fig')
+save 10UweaklyNLamp10.mat amplitude swept_sine_range t t_new
+savefig('10UweaklyNLamp10.fig')
 %% Mass-Spring-Damper system
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
@@ -99,7 +99,7 @@ function dxdt=rhs(t,x,omega,k3)
         stiff3=k3;
         damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
         damp2=0.002;
-        f=1; %*(stepfun(t,0)-stepfun(t,0.01));
+        f=10; %*(stepfun(t,0)-stepfun(t,0.01));
         w=omega; % Hz, forcing frequency 
         %----1 unit cell-----
         u1=x(1);    %disp mass1

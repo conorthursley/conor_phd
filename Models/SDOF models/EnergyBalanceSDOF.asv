@@ -1,7 +1,7 @@
 %% simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;        % [s] delta t
-t_end=4;   % t limit
+t_end=4000;   % t limit
 t=0:dt:t_end;      % [s] time scale
 tic
 omega=25;
@@ -9,12 +9,12 @@ omega=25;
 %from 8000 seconds
 t_b=1;
 t_cycle=2*pi/(omega*2*pi); %*sqrt(1/((omega*(2*pi)))^2);
-t_a=((t_b+5*t_cycle));
+t_a=((t_b+t_cycle));
 [m_min,i_min]=min(abs(t(:)-t_a));
 p=i_min; q=find(t==t_b); 
 
 %% Initial conditions: x(0) = 0, x'(0)=0
-initial_x    = 0;
+initial_x    = 1;
 initial_dxdt = 0;
 K=1000;
 mass1=0.1;
@@ -75,14 +75,14 @@ legend 'Input, Fx' 'Output, PE+KE'
 % The equations for the mass spring damper system have to be defined
 % separately so that the ODE45 solver can call it.
     function dxdt=rhs(t,x,omega)
-        mass1=0;		% [kg]
+        mass1=0.1;		% [kg]
         stiff1=1000;    % [N/m]
         damp=0.000;     % [Ns/m] keep as a small number to fix solver errors
-        f=1;           % [N] amplitude of driving force
+        f=0;           % [N] amplitude of driving force
         w=omega;
 
         dxdt_1 = x(2);
-        dxdt_2 = -(damp/mass1)*x(2) - (stiff1/mass1)*x(1) + (f/mass1); %*sin((w*2*pi)*t);
+        dxdt_2 = -(damp/mass1)*x(2) - (stiff1/mass1)*x(1) + (f/mass1)*sin((w*2*pi)*t);
 
         dxdt=[dxdt_1; dxdt_2];
     end
