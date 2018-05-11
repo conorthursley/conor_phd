@@ -33,22 +33,22 @@ clear
 %% Run 1U system code with error handling capabilities
 a=1;    %flag for successful iteration 
 try 
-    NL_MIM_1U_SweptSine    % no need to add the .m at the end of it
+    NL_MIM_2U_SweptSine    % no need to add the .m at the end of it
 
 catch ME
-    warning('Problem using the 1U simulation. Sending email.')
+    warning('Problem using the 2U simulation. Sending email.')
 %     exception = MException.last;
     a=0;
     msgtext = getReport(ME);
-    sendolmail('conor.macdonald@adelaide.edu.au','1U simulation failed',...
+    sendolmail('conor.macdonald@adelaide.edu.au','2U simulation failed',...
     ['2U failed due to ' msgtext newline ' -----------:End message:--------']);
 
 end
-figureFile2='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\1UweaklyNLamp10.fig';
+figureFile2='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\2UweaklyNL.fig';
 %loop for flag checking
 if a==1
-    sendolmail('conor.macdonald@adelaide.edu.au','1U simulation complete',...
-    '1U simulation with figure',{figureFile2});
+    sendolmail('conor.macdonald@adelaide.edu.au','2U simulation complete',...
+    '2U simulation with figure',{figureFile2});
 else
 end
 
@@ -68,7 +68,7 @@ catch ME
     ['2U failed due to ' msgtext newline ' -----------:End message:--------']);
 
 end
-figureFile2='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\2UweaklyNLamp10.fig';
+figureFile2='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\2UweaklyNL.fig';
 %loop for flag checking
 if b==1
     sendolmail('conor.macdonald@adelaide.edu.au','2U simulation complete',...
@@ -91,7 +91,7 @@ catch ME
     ['5U failed due to ' msgtext newline ' -----------:End message:--------']);
 end
 
-figureFile5='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\5UweaklyNLamp10.fig';
+figureFile5='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\5UweaklyNL.fig';
 %loop for flag checking
 if c==1
        sendolmail('conor.macdonald@adelaide.edu.au','5U simulation complete',...
@@ -115,7 +115,7 @@ catch ME
     sendolmail('conor.macdonald@adelaide.edu.au','10U simulation failed',...
     ['10U failed due to ' msgtext newline ' -----------:End message:--------']);
 end
-figureFile10='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\10UweaklyNLamp10.fig';
+figureFile10='U:\_PhD\Matlab\Git\Models\MDOF Metamaterial Models\SweptSine\WeekendSimulationCode\10UweaklyNL.fig';
 
 if d==1
     sendolmail('conor.macdonald@adelaide.edu.au','10U simulation complete',...
