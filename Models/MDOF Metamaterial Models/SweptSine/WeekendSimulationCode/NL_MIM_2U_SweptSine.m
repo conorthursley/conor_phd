@@ -4,7 +4,7 @@ tic
 % simulation parameters
 fs=1000;        % [Hz] sampling frequency
 dt=1/fs;    % [s] delta t
-for loop parameters
+ % for loop parameters
 t_end=1000;   % t limit
 t=0:dt:t_end;      % [s] time scaled/dx of sined
 t_find=600; % the time to safely assume SS has been reached 600 seconds after initial transient begins
