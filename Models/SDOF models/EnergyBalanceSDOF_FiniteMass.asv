@@ -1,6 +1,6 @@
 %% Energy Balance finite mass situation 
 
-tspan=0:0.001:1; %span of t values (time)
+tspan=0:0.01:1; %span of t values (time)
 x0=[0,0]; %initial displacement at t=0;
 
 [t,X]=ode45(@(t,X) rhs(t,X), tspan, x0);  
@@ -9,12 +9,8 @@ plot(t,X,'-o') %,t,xdot(:,2))
 
 % create for loop to iterate over the entire graph to find the area under
 % the curve
-Potential=0.5*1000.*(X(:,1)).^2; %compare with Potential energy term to show 
-% PE and Work are the same
-Kinetic=0.5*0.1.*(X(:,2)).^2;
-Fx=Potential+Kinetic;
-plot(t,Fx,t,Potential,t,Kinetic)
-
+Fx=0.1.*xdot(:,2)+1000*X(:,1);
+% plot(t,Fx)
 h=t;
 delta=h(2)-h(1); %step value
 trapint=0;  % counter
