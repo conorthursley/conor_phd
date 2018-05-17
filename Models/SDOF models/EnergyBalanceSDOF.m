@@ -4,7 +4,7 @@ dt=1/fs;        % [s] delta t
 t_end=1;   % t limit
 t=0:dt:t_end;      % [s] time scale
 tic
-omega=5;
+omega=10;
 %work period/cycle
 %from 8000 seconds
 t_b=8000;
@@ -75,13 +75,14 @@ plot(t_new,workIn,'b',t_new,ME,'r--')
 title 'Energy Method'
 legend 'Input, Fx' 'Output, PE+KE'
 %% Trap rule for non-integer steps (not TRAPZ)
-h=t;  % first example with linear forcing, stepping from 0 to 1 
+x=linspace(0,1,1000);
+h=x;  % first example with linear forcing, stepping from 0 to 1 
 delta=h(2)-h(1);
 % as the spring stretches and does not collapse
-Work=abs(sin(omega*2*pi*h)).*delta; % our function of the spring stretching due to the sinusoidal force
-Potential=0.5*K.*x(8001:end,1).^2;
-Kinetic=0.5*mass1*((x(8001:end,2).^2));
-Fx=In;
+Work=1.*delta; % our function of the spring stretching due to the sinusoidal force
+Potential=0.5*K.*x.^2;
+Kinetic=0.5*mass1*x.^2;
+Fx=K.*x;
 % creat for loop to iterate over the entire graph to find the area under
 % the curve
 trapint=0;  % counter
@@ -99,8 +100,8 @@ end
         f=1;           % [N] amplitude of driving force
         w=omega;
 
-        dxdt_1 = (w*cos((w*2*pi)*t))/stiff1;
-        dxdt_2 = -w^2*(sin((w*2*pi)*t))/stiff1;
+        dxdt_1 = stiff1;
+        dxdt_2 = 0;
 %         dxdt_2 = -(damp/mass1)*x(2) - (stiff1/mass1)*x(1) + (f/mass1)*sin((w*2*pi)*t);
 
         dxdt=[dxdt_1; dxdt_2];
