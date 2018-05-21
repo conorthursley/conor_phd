@@ -98,7 +98,7 @@ stiff2=1500;
 stiff3=k3;
 damp1=0.002;     % [Ns/m] keep as a small number to fix solver errors
 damp2=0.002;
-f=10; %*(stepfun(t,0)-stepfun(t,0.01));
+f=1; %*(stepfun(t,0)-stepfun(t,0.01));
 w=omega; % Hz, forcing frequency
 %----first unit cell-----
 u1=x(1);    %disp mass1

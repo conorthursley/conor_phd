@@ -6,7 +6,9 @@ F0=0; %initial forcing at x=0;
 [x,F]=ode45(@(x,F) rhs, xspan, F0);  
 
 plot(x,F,'-o')
-
+xlabel 'Displacement of spring, x'
+ylabel 'Force, F'
+title 'F=k*x'
 % create for loop to iterate over the entire graph to find the area under
 % the curve
 

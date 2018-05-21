@@ -19,12 +19,12 @@ m1=0.1;
 m2=0.5*m1;
 k1=1000;
 k2L=1.5*k1;
-k2NL=100*k2L;
-c=0.001;
+k2NL=1600*k2L;
+c=0.002;
 L=0.5; %length between cells (cell is two masses)
 l=L/2; %length within each cell
 %-------------------------------------
-n=1; %number of cells, so we need 2xn number of nodes
+n=2; %number of cells, so we need 2xn number of nodes
 %-------------------------------------
 ival=0; %initial value for node generation
 fval=2*n; %final value for end of node chain
@@ -70,20 +70,22 @@ fprintf(fileID,'\nposx=II*L		! calculate nodal position with spacing, =%d\n',L);
 fprintf(fileID,'\nN,II+1,posx,0,0			! define the node\n*ENDDO\n');
 % fprintf(fileID,'\nN,II+2,posx+l,0,0\n*ENDDO\n');
 % define first node
-% fprintf(fileID,'\n\nN,1,0,0,0     !Define first node at 0,0');
-fprintf(fileID,'\n! Now that all the nodes are defined\n! One can define the elements that link them together\n');
+fprintf(fileID,'\nN,II+2,posx+L,0,0     !Define LAST node at 0,FINAL');
+fprintf(fileID,'\n\n! Now that all the nodes are defined\n! One can define the elements that link them together\n');
 %-----------------------------------------------
+% Element Generation
+
 % link springs together (nonlinear springs - primary mass to secondary mass)
-fprintf(fileID,'\nTYPE,3! Change the element type to 3 (spring element)\nREAL,3! Change to real set 3 for the spring\n');
+fprintf(fileID,'\nTYPE,3! Change the element type to 3 (nonlinear spring element for secondary springs)\nREAL,3! Change to real set 3 for the spring\n');
 fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+1\n*ENDDO\n');
 %-----------------------------------------------
 % link springs together (linear springs - primary mass to primary mass)
-fprintf(fileID,'\nTYPE,2! Change the element type to 2 (spring element)\nREAL,2! Change to real set 2 for the spring\n');
+fprintf(fileID,'\nTYPE,2! Change the element type to 2 (linear spring element for primary springs)\nREAL,2! Change to real set 2 for the spring\n');
 fprintf(fileID,'\nE,1,2\n');
 % setout another DO loop
-fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval-2);
+fprintf(fileID,'\n!*DO, Par, IVAL, FVAL, INC\n*DO, II,2,%d, 2\n',fval);
 % element is defined by connectivity to two nodes, I and J
 fprintf(fileID,'\nE,II,II+2\n*ENDDO\n');
 %-----------------------------------------------
@@ -107,11 +109,13 @@ fprintf(fileID,'\nE,II\n*ENDDO\n');
 % fprintf(fileID,'\nF,1,FX,1');
 %-----------------------------------------------
 % Constrain the other end of the chain
-fprintf(fileID,'\n! Constrain the end node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
+fprintf(fileID,'\n! Constrain the first node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',ival+1);
 fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
 fprintf(fileID,'\nD,%d,UX,0\n',ival+1);
 % %-----------------------------------------------
-
+fprintf(fileID,'\n! Constrain the end node, which is numbered %d\n! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6',fval+2);
+fprintf(fileID,'\n! Defines degree-of-freedom constraints at nodes.');
+fprintf(fileID,'\nD,%d,UX,0\n',fval+2);
 %-----------------------------------------------
 % Model process has been completed
 %% Solution of system

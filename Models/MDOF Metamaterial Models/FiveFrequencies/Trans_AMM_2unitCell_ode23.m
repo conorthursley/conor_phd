@@ -43,10 +43,10 @@ i=1;
         omega=freq_range(i);
         t=0:dt:t_end;      % [s] time scale
         options=odeset('InitialStep',dt,'MaxStep',dt);
-        [t,result]=ode45(@(t,z) rhs(t,z,omega,k3),t,z,options);
+        [t2,result2]=ode23(@(t,z) rhs(t,z,omega,k3),t,z,options);
         
         % change result to show the steady state portion of the time history
-        x=result;%(p:q,:); % x becomes the steady state result
+        x=result2;%(p:q,:); % x becomes the steady state result
         freq_results1(:,i)=x(:,1); %store the displacement history of 1 cell mass1
         freq_results2(:,i)=x(:,5); %store the displacement history of 2 cell mass1
         freq_results3(:,i)=x(:,3); %store the displacement history of 1 cell mass2
