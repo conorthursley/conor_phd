@@ -6,7 +6,7 @@ clear all
 hf=50;
 dt=1/(1000);
 %length of time we want to find response for
-lt=1000;
+lt=250;
 steps=(lt/dt);
 x=linspace(0,lt,(steps));
 % x=0:1/steps:lt;
@@ -23,7 +23,7 @@ Y=[x' r'];
 figure
 plot(x,r,'b') %,x,y,'g')
 
-file='U:\_PhD\ANSYS\ANSYS Validation\Signals\TS3.csv';
+file='U:\_PhD\ANSYS\ANSYS Validation\Signals\TS4.csv';
 csvwrite(file,Y);
 
 

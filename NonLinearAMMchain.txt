@@ -1,5 +1,5 @@
 ! Script to examine the response for a nonlinear mass-spring system
-! Conor MacDonaldMay 21, 2018  5:58:17 PM
+! Conor MacDonaldMay 22, 2018  4:49:42 PM
 
 FINI
 /clear,all
@@ -12,9 +12,9 @@ m2=0.050000
 k1=1000.000000
 L=0.500000
 l=0.250000
-n=2.000000 !number of cells
+n=1.000000 !number of cells
 ival=0.000000
-fval=4.000000
+fval=2.000000
 
 ! Define the mass element
 ET,1,MASS21
@@ -39,17 +39,17 @@ KEYOPT,2,3,0
 KEYOPT,2,4,0
 KEYOPT,2,6,0
 KEYOPT,2,3,2
-R,3,-1,-2401500,-9.000000e-01,-1.750950e+06,-8.000000e-01,-1.230000e+06,
-RMORE,-7.000000e-01,-8.242500e+05,-6.000000e-01,-5.193000e+05,-5.000000e-01,-300750,
-RMORE,-4.000000e-01,-1.542000e+05,-3.000000e-01,-6.525000e+04,-2.000000e-01,-1.950000e+04,
-RMORE,-1.000000e-01,-2.550000e+03,0,0,1.000000e-01,2.550000e+03,
-RMORE,2.000000e-01,1.950000e+04,3.000000e-01,6.525000e+04,4.000000e-01,1.542000e+05,
-RMORE,5.000000e-01,300750,6.000000e-01,5.193000e+05,7.000000e-01,8.242500e+05,
-RMORE,8.000000e-01,1.230000e+06,9.000000e-01,1.750950e+06,
+R,3,-1,-1500,-9.000000e-01,-1350,-8.000000e-01,-1200,
+RMORE,-7.000000e-01,-1050,-6.000000e-01,-900,-5.000000e-01,-750,
+RMORE,-4.000000e-01,-6.000000e+02,-3.000000e-01,-4.500000e+02,-2.000000e-01,-3.000000e+02,
+RMORE,-1.000000e-01,-1.500000e+02,0,0,1.000000e-01,1.500000e+02,
+RMORE,2.000000e-01,3.000000e+02,3.000000e-01,4.500000e+02,4.000000e-01,6.000000e+02,
+RMORE,5.000000e-01,750,6.000000e-01,900,7.000000e-01,1050,
+RMORE,8.000000e-01,1200,9.000000e-01,1350,
 ! Define a DO loop using the command
 !*DO, counter, InitialVAL, FinalVAL, INCrement
 
-*DO,II,0,fval,1 ! For I = 0 to 4:
+*DO,II,0,fval,1 ! For I = 0 to 2:
 
 ! Define the nodes using the command
 ! N, NODE, X, Y, Z, THXY, THYZ, THZX
@@ -68,7 +68,7 @@ TYPE,3! Change the element type to 3 (nonlinear spring element for secondary spr
 REAL,3! Change to real set 3 for the spring
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,4, 2
+*DO, II,2,2, 2
 
 E,II,II+1
 *ENDDO
@@ -79,7 +79,7 @@ REAL,2! Change to real set 2 for the spring
 E,1,2
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2,4, 2
+*DO, II,2,2, 2
 
 E,II,II+2
 *ENDDO
@@ -88,7 +88,7 @@ TYPE,1! Change the element type to 1 (mass element)
 REAL,1! Change to real set 1 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,2 ,4, 2
+*DO, II,2 ,2, 2
 
 E,II
 *ENDDO
@@ -97,7 +97,7 @@ TYPE,4! Change the element type to 4 (mass element)
 REAL,4! Change to real set 4 for the mass
 
 !*DO, Par, IVAL, FVAL, INC
-*DO, II,3 ,5, 2
+*DO, II,3 ,3, 2
 
 E,II
 *ENDDO
@@ -107,10 +107,10 @@ E,II
 ! Defines degree-of-freedom constraints at nodes.
 D,1,UX,0
 
-! Constrain the end node, which is numbered 6
+! Constrain the end node, which is numbered 4
 ! D, Node, Lab, VALUE, VALUE2, NEND, NINC, Lab2, Lab3, Lab4, Lab5, Lab6
 ! Defines degree-of-freedom constraints at nodes.
-D,6,UX,0
+D,4,UX,0
 
 !*
 ANTYPE,4
